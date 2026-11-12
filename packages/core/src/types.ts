@@ -3,7 +3,8 @@ export type DiagramType = 'flow' | 'architecture' | 'timeline';
 
 export type Direction = 'LR' | 'TB';
 
-export type NodeKind = 'default' | 'decision' | 'start' | 'end';
+export type NodeKind = 'default' | 'decision' | 'start' | 'end' | 'data' | 'database' | 'note';
+export const NODE_KINDS: NodeKind[] = ['default', 'decision', 'start', 'end', 'data', 'database', 'note'];
 
 /** Estado de un nodo en un paso. `default` lo devuelve a su aspecto normal. */
 export type NodeState = 'success' | 'error' | 'warning' | 'pending' | 'default';
@@ -16,7 +17,10 @@ export interface FluxNode {
   description?: string;
   /** Nombre de un ícono incluido (ver ICON_NAMES en @fluxygram/element). */
   icon?: string;
-  /** `decision` dibuja un rombo; `start` y `end` una píldora. Solo en `flow`. */
+  /**
+   * Forma del bloque: `decision` rombo, `start`/`end` píldora, `data` paralelogramo (entrada/salida),
+   * `database` cilindro, `note` nota con esquina doblada (anotación).
+   */
   kind?: NodeKind;
   /** Capa a la que pertenece (solo `architecture`). */
   group?: string;
@@ -65,6 +69,8 @@ export interface Diagram {
   type: DiagramType;
   title?: string;
   theme?: 'dark' | 'light';
+  /** Final automático que aleja la cámara y muestra todo funcionando. Por defecto true. */
+  finale?: boolean;
   /** Dirección del layout para `flow` (por defecto LR). */
   direction?: Direction;
   nodes: FluxNode[];
@@ -135,6 +141,8 @@ export interface StepState {
   caption?: string;
   /** Estado de cada nodo que no está en su aspecto normal (acumulado). */
   states: Record<string, Exclude<NodeState, 'default'>>;
+  /** El paso final automático (vista completa con todo funcionando). */
+  finale?: boolean;
 }
 
 export interface MotionPlan {

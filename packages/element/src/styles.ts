@@ -72,6 +72,8 @@ ${darkTokens(':host')}
   /* Un dedo en vertical sigue desplazando la página; horizontal mueve el diagrama y dos dedos hacen zoom. */
   touch-action: pan-y;
 }
+/* gestures="full": el diagrama es el contenido principal (página de vista, HTML exportado) y se queda con todos los gestos. */
+:host([gestures='full']) .fx-stage { touch-action: none; }
 .fx-stage.is-dragging { cursor: grabbing; }
 .fx-stage:not(.is-dragging) .fx-node.is-in { cursor: pointer; }
 .fx-node:not(.is-in) { pointer-events: none; }
@@ -164,6 +166,11 @@ ${darkTokens(':host')}
   filter: drop-shadow(0 1px 1.5px rgb(23 23 28 / 0.05)) drop-shadow(0 4px 10px rgb(23 23 28 / 0.04));
   transition: fill 320ms ease, stroke 320ms ease;
 }
+.fx-rim { fill: none; stroke: var(--fx-border); stroke-width: 1; transition: stroke 320ms ease; }
+.fx-shape.fx-note { stroke-dasharray: 4 3; fill: color-mix(in oklab, var(--fx-warning) 6%, var(--fx-surface)); }
+.fx-note-text { font-weight: 500; }
+.fx-node.is-accent .fx-rim { stroke: var(--fx-accent); }
+.fx-node[data-state] .fx-rim { stroke: var(--fx-state); }
 .fx-label { fill: var(--fx-text); font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
 .fx-desc { fill: var(--fx-muted); font-size: 12.5px; }
 .fx-date { fill: var(--fx-accent); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }

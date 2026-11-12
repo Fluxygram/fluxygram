@@ -21,8 +21,6 @@
         <button type="button" role="radio" data-type="timeline" data-i18n="examples.timeline">Timeline</button>
       </div>
 
-      <div class="ed-palette" id="palette"></div>
-
       <div class="ed-spacer"></div>
 
       <div class="ed-tools">
@@ -44,12 +42,14 @@
         <button type="button" class="ed-icon" id="export" data-i18n-attr="aria-label:ed.export;title:ed.export"></button>
         <button type="button" class="ed-btn" id="share"><span data-i18n="ed.share">Share</span></button>
         <button type="button" class="ed-btn ed-primary" id="preview"><span data-i18n="ed.preview">Play</span></button>
+        <button type="button" class="ed-icon" id="tour" data-i18n-attr="aria-label:tour.help;title:tour.help"></button>
         <button class="lang-switch" type="button" data-lang-switch>Español</button>
       </div>
     </header>
 
     <main class="ed-main">
       <div class="ed-stage" id="stage">
+        <div class="ed-palette" id="palette"></div>
         <p class="ed-empty" id="empty" data-i18n="ed.empty"></p>
         <div class="ed-dropzone" id="dropzone"><span data-i18n="ed.drop"></span></div>
         <div class="ed-zoom">
@@ -76,7 +76,7 @@
     <div class="ed-modal" id="modal" hidden>
       <div class="ed-modal-box">
         <button type="button" class="ed-icon ed-modal-close" id="modalClose" data-i18n-attr="aria-label:ed.close;title:ed.close"></button>
-        <fluxy-gram id="player"></fluxy-gram>
+        <fluxy-gram id="player" gestures="full"></fluxy-gram>
       </div>
     </div>
     <div class="ed-toast" id="toast" role="status" aria-live="polite"></div>

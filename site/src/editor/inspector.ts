@@ -73,22 +73,18 @@ function nodePanel(model: Model, id: string) {
   if (d.type === 'timeline') box.append(textField(t('ed.date'), n.date, (v) => model.updateNode(id, { date: v }), '2026'));
   box.append(textField(t('ed.desc'), n.description, (v) => model.updateNode(id, { description: v })));
 
-  if (d.type === 'flow') {
-    const kinds: [NodeKind, string][] = [['default', 'ed.kind.default'], ['decision', 'ed.add.decision'], ['start', 'ed.add.start'], ['end', 'ed.add.end']];
-    box.append(
-      h('div', { class: 'ed-field' },
-        h('span', {}, t('ed.kind')),
-        h('div', { class: 'ed-seg' },
-          ...kinds.map(([k, label]) =>
-            h('button', {
-              type: 'button',
-              'aria-pressed': String((n.kind ?? 'default') === k),
-              onclick: () => model.updateNode(id, { kind: k === 'default' ? undefined : k }),
-            }, t(label)),
-          ),
-        ),
-      ),
-    );
+  if (d.type !== 'timeline') {
+    const kinds: [NodeKind, string][] =
+      d.type === 'flow'
+        ? [['default', 'ed.kind.default'], ['decision', 'ed.add.decision'], ['start', 'ed.add.start'], ['end', 'ed.add.end'], ['data', 'ed.add.data'], ['database', 'ed.add.database'], ['note', 'ed.add.note']]
+        : [['default', 'ed.kind.default'], ['database', 'ed.add.database'], ['note', 'ed.add.note']];
+    const select = h('select', {
+      onchange: (e) => {
+        const k = (e.target as HTMLSelectElement).value as NodeKind;
+        model.updateNode(id, { kind: k === 'default' ? undefined : k });
+      },
+    }, ...kinds.map(([k, label]) => h('option', { value: k, selected: (n.kind ?? 'default') === k }, t(label))));
+    box.append(h('label', { class: 'ed-field' }, h('span', {}, t('ed.kind')), select));
   }
 
   if (d.type === 'architecture' && d.groups?.length) {

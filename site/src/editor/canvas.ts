@@ -267,6 +267,7 @@ export class Canvas {
   }
 
   private onDown = (e: PointerEvent) => {
+    if (this.pinch(e, 'down')) return;
     if (e.button !== 0 && e.button !== 1) return;
     const t = e.target as Element;
     const svg = this.svg;
@@ -314,6 +315,7 @@ export class Canvas {
   };
 
   private onMove = (e: PointerEvent) => {
+    if (this.pinch(e, 'move')) return;
     const drag = this.drag;
     if (!drag) {
       // Manijas al pasar el mouse por un nodo.
@@ -358,6 +360,7 @@ export class Canvas {
   };
 
   private onUp = (e: PointerEvent) => {
+    if (this.pinch(e, 'up')) return;
     const drag = this.drag;
     this.drag = undefined;
     this.svg?.classList.remove('is-panning', 'is-dragging');
@@ -383,19 +386,50 @@ export class Canvas {
     }
   };
 
-  // Rueda: desplaza. Ctrl/⌘ + rueda o pellizco: zoom alrededor del cursor.
+  // Rueda: zoom alrededor del cursor. Shift + rueda: desplaza de lado.
   private onWheel = (e: WheelEvent) => {
     e.preventDefault();
     const r = this.host.getBoundingClientRect();
-    if (e.ctrlKey || e.metaKey) {
-      this.zoomAt(Math.exp(-e.deltaY * 0.01), e.clientX - r.left, e.clientY - r.top);
-    } else {
+    const scale = e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 400 : 1;
+    if (e.shiftKey) {
       this.userMoved = true;
-      this.cam.tx -= e.deltaX;
-      this.cam.ty -= e.deltaY;
+      this.cam.tx -= (e.deltaX || e.deltaY) * scale;
       this.applyCam();
+      return;
     }
+    const k = e.ctrlKey || e.metaKey ? 0.01 : 0.0022;
+    this.zoomAt(Math.exp(-e.deltaY * scale * k), e.clientX - r.left, e.clientY - r.top);
   };
+
+  /* ---------- Pellizco con dos dedos ---------- */
+
+  private touches = new Map<number, { x: number; y: number }>();
+  private pinchDist = 0;
+
+  /** Devuelve true si el evento es parte de un pellizco (y ya se manejó). */
+  private pinch(e: PointerEvent, phase: 'down' | 'move' | 'up'): boolean {
+    if (e.pointerType !== 'touch') return false;
+    if (phase === 'down') this.touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    else if (phase === 'up') this.touches.delete(e.pointerId);
+    else if (this.touches.has(e.pointerId)) this.touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (this.touches.size < 2) {
+      this.pinchDist = 0;
+      return false;
+    }
+    const [a, b] = [...this.touches.values()];
+    const dist = Math.hypot(a!.x - b!.x, a!.y - b!.y);
+    if (phase === 'down' || !this.pinchDist) {
+      // Empieza el pellizco: se cancela cualquier arrastre de un dedo.
+      if (this.drag?.kind === 'wire') this.drag.path.remove();
+      this.drag = undefined;
+      this.pinchDist = dist;
+      return true;
+    }
+    const r = this.host.getBoundingClientRect();
+    this.zoomAt(dist / this.pinchDist, (a!.x + b!.x) / 2 - r.left, (a!.y + b!.y) / 2 - r.top);
+    this.pinchDist = dist;
+    return true;
+  }
 }
 
 function rect(cls: string, attrs: Record<string, number>) {

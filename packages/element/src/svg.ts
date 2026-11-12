@@ -113,23 +113,40 @@ function drawNode(n: LaidNode, slot: Element) {
   const { node, w, h } = n;
   const part = el('g', { class: `fx-node${node.accent ? ' is-accent' : ''}`, 'data-id': n.id }, slot);
 
-  if (node.kind === 'decision') {
-    el('path', { class: 'fx-shape', d: `M${w / 2} 0 L${w} ${h / 2} L${w / 2} ${h} L0 ${h / 2} Z`, 'stroke-linejoin': 'round' }, part);
-  } else {
-    const rx = node.kind === 'start' || node.kind === 'end' ? h / 2 : 12;
-    el('rect', { class: 'fx-shape', width: w, height: h, rx }, part);
+  const RY = 7; // radio vertical de la tapa del cilindro
+  switch (node.kind) {
+    case 'decision':
+      el('path', { class: 'fx-shape', d: `M${w / 2} 0 L${w} ${h / 2} L${w / 2} ${h} L0 ${h / 2} Z`, 'stroke-linejoin': 'round' }, part);
+      break;
+    case 'data':
+      el('path', { class: 'fx-shape', d: `M14 0 H${w} L${w - 14} ${h} H0 Z`, 'stroke-linejoin': 'round' }, part);
+      break;
+    case 'database':
+      el('path', { class: 'fx-shape', d: `M0 ${RY} A${w / 2} ${RY} 0 0 1 ${w} ${RY} V${h - RY} A${w / 2} ${RY} 0 0 1 0 ${h - RY} Z` }, part);
+      el('path', { class: 'fx-rim', d: `M0 ${RY} A${w / 2} ${RY} 0 0 0 ${w} ${RY}` }, part);
+      break;
+    case 'note':
+      el('path', { class: 'fx-shape fx-note', d: `M0 0 H${w - 14} L${w} 14 V${h} H0 Z`, 'stroke-linejoin': 'round' }, part);
+      el('path', { class: 'fx-rim', d: `M${w - 14} 0 V14 H${w}` }, part);
+      break;
+    default: {
+      const rx = node.kind === 'start' || node.kind === 'end' ? h / 2 : 12;
+      el('rect', { class: 'fx-shape', width: w, height: h, rx }, part);
+    }
   }
 
-  const icon = node.icon && node.kind !== 'decision' ? iconElement(node.icon, 16, h / 2 - 9, 18) : null;
+  // El cilindro baja el texto para que quede debajo de la tapa.
+  const cy = node.kind === 'database' ? h / 2 + RY / 2 : h / 2;
+  const icon = node.icon && node.kind !== 'decision' ? iconElement(node.icon, node.kind === 'data' ? 22 : 16, cy - 9, 18) : null;
   const center = !icon;
-  const tx = center ? w / 2 : 44;
+  const tx = center ? w / 2 : node.kind === 'data' ? 50 : 44;
   const anchor = center ? 'middle' : 'start';
   if (icon) part.appendChild(icon);
 
-  const label = el('text', { class: 'fx-label', x: tx, y: node.description ? h / 2 - 4 : h / 2 + 5, 'text-anchor': anchor }, part);
+  const label = el('text', { class: `fx-label${node.kind === 'note' ? ' fx-note-text' : ''}`, x: tx, y: node.description ? cy - 4 : cy + 5, 'text-anchor': anchor }, part);
   label.textContent = node.label;
   if (node.description) {
-    const desc = el('text', { class: 'fx-desc', x: tx, y: h / 2 + 15, 'text-anchor': anchor }, part);
+    const desc = el('text', { class: 'fx-desc', x: tx, y: cy + 15, 'text-anchor': anchor }, part);
     desc.textContent = node.description;
   }
   if (node.kind === 'decision') drawBadge(part, w * 0.75, h * 0.25);

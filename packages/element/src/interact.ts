@@ -16,7 +16,7 @@ const MIN_SPEED = 0.01; // unidades del escenario por ms
 const finePointer = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 /**
- * Arrastrar para mover (con inercia), pellizcar o Ctrl/⌘ + rueda para zoom, clic en un nodo para acercarse,
+ * Arrastrar para mover (con inercia), rueda o pellizco para zoom, clic en un nodo para acercarse,
  * y resaltado de conexiones al pasar el mouse. Volver a la vista del paso: botón o Escape.
  */
 export function attachInteractions(svg: SVGSVGElement, player: Player, hooks: Hooks): () => void {
@@ -138,13 +138,15 @@ export function attachInteractions(svg: SVGSVGElement, player: Player, hooks: Ho
     }
   };
 
-  // La rueda sola sigue desplazando la página; Ctrl/⌘ + rueda (y el pellizco del trackpad) hace zoom.
+  // Rueda (y pellizco del trackpad): zoom alrededor del cursor. Si el zoom ya llegó a su límite,
+  // el evento sigue de largo y la página se desplaza: el diagrama nunca atrapa el scroll.
   const onWheel = (e: WheelEvent) => {
-    if (!e.ctrlKey && !e.metaKey) return;
+    const scale = e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 400 : 1;
+    const k = e.ctrlKey || e.metaKey ? 0.01 : 0.0022;
+    const p = toStage(e.clientX, e.clientY);
+    if (!player.zoomAt(Math.exp(-e.deltaY * scale * k), p.x, p.y)) return;
     e.preventDefault();
     stopInertia();
-    const p = toStage(e.clientX, e.clientY);
-    player.zoomAt(Math.exp(-e.deltaY * 0.0022), p.x, p.y);
     hooks.onInteract();
   };
 

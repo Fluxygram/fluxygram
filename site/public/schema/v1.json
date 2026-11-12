@@ -65,6 +65,11 @@
       "items": {
         "$ref": "#/$defs/step"
       }
+    },
+    "finale": {
+      "type": "boolean",
+      "default": true,
+      "description": "After the last step the camera zooms out and every visible connection flows at once. Set false to end on the last step."
     }
   },
   "$defs": {
@@ -159,9 +164,12 @@
             "default",
             "decision",
             "start",
-            "end"
+            "end",
+            "data",
+            "database",
+            "note"
           ],
-          "description": "flow only."
+          "description": "Block shape. decision: diamond (phrase it as a question). start/end: pill. data: parallelogram (input/output). database: cylinder. note: folded note for annotations."
         },
         "group": {
           "$ref": "#/$defs/id",

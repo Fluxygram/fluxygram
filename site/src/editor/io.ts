@@ -97,7 +97,7 @@ export async function exportHtml(d: Diagram, lang: string) {
 </style>
 </head>
 <body>
-<fluxy-gram><script type="application/json">${json}</script></fluxy-gram>
+<fluxy-gram gestures="full"><script type="application/json">${json}</script></fluxy-gram>
 <a class="credit" href="https://github.com/Fluxygram/fluxygram">Fluxygram</a>
 <script type="module">${safeJs}</script>
 </body>

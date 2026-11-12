@@ -2,8 +2,8 @@ import '@fluxygram/element';
 import type { FluxyGram } from '@fluxygram/element';
 import { validate, type Diagram, type FluxNode } from '@fluxygram/core';
 import {
-  Circle, CircleDot, Diamond, Download, FileCode, FilePlus, FolderOpen, LayoutGrid, Maximize, Milestone, Minus, Plus,
-  RectangleHorizontal, Redo2, Square, Undo2, X, type IconNode,
+  Circle, CircleDot, Database, Diamond, Download, FileCode, FilePlus, FolderOpen, LayoutGrid, Maximize, Milestone, Minus, Plus,
+  CircleHelp, RectangleHorizontal, Redo2, Square, StickyNote, Undo2, X, type IconNode,
 } from 'lucide';
 import { exampleUrl, lang, t } from './i18n';
 import { Canvas } from './editor/canvas';
@@ -12,6 +12,7 @@ import { renderInspector } from './editor/inspector';
 import { copyText, diagramFromHash, download, exportHtml, pickFile, shareUrl, slug } from './editor/io';
 import { emptyDiagram, Model } from './editor/model';
 import { renderSteps } from './editor/steps';
+import { startTour, tourSeen } from './editor/tour';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const DRAFT_KEY = 'fluxygram:editor';
@@ -59,6 +60,7 @@ setIcon('export', FileCode);
 setIcon('zoomIn', Plus);
 setIcon('zoomOut', Minus);
 setIcon('modalClose', X);
+setIcon('tour', CircleHelp);
 
 $('undo').onclick = () => model.undo();
 $('redo').onclick = () => model.redo();
@@ -67,6 +69,7 @@ $('fit').onclick = () => canvas.fit();
 $('zoomIn').onclick = () => canvas.zoomBy(1.2);
 $('zoomOut').onclick = () => canvas.zoomBy(1 / 1.2);
 $('new').onclick = () => model.load(emptyDiagram());
+$('tour').onclick = () => startTour();
 
 for (const btn of document.querySelectorAll<HTMLButtonElement>('#type button')) {
   btn.onclick = () => {
@@ -111,6 +114,9 @@ interface PaletteItem {
   add: (at?: { x: number; y: number }) => void;
 }
 
+/** Paralelogramo (entrada / salida): lucide no lo trae. */
+const Parallelogram: IconNode = [['path', { d: 'M7 5h14l-4 14H3z' }]];
+
 function paletteItems(): PaletteItem[] {
   const type = model.diagram.type;
   const node = (partial: Partial<FluxNode>, labelKey: string) => (at?: { x: number; y: number }) => {
@@ -129,6 +135,8 @@ function paletteItems(): PaletteItem[] {
   if (type === 'architecture') {
     return [
       { label: t('ed.add.node'), icon: Square, add: node({}, 'ed.newNode') },
+      { label: t('ed.add.database'), icon: Database, add: node({ kind: 'database' }, 'ed.newDatabase') },
+      { label: t('ed.add.note'), icon: StickyNote, add: node({ kind: 'note' }, 'ed.newNote') },
       { label: t('ed.add.layer'), icon: RectangleHorizontal, add: () => model.addGroup(t('ed.newLayer')) },
     ];
   }
@@ -137,6 +145,9 @@ function paletteItems(): PaletteItem[] {
     { label: t('ed.add.decision'), icon: Diamond, add: node({ kind: 'decision' }, 'ed.newDecision') },
     { label: t('ed.add.start'), icon: Circle, add: node({ kind: 'start' }, 'ed.newStart') },
     { label: t('ed.add.end'), icon: CircleDot, add: node({ kind: 'end' }, 'ed.newEnd') },
+    { label: t('ed.add.data'), icon: Parallelogram, add: node({ kind: 'data' }, 'ed.newData') },
+    { label: t('ed.add.database'), icon: Database, add: node({ kind: 'database' }, 'ed.newDatabase') },
+    { label: t('ed.add.note'), icon: StickyNote, add: node({ kind: 'note' }, 'ed.newNote') },
   ];
 }
 
@@ -353,3 +364,6 @@ function renderAll(reason: string) {
 
 model.on(renderAll);
 renderAll('init');
+
+// La intro aparece sola la primera vez (cuando ya se dibujó todo, para que el foco encuentre cada zona).
+if (!tourSeen()) setTimeout(startTour, 500);

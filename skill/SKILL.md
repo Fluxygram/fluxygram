@@ -67,7 +67,7 @@ If two types fit, prefer the one whose motion matches the question: "how does X 
 | `label` | yes | 1 to 3 words. It is a name, not a sentence. |
 | `description` | no | One short line (under ~30 characters) under the label. |
 | `icon` | no | One of the built-in names listed below. |
-| `kind` | no | `flow` only: `decision` (diamond, phrase it as a question), `start`, `end` (pills). |
+| `kind` | no | Block shape. `flow`: `decision` (diamond, phrase it as a question), `start` / `end` (pills), `data` (parallelogram: input or output), `database` (cylinder), `note` (folded note to annotate). `architecture`: `database`, `note`. |
 | `group` | no | `architecture` only: the id of the layer it belongs to. |
 | `date` | no | `timeline` only: `"1995"`, `"2026-03"`, `"Q3 2026"`. Milestones are sorted by it when every node has one. |
 | `accent` | no | `true` on the one node that matters most (the outcome, the key service). Use it at most once or twice. |
@@ -97,6 +97,10 @@ Steps are **cumulative**: whatever appears stays visible until a later step `hid
 | `state` | Node states from this step on: `{ "bank": "pending" }`. Values: `success`, `error`, `warning`, `pending`, `default` (back to normal). The node changes color, gets a badge and pulses once. Persists until a later step changes it. |
 | `hide` | Elements that disappear. Rarely needed. |
 | `caption` | The sentence shown under the diagram. |
+
+### Ending
+
+After the last step, Fluxygram adds an automatic finale: the camera zooms out to the whole diagram and particles run along every visible connection. Leave it on (the default); set `"finale": false` only when the last step must stay framed on a detail.
 
 ## Storytelling rules
 

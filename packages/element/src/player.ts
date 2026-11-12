@@ -241,12 +241,14 @@ export class Player {
   }
 
   /** Zoom alrededor de un punto del escenario, para que lo que está bajo el cursor no se mueva. */
-  zoomAt(factor: number, px: number, py: number, animate = false) {
+  /** Devuelve false si ya estaba en el límite (para dejar que la rueda desplace la página). */
+  zoomAt(factor: number, px: number, py: number, animate = false): boolean {
     const s = clamp(this.view.s * factor, this.base.s * MIN_ZOOM, this.base.s * MAX_ZOOM);
     const k = s / this.view.s;
-    if (Math.abs(k - 1) < 1e-4) return;
+    if (Math.abs(k - 1) < 1e-4) return false;
     this.setFree(true);
     this.apply({ s, tx: px - (px - this.view.tx) * k, ty: py - (py - this.view.ty) * k }, animate);
+    return true;
   }
 
   /** La cámara se acerca a un nodo, con contexto alrededor. */

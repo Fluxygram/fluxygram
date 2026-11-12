@@ -25,6 +25,8 @@ export function nodeSize(node: FluxNode, type: DiagramType): { w: number; h: num
   }
 
   const inner = Math.max(label + icon, desc);
-  const w = Math.min(300, Math.max(node.kind === 'start' || node.kind === 'end' ? 120 : 140, inner + 44));
-  return { w, h: node.description ? 64 : 48 };
+  const extra = node.kind === 'data' ? 24 : node.kind === 'note' ? 16 : 0;
+  const w = Math.min(320, Math.max(node.kind === 'start' || node.kind === 'end' ? 120 : 140, inner + 44 + extra));
+  const h = (node.description ? 64 : 48) + (node.kind === 'database' ? 14 : 0);
+  return { w, h };
 }

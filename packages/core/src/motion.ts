@@ -13,7 +13,27 @@ const list = (v: string | string[] | undefined): string[] => (v === undefined ? 
  */
 export function plan(diagram: Diagram, layout: Layout): MotionPlan {
   const steps = diagram.steps?.length ? diagram.steps : defaultSteps(diagram);
-  return { steps: resolve(diagram, layout, steps) };
+  const resolved = resolve(diagram, layout, steps);
+  const last = resolved[resolved.length - 1];
+  if (last && diagram.finale !== false) resolved.push(finale(layout, last));
+  return { steps: resolved };
+}
+
+/**
+ * Final automático: la cámara se aleja para mostrar todo el diagrama y las partículas recorren cada conexión
+ * visible a la vez. Es el "así funciona todo junto" después de contar la historia paso a paso.
+ */
+function finale(layout: Layout, last: StepState): StepState {
+  const flowing = layout.edges.filter((e) => last.visible.has(e.id)).map((e) => e.id);
+  return {
+    visible: new Set(last.visible),
+    entering: [],
+    flowing,
+    highlighted: [],
+    camera: layout.bounds,
+    states: { ...last.states },
+    finale: true,
+  };
 }
 
 function defaultSteps(diagram: Diagram): FluxStep[] {
