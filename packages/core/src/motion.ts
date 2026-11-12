@@ -1,5 +1,5 @@
 import { computeRanks, edgeId } from './layout';
-import type { Diagram, FluxStep, Layout, MotionPlan, Rect, StepState } from './types';
+import type { Diagram, FluxStep, Layout, MotionPlan, NodeState, Rect, StepState } from './types';
 
 const list = (v: string | string[] | undefined): string[] => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
 
@@ -67,6 +67,7 @@ function resolve(diagram: Diagram, layout: Layout, steps: FluxStep[]): StepState
 
   const visible = new Set<string>();
   const states: StepState[] = [];
+  const nodeStates: Record<string, Exclude<NodeState, 'default'>> = {};
   let lastNode: string | undefined;
 
   for (const step of steps) {
@@ -97,8 +98,15 @@ function resolve(diagram: Diagram, layout: Layout, steps: FluxStep[]): StepState
       }
     }
 
+    const changed = Object.keys(step.state ?? {}).filter((id) => nodes.has(id));
+    for (const id of changed) {
+      const v = step.state![id]!;
+      if (v === 'default') delete nodeStates[id];
+      else nodeStates[id] = v;
+    }
+
     const isLast = states.length === steps.length - 1;
-    const active = [...entering, ...list(step.flow), ...list(step.highlight)];
+    const active = [...entering, ...list(step.flow), ...list(step.highlight), ...changed];
     states.push({
       visible: new Set(visible),
       entering: entering.filter((id) => visible.has(id)),
@@ -106,6 +114,7 @@ function resolve(diagram: Diagram, layout: Layout, steps: FluxStep[]): StepState
       highlighted: list(step.highlight),
       camera: cameraFor(step, layout, full, nodes, groups, lastNode, active, isLast),
       caption: step.caption,
+      states: { ...nodeStates },
     });
   }
   return states;

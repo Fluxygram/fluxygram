@@ -16,6 +16,8 @@ export interface Scene {
   svg: SVGSVGElement;
   camera: SVGGElement;
   particles: SVGGElement;
+  /** Capa sobre los nodos: pulsos y etiquetas que viajan. */
+  overlay: SVGGElement;
   axis?: SVGGElement;
   /** Elemento animable por id (nodo, conexión o grupo). */
   parts: Map<string, SVGGElement>;
@@ -67,7 +69,8 @@ export function buildScene(layout: Layout, uid: string): Scene {
     parts.set(n.id, part);
   }
 
-  return { svg, camera, particles, axis, parts, slots, paths };
+  const overlay = el('g', { class: 'fx-overlay' }, camera);
+  return { svg, camera, particles, overlay, axis, parts, slots, paths };
 }
 
 function drawGroup(g: LaidGroup, parent: Element) {
@@ -94,6 +97,18 @@ function drawEdge(e: LaidEdge, parent: Element) {
   return { group, path };
 }
 
+/** Insignia de estado (éxito, error, alerta, espera). Está siempre y el CSS muestra la que corresponde. */
+function drawBadge(part: Element, x: number, y: number) {
+  // Posición en un grupo y animación en otro: el transform de CSS pisaría el del atributo.
+  const at = el('g', { transform: `translate(${x} ${y})` }, part);
+  const g = el('g', { class: 'fx-badge' }, at);
+  el('circle', { r: 9 }, g);
+  el('path', { class: 'i-success', d: 'M-3.6 0.2 L-1.1 2.7 L3.6 -2.4' }, g);
+  el('path', { class: 'i-error', d: 'M-2.8 -2.8 L2.8 2.8 M2.8 -2.8 L-2.8 2.8' }, g);
+  el('path', { class: 'i-warning', d: 'M0 -4 V0.6 M0 3.4 V3.6' }, g);
+  el('path', { class: 'i-pending', d: 'M0 -3.6 V0 L2.4 1.6' }, g);
+}
+
 function drawNode(n: LaidNode, slot: Element) {
   const { node, w, h } = n;
   const part = el('g', { class: `fx-node${node.accent ? ' is-accent' : ''}`, 'data-id': n.id }, slot);
@@ -117,6 +132,8 @@ function drawNode(n: LaidNode, slot: Element) {
     const desc = el('text', { class: 'fx-desc', x: tx, y: h / 2 + 15, 'text-anchor': anchor }, part);
     desc.textContent = node.description;
   }
+  if (node.kind === 'decision') drawBadge(part, w * 0.75, h * 0.25);
+  else drawBadge(part, w - 4, 4);
   return part;
 }
 
@@ -144,5 +161,6 @@ function drawMilestone(n: LaidNode, axisY: number, slot: Element) {
     const desc = el('text', { class: 'fx-desc', x: 18, y: ty + 20 }, part);
     desc.textContent = node.description;
   }
+  drawBadge(part, w - 4, 4);
   return part;
 }

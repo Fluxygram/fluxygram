@@ -205,6 +205,10 @@
         },
         "label": {
           "type": "string"
+        },
+        "carries": {
+          "type": "string",
+          "description": "What travels along the edge. Shown next to the particle (\"token\", \"$\", \"event\"). 1 or 2 words."
         }
       }
     },
@@ -256,6 +260,19 @@
         "caption": {
           "type": "string",
           "description": "Text for the step. Keep it under 12 words."
+        },
+        "state": {
+          "type": "object",
+          "description": "Changes node states from this step on: { \"pay\": \"success\" }. \"default\" clears it.",
+          "additionalProperties": {
+            "enum": [
+              "success",
+              "error",
+              "warning",
+              "pending",
+              "default"
+            ]
+          }
         }
       }
     }

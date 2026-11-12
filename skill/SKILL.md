@@ -43,8 +43,8 @@ If two types fit, prefer the one whose motion matches the question: "how does X 
     { "id": "retry", "label": "Ask for another card", "icon": "card" }
   ],
   "edges": [
-    { "id": "e1", "from": "shop", "to": "gateway" },
-    { "id": "e2", "from": "gateway", "to": "bank" },
+    { "id": "e1", "from": "shop", "to": "gateway", "carries": "card" },
+    { "id": "e2", "from": "gateway", "to": "bank", "carries": "token" },
     { "id": "e3", "from": "bank", "to": "ok" },
     { "id": "yes", "from": "ok", "to": "done", "label": "yes" },
     { "id": "no", "from": "ok", "to": "retry", "label": "no" }
@@ -53,8 +53,8 @@ If two types fit, prefer the one whose motion matches the question: "how does X 
     { "show": ["shop"], "caption": "The customer pays at checkout" },
     { "show": ["e1"], "flow": "e1", "caption": "The card never touches your server" },
     { "show": ["e2"], "flow": "e2", "caption": "The gateway asks the bank" },
-    { "show": ["e3"], "flow": "e3", "caption": "The bank approves or declines" },
-    { "show": ["yes", "no"], "flow": "yes", "highlight": ["done"], "caption": "Approved: the order is confirmed" }
+    { "show": ["e3"], "flow": "e3", "state": { "bank": "pending" }, "caption": "The bank approves or declines" },
+    { "show": ["yes", "no"], "flow": "yes", "state": { "bank": "success" }, "highlight": ["done"], "caption": "Approved: the order is confirmed" }
   ]
 }
 ```
@@ -76,7 +76,9 @@ Icons: `alert api book bot browser building cart chart check clock cloud code cp
 
 ### Edges
 
-`{ "id": "e1", "from": "a", "to": "b", "label": "optional" }`. Give edges an `id` whenever a step references them (otherwise their id is `"a->b"`). Labels are 1 or 2 words (`"yes"`, `"HTTPS"`, `"events"`).
+`{ "id": "e1", "from": "a", "to": "b", "label": "optional", "carries": "optional" }`. Give edges an `id` whenever a step references them (otherwise their id is `"a->b"`). Labels are 1 or 2 words (`"yes"`, `"HTTPS"`, `"events"`).
+
+`carries` is what travels along the edge, shown riding with the particle whenever the edge flows (`"token"`, `"$"`, `"order"`, `"event"`). Use it on the edges of the main path so the viewer sees *what* moves, not just that something moves. 1 or 2 words.
 
 ### Groups (architecture only)
 
@@ -92,6 +94,7 @@ Steps are **cumulative**: whatever appears stays visible until a later step `hid
 | `flow` | Edge id or list of ids: a particle travels along them while the step is active. Also shows them. |
 | `highlight` | Node ids that stand out; everything else dims. Use it to follow one path through a busy diagram. |
 | `focus` | The camera moves in on one node or group. Use it for a detail, typically near the end. |
+| `state` | Node states from this step on: `{ "bank": "pending" }`. Values: `success`, `error`, `warning`, `pending`, `default` (back to normal). The node changes color, gets a badge and pulses once. Persists until a later step changes it. |
 | `hide` | Elements that disappear. Rarely needed. |
 | `caption` | The sentence shown under the diagram. |
 
@@ -103,11 +106,12 @@ These make the difference between a diagram that moves and one that explains.
 2. **At most ~5 new elements per step.** A step that shows everything at once explains nothing.
 3. **Captions under 12 words**, in plain language, saying *what happens*, not what the box is ("The gateway asks the bank", not "Payment gateway").
 4. **Follow the reading order**: the order of `show` is the order things enter. Show a node before the edge that leaves it.
-5. **Use `flow` for movement of something real** (a request, money, data, a message), not as decoration.
-6. **End on the outcome**: the last step highlights or focuses the result, and the full diagram is visible.
-7. **Architecture**: build it bottom-up (data → services → edge → clients), then trace one request with `flow` + `highlight`.
-8. **Timeline**: no steps needed unless you want captions; keep 4 to 10 milestones.
-9. **5 to 8 steps** is the sweet spot. Under 3 feels static; over 10 feels slow.
+5. **Use `flow` for movement of something real** (a request, money, data, a message), not as decoration, and name it with `carries`.
+6. **Use `state` for outcomes**: approved/declined, healthy/failing, waiting. Show the result on the node instead of describing it in the caption.
+7. **End on the outcome**: the last step highlights or focuses the result, and the full diagram is visible.
+8. **Architecture**: build it bottom-up (data → services → edge → clients), then trace one request with `flow` + `highlight`.
+9. **Timeline**: no steps needed unless you want captions; keep 4 to 10 milestones.
+10. **5 to 8 steps** is the sweet spot. Under 3 feels static; over 10 feels slow.
 
 ## Before you hand it over
 

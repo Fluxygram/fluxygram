@@ -3,7 +3,7 @@ import { t } from '../i18n';
 import { h, icon } from './dom';
 import type { Model, StepMode } from './model';
 
-const MODES: StepMode[] = ['show', 'flow', 'highlight', 'focus'];
+const MODES: StepMode[] = ['show', 'flow', 'highlight', 'focus', 'state'];
 
 /** Barra inferior: lista de pasos y, con uno seleccionado, qué hace ese paso. */
 export function renderSteps(root: HTMLElement, model: Model) {

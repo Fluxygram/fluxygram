@@ -141,6 +141,7 @@ function edgePanel(model: Model, id: string) {
   box.append(h('h3', { class: 'ed-h' }, t('ed.edge')));
   box.append(h('p', { class: 'ed-field' }, `${from}  →  ${to}`));
   box.append(textField(t('ed.edgeLabel'), e.label, (v) => model.updateEdge(id, { label: v })));
+  box.append(textField(t('ed.carries'), e.carries, (v) => model.updateEdge(id, { carries: v }), t('ed.carriesPh')));
   box.append(
     h('div', { class: 'ed-row' },
       h('button', { type: 'button', class: 'ed-btn', onclick: () => model.updateEdge(id, { from: e.to, to: e.from }) }, icon(ArrowLeftRight, 14), ' ', t('ed.reverse')),

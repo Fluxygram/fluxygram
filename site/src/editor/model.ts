@@ -1,4 +1,4 @@
-import type { Diagram, DiagramType, FluxEdge, FluxGroup, FluxNode, FluxStep } from '@fluxygram/core';
+import type { Diagram, DiagramType, FluxEdge, FluxGroup, FluxNode, FluxStep, NodeState } from '@fluxygram/core';
 
 export type Selection =
   | { kind: 'node'; id: string }
@@ -6,7 +6,10 @@ export type Selection =
   | { kind: 'group'; id: string }
   | null;
 
-export type StepMode = 'show' | 'flow' | 'highlight' | 'focus';
+export type StepMode = 'show' | 'flow' | 'highlight' | 'focus' | 'state';
+
+/** Orden en que un clic recorre los estados de un nodo en el modo "Estado". */
+const STATE_CYCLE: (NodeState | undefined)[] = [undefined, 'success', 'error', 'warning', 'pending'];
 
 export const edgeKey = (e: FluxEdge) => e.id ?? `${e.from}->${e.to}`;
 const clone = <T>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
@@ -202,6 +205,10 @@ export class Model {
         if (patch.label) e.label = patch.label;
         else delete e.label;
       }
+      if ('carries' in patch) {
+        if (patch.carries) e.carries = patch.carries;
+        else delete e.carries;
+      }
       if (patch.from && patch.to) {
         e.from = patch.from;
         e.to = patch.to;
@@ -316,9 +323,19 @@ export class Model {
     if (i === null) return;
     const mode = this.stepMode;
     if (mode === 'flow' && !isEdge) return;
-    if ((mode === 'highlight' || mode === 'focus') && isEdge) return;
+    if ((mode === 'highlight' || mode === 'focus' || mode === 'state') && isEdge) return;
     this.change((d) => {
       const s = d.steps![i]!;
+      if (mode === 'state') {
+        const current = s.state?.[id];
+        const next = STATE_CYCLE[(STATE_CYCLE.indexOf(current) + 1) % STATE_CYCLE.length];
+        const map = { ...(s.state ?? {}) };
+        if (next) map[id] = next;
+        else delete map[id];
+        if (Object.keys(map).length) s.state = map;
+        else delete s.state;
+        return;
+      }
       if (mode === 'focus') {
         if (s.focus === id) delete s.focus;
         else s.focus = id;
@@ -343,6 +360,10 @@ function scrubSteps(d: Diagram, ids: string[]) {
       else delete s[key];
     }
     if (s.focus && ids.includes(s.focus)) delete s.focus;
+    if (s.state) {
+      for (const id of ids) delete s.state[id];
+      if (!Object.keys(s.state).length) delete s.state;
+    }
   }
 }
 

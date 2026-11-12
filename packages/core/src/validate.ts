@@ -1,4 +1,4 @@
-import type { Diagram } from './types';
+import { NODE_STATES, type Diagram } from './types';
 
 export type Locale = 'en' | 'es';
 
@@ -37,6 +37,11 @@ const MESSAGES: Record<string, Record<Locale, string>> = {
   to: { en: '"to" points to "{id}", which is not a node.', es: '"to" apunta a "{id}", que no es un nodo.' },
   steps: { en: '"steps" must be a list.', es: '"steps" debe ser una lista.' },
   stepObj: { en: 'Each step must be an object.', es: 'Cada paso debe ser un objeto.' },
+  stateVal: {
+    en: '"{v}" is not a state. Use one of: {list}.',
+    es: '"{v}" no es un estado. Usa uno de: {list}.',
+  },
+  stateObj: { en: '"state" must be an object like { "node-id": "success" }.', es: '"state" debe ser un objeto como { "id-del-nodo": "success" }.' },
   ref: {
     en: '"{id}" is not the id of any node, edge or group.',
     es: '"{id}" no es el id de ningún nodo, conexión o grupo.',
@@ -134,6 +139,14 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
           asList(s[key]).forEach((ref) => {
             if (!ids.has(ref)) add(`${p}.${key}`, 'ref', { id: ref });
           });
+        }
+        if (s.state !== undefined) {
+          if (!isObj(s.state)) add(`${p}.state`, 'stateObj');
+          else
+            for (const [id, v] of Object.entries(s.state)) {
+              if (!nodeIds.has(id)) add(`${p}.state`, 'ref', { id });
+              if (!NODE_STATES.includes(v as never)) add(`${p}.state.${id}`, 'stateVal', { v: String(v), list: NODE_STATES.join(', ') });
+            }
         }
       });
   }

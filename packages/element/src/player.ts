@@ -18,6 +18,12 @@ interface Flow {
   group: SVGGElement;
   dots: SVGCircleElement[];
   glow: SVGCircleElement;
+  /** Nodo al que llega: late cuando la partícula lo alcanza. */
+  to: string;
+  /** Vuelta en la que ya lató, para latir una sola vez por recorrido. */
+  pulsed: number;
+  /** Etiqueta que viaja con la partícula (lo que "lleva" la conexión). */
+  tag?: SVGGElement;
 }
 
 /** Transformación de la cámara: punto del mundo (x, y) → (x·s + tx, y·s + ty) en el escenario. */
@@ -42,6 +48,7 @@ export class Player {
   private base: View = { tx: 0, ty: 0, s: 1 };
   private view: View = { tx: 0, ty: 0, s: 1 };
   private hovered?: string;
+  private appliedStates: Record<string, string> = {};
   private neighbors = new Map<string, { nodes: string[]; edges: string[] }>();
 
   constructor(
@@ -96,6 +103,7 @@ export class Player {
     this.scene.axis?.classList.add('is-in');
 
     this.emphasize(new Set(state.highlighted), state.flowing);
+    this.applyStates(state.states, nodeDelay);
     this.moveCamera(state.camera, first);
     this.onCaption(state.caption, forward ? 1 : -1);
     this.startFlows(state.flowing, edgeDelay);
@@ -103,6 +111,7 @@ export class Player {
 
   reset() {
     this.index = -1;
+    this.applyStates({}, new Map(), false);
     for (const part of this.scene.parts.values()) {
       part.style.setProperty('--d', '0ms');
       part.classList.remove('is-in', 'is-flowing', 'is-dim');
@@ -114,6 +123,45 @@ export class Player {
 
   destroy() {
     this.stopFlows();
+  }
+
+  /* ---------- Estados ---------- */
+
+  /** Pinta el estado de cada nodo; los que cambian en este paso laten con el color de su nuevo estado. */
+  private applyStates(states: Record<string, string>, delays: Map<string, number>, pulse = true) {
+    for (const n of this.layout.nodes) {
+      const part = this.scene.parts.get(n.id);
+      if (!part) continue;
+      const next = states[n.id];
+      const prev = this.appliedStates[n.id];
+      if (next) part.setAttribute('data-state', next);
+      else part.removeAttribute('data-state');
+      if (pulse && next && next !== prev) {
+        setTimeout(() => this.pulse(n.id, `var(--fx-${next})`), (delays.get(n.id) ?? 0) + 120);
+      }
+    }
+    this.appliedStates = { ...states };
+  }
+
+  /** Un anillo que se expande y se desvanece alrededor de un nodo. */
+  pulse(id: string, color = 'var(--fx-accent)', strength = 0.75) {
+    if (reducedMotion()) return;
+    const n = this.layout.nodes.find((x) => x.id === id);
+    if (!n) return;
+    const decision = n.node.kind === 'decision';
+    const ring = decision
+      ? el('path', { class: 'fx-pulse', d: `M${n.x + n.w / 2} ${n.y} L${n.x + n.w} ${n.y + n.h / 2} L${n.x + n.w / 2} ${n.y + n.h} L${n.x} ${n.y + n.h / 2} Z` }, this.scene.overlay)
+      : el('rect', { class: 'fx-pulse', x: n.x, y: n.y, width: n.w, height: n.h, rx: n.node.kind === 'start' || n.node.kind === 'end' ? n.h / 2 : 12 }, this.scene.overlay);
+    ring.style.stroke = color;
+    const anim = ring.animate(
+      [
+        { opacity: strength, transform: 'scale(1)' },
+        { opacity: 0, transform: 'scale(1.16)' },
+      ],
+      { duration: 720, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
+    );
+    anim.onfinish = () => ring.remove();
+    anim.oncancel = () => ring.remove();
   }
 
   /* ---------- Resaltado ---------- */
@@ -237,7 +285,17 @@ export class Player {
       // Si la conexión se está dibujando en este paso, la partícula sale cuando termina de dibujarse.
       const wait = edgeDelay.has(id) ? edgeDelay.get(id)! + EDGE_DRAW - 120 : idleWait;
       const duration = Math.min(1700, Math.max(800, length * 4.2));
-      this.flows.push({ path, length, start: now + wait, duration, group, dots, glow });
+      const laid = this.layout.edges.find((e) => e.id === id);
+      let tag: SVGGElement | undefined;
+      if (laid?.edge.carries) {
+        const text = laid.edge.carries;
+        const w = Math.ceil(text.length * 6.6) + 14;
+        tag = el('g', { class: 'fx-tag' }, group);
+        el('rect', { x: -w / 2, y: -27, width: w, height: 18, rx: 9 }, tag);
+        const label = el('text', { 'text-anchor': 'middle', y: -14.5 }, tag);
+        label.textContent = text;
+      }
+      this.flows.push({ path, length, start: now + wait, duration, group, dots, glow, to: laid?.edge.to ?? '', pulsed: -1, tag });
     }
     const tick = (t: number) => {
       for (const f of this.flows) this.drawFlow(f, t);
@@ -251,6 +309,11 @@ export class Player {
     if (elapsed < 0) return;
     const period = f.duration + 520;
     const local = elapsed % period;
+    const cycle = Math.floor(elapsed / period);
+    if (local >= f.duration * 0.94 && f.pulsed !== cycle) {
+      f.pulsed = cycle;
+      this.pulse(f.to, 'var(--fx-accent)', 0.5);
+    }
     if (local > f.duration) {
       f.group.setAttribute('opacity', '0');
       return;
@@ -269,6 +332,7 @@ export class Player {
     const pt = f.path.getPointAtLength(head * f.length);
     f.glow.setAttribute('cx', String(pt.x));
     f.glow.setAttribute('cy', String(pt.y));
+    f.tag?.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
   }
 
   private stopFlows() {

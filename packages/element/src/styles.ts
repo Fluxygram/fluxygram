@@ -50,6 +50,10 @@ ${darkTokens(':host')}
   --fx-group: #f1f1f5;
   --fx-accent: #0a9e52;
   --fx-accent-soft: #e7fbef;
+  --fx-success: #0a9e52;
+  --fx-error: #e5484d;
+  --fx-warning: #c77700;
+  --fx-pending: #6e6e7a;
   color-scheme: light;
 }
 
@@ -171,6 +175,38 @@ ${darkTokens(':host')}
 .fx-node.is-accent .fx-icon { stroke: var(--fx-accent); }
 .fx-node.is-accent .fx-dot { fill: var(--fx-accent); stroke: var(--fx-accent); }
 
+/* ---------- Estados por paso ---------- */
+.fx-node[data-state='success'] { --fx-state: var(--fx-success); }
+.fx-node[data-state='error'] { --fx-state: var(--fx-error); }
+.fx-node[data-state='warning'] { --fx-state: var(--fx-warning); }
+.fx-node[data-state='pending'] { --fx-state: var(--fx-pending); }
+.fx-node[data-state] .fx-shape {
+  stroke: var(--fx-state); stroke-width: 1.5;
+  fill: color-mix(in oklab, var(--fx-state) 9%, var(--fx-surface));
+}
+.fx-node[data-state] .fx-icon { stroke: var(--fx-state); }
+.fx-node[data-state='pending'] .fx-shape { stroke-dasharray: 5 4; }
+.fx-badge {
+  opacity: 0; transform: scale(0.7); transform-box: fill-box; transform-origin: center;
+  transition: opacity 160ms ease-out, transform 160ms ease-out;
+}
+.fx-node[data-state] .fx-badge {
+  opacity: 1; transform: none;
+  transition: opacity 240ms var(--fx-ease-out), transform 360ms var(--fx-ease-out);
+}
+.fx-badge circle { fill: var(--fx-state, var(--fx-muted)); }
+.fx-badge path { display: none; fill: none; stroke: #07120c; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.fx-node[data-state='success'] .i-success,
+.fx-node[data-state='error'] .i-error,
+.fx-node[data-state='warning'] .i-warning,
+.fx-node[data-state='pending'] .i-pending { display: inline; }
+
+/* ---------- Pulso al llegar y etiqueta viajera ---------- */
+.fx-overlay { pointer-events: none; }
+.fx-pulse { fill: none; stroke-width: 2; transform-box: fill-box; transform-origin: center; }
+.fx-tag rect { fill: var(--fx-accent); }
+.fx-tag text { fill: var(--fx-bg); font-size: 11px; font-weight: 600; letter-spacing: 0.01em; }
+
 /* ---------- Texto del paso ---------- */
 .fx-caption {
   position: relative; height: 28px; margin: 0 20px 4px;
@@ -240,6 +276,7 @@ ${darkTokens(':host')}
   .fx-edge .fx-edge-line { opacity: 0; transition: opacity 240ms ease; }
   .fx-edge.is-in .fx-edge-line { opacity: 1; }
   .fx-caption span, .fx-caption span.is-entering, .fx-caption span.is-leaving { transform: none; filter: none; }
+  .fx-badge, .fx-node[data-state] .fx-badge { transform: none; }
 }
 `;
 
@@ -255,6 +292,10 @@ function darkTokens(selector: string) {
     --fx-group: #131318;
     --fx-accent: #2bff88;
     --fx-accent-soft: #0b2a1a;
+    --fx-success: #2bff88;
+    --fx-error: #ff5c5c;
+    --fx-warning: #ffb020;
+    --fx-pending: #9b9ba8;
     color-scheme: dark;
   }`;
 }

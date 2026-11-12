@@ -221,6 +221,8 @@ export class Canvas {
     const flow = new Set(toList(step.flow));
 
     for (const [id, part] of parts) {
+      const st = state.states[id];
+      if (st) part.setAttribute('data-state', st);
       const visible = state.visible.has(id);
       const target = slots.get(id) ?? part;
       target.classList.toggle('ed-off', !visible);

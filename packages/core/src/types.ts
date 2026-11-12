@@ -5,6 +5,10 @@ export type Direction = 'LR' | 'TB';
 
 export type NodeKind = 'default' | 'decision' | 'start' | 'end';
 
+/** Estado de un nodo en un paso. `default` lo devuelve a su aspecto normal. */
+export type NodeState = 'success' | 'error' | 'warning' | 'pending' | 'default';
+export const NODE_STATES: NodeState[] = ['success', 'error', 'warning', 'pending', 'default'];
+
 export interface FluxNode {
   id: string;
   label: string;
@@ -30,6 +34,8 @@ export interface FluxEdge {
   from: string;
   to: string;
   label?: string;
+  /** Lo que viaja por la conexión: se muestra junto a la partícula ("token", "$", "evento"). */
+  carries?: string;
 }
 
 export interface FluxGroup {
@@ -50,6 +56,8 @@ export interface FluxStep {
   highlight?: string | string[];
   /** Texto que acompaña el paso. Mejor si tiene menos de 12 palabras. */
   caption?: string;
+  /** Cambia el estado de nodos: { "pay": "success" }. Se mantiene en los pasos siguientes hasta que cambie. */
+  state?: Record<string, NodeState>;
 }
 
 export interface Diagram {
@@ -125,6 +133,8 @@ export interface StepState {
   /** Rectángulo del mundo que la cámara encuadra. */
   camera: Rect;
   caption?: string;
+  /** Estado de cada nodo que no está en su aspecto normal (acumulado). */
+  states: Record<string, Exclude<NodeState, 'default'>>;
 }
 
 export interface MotionPlan {

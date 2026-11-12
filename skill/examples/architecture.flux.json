@@ -2,46 +2,214 @@
   "type": "architecture",
   "title": "How an app answers every order",
   "groups": [
-    { "id": "clients", "label": "Clients" },
-    { "id": "edge", "label": "Edge" },
-    { "id": "services", "label": "Services" },
-    { "id": "data", "label": "Data" }
+    {
+      "id": "clients",
+      "label": "Clients"
+    },
+    {
+      "id": "edge",
+      "label": "Edge"
+    },
+    {
+      "id": "services",
+      "label": "Services"
+    },
+    {
+      "id": "data",
+      "label": "Data"
+    }
   ],
   "nodes": [
-    { "id": "web", "label": "Web app", "icon": "browser", "group": "clients" },
-    { "id": "mobile", "label": "Mobile app", "icon": "mobile", "group": "clients" },
-    { "id": "gw", "label": "API Gateway", "icon": "api", "group": "edge" },
-    { "id": "cdn", "label": "CDN", "icon": "globe", "group": "edge" },
-    { "id": "auth", "label": "Auth", "icon": "shield", "group": "services" },
-    { "id": "orders", "label": "Orders", "icon": "package", "group": "services" },
-    { "id": "payments", "label": "Payments", "icon": "card", "group": "services" },
-    { "id": "db", "label": "Postgres", "icon": "database", "group": "data" },
-    { "id": "cache", "label": "Redis", "icon": "zap", "group": "data" },
-    { "id": "files", "label": "Files", "icon": "disk", "group": "data" }
+    {
+      "id": "web",
+      "label": "Web app",
+      "icon": "browser",
+      "group": "clients"
+    },
+    {
+      "id": "mobile",
+      "label": "Mobile app",
+      "icon": "mobile",
+      "group": "clients"
+    },
+    {
+      "id": "gw",
+      "label": "API Gateway",
+      "icon": "api",
+      "group": "edge"
+    },
+    {
+      "id": "cdn",
+      "label": "CDN",
+      "icon": "globe",
+      "group": "edge"
+    },
+    {
+      "id": "auth",
+      "label": "Auth",
+      "icon": "shield",
+      "group": "services"
+    },
+    {
+      "id": "orders",
+      "label": "Orders",
+      "icon": "package",
+      "group": "services"
+    },
+    {
+      "id": "payments",
+      "label": "Payments",
+      "icon": "card",
+      "group": "services"
+    },
+    {
+      "id": "db",
+      "label": "Postgres",
+      "icon": "database",
+      "group": "data"
+    },
+    {
+      "id": "cache",
+      "label": "Redis",
+      "icon": "zap",
+      "group": "data"
+    },
+    {
+      "id": "files",
+      "label": "Files",
+      "icon": "disk",
+      "group": "data"
+    }
   ],
   "edges": [
-    { "id": "web-gw", "from": "web", "to": "gw" },
-    { "id": "mobile-gw", "from": "mobile", "to": "gw" },
-    { "id": "web-cdn", "from": "web", "to": "cdn" },
-    { "id": "gw-auth", "from": "gw", "to": "auth" },
-    { "id": "gw-orders", "from": "gw", "to": "orders" },
-    { "id": "orders-payments", "from": "orders", "to": "payments" },
-    { "id": "auth-db", "from": "auth", "to": "db" },
-    { "id": "orders-db", "from": "orders", "to": "db" },
-    { "id": "orders-cache", "from": "orders", "to": "cache" },
-    { "id": "payments-db", "from": "payments", "to": "db" },
-    { "id": "cdn-files", "from": "cdn", "to": "files" }
+    {
+      "id": "web-gw",
+      "from": "web",
+      "to": "gw",
+      "carries": "order"
+    },
+    {
+      "id": "mobile-gw",
+      "from": "mobile",
+      "to": "gw"
+    },
+    {
+      "id": "web-cdn",
+      "from": "web",
+      "to": "cdn"
+    },
+    {
+      "id": "gw-auth",
+      "from": "gw",
+      "to": "auth"
+    },
+    {
+      "id": "gw-orders",
+      "from": "gw",
+      "to": "orders",
+      "carries": "order"
+    },
+    {
+      "id": "orders-payments",
+      "from": "orders",
+      "to": "payments",
+      "carries": "$"
+    },
+    {
+      "id": "auth-db",
+      "from": "auth",
+      "to": "db"
+    },
+    {
+      "id": "orders-db",
+      "from": "orders",
+      "to": "db"
+    },
+    {
+      "id": "orders-cache",
+      "from": "orders",
+      "to": "cache"
+    },
+    {
+      "id": "payments-db",
+      "from": "payments",
+      "to": "db",
+      "carries": "paid"
+    },
+    {
+      "id": "cdn-files",
+      "from": "cdn",
+      "to": "files"
+    }
   ],
   "steps": [
-    { "show": ["db", "cache", "files"], "caption": "At the bottom, the data: what the system remembers" },
-    { "show": ["auth", "orders", "payments", "auth-db", "orders-db", "orders-cache", "payments-db", "orders-payments"], "caption": "Above it, the services that do the work" },
-    { "show": ["gw", "cdn", "gw-auth", "gw-orders", "cdn-files"], "caption": "The edge receives everything coming from outside" },
-    { "show": ["web", "mobile", "web-gw", "mobile-gw", "web-cdn"], "caption": "On top, the apps people actually use" },
     {
-      "flow": ["web-gw", "gw-orders", "orders-payments", "payments-db"],
-      "highlight": ["web", "gw", "orders", "payments", "db"],
+      "show": [
+        "db",
+        "cache",
+        "files"
+      ],
+      "caption": "At the bottom, the data: what the system remembers"
+    },
+    {
+      "show": [
+        "auth",
+        "orders",
+        "payments",
+        "auth-db",
+        "orders-db",
+        "orders-cache",
+        "payments-db",
+        "orders-payments"
+      ],
+      "caption": "Above it, the services that do the work"
+    },
+    {
+      "show": [
+        "gw",
+        "cdn",
+        "gw-auth",
+        "gw-orders",
+        "cdn-files"
+      ],
+      "caption": "The edge receives everything coming from outside"
+    },
+    {
+      "show": [
+        "web",
+        "mobile",
+        "web-gw",
+        "mobile-gw",
+        "web-cdn"
+      ],
+      "caption": "On top, the apps people actually use"
+    },
+    {
+      "flow": [
+        "web-gw",
+        "gw-orders",
+        "orders-payments",
+        "payments-db"
+      ],
+      "highlight": [
+        "web",
+        "gw",
+        "orders",
+        "payments",
+        "db"
+      ],
       "caption": "An order travels from the app to the database"
     },
-    { "focus": "payments", "highlight": ["payments"], "flow": "orders-payments", "caption": "Payments confirms the charge before saving it" }
+    {
+      "focus": "payments",
+      "highlight": [
+        "payments"
+      ],
+      "flow": "orders-payments",
+      "caption": "Payments confirms the charge before saving it",
+      "state": {
+        "payments": "success"
+      }
+    }
   ]
 }
