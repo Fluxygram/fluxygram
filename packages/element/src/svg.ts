@@ -61,7 +61,7 @@ export function buildScene(layout: Layout, uid: string): Scene {
 
   const nodeLayer = el('g', { class: 'fx-nodes' }, camera);
   for (const n of layout.nodes) {
-    const slot = el('g', { class: 'fx-slot', transform: `translate(${n.x} ${n.y})` }, nodeLayer);
+    const slot = el('g', { class: 'fx-slot', 'data-id': n.id, transform: `translate(${n.x} ${n.y})` }, nodeLayer);
     const part = layout.type === 'timeline' ? drawMilestone(n, layout.axis!.y, slot) : drawNode(n, slot);
     slots.set(n.id, slot);
     parts.set(n.id, part);

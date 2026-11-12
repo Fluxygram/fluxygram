@@ -1,4 +1,5 @@
 import { layout, plan, validate, type Diagram, type Locale, type ValidationIssue } from '@fluxygram/core';
+import { attachInteractions } from './interact';
 import { Player } from './player';
 import { STYLES } from './styles';
 import { buildScene } from './svg';
@@ -9,6 +10,7 @@ const ICON = {
   play: '<svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke-linejoin="round"/></svg>',
   pause: '<svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>',
   replay: '<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>',
+  recenter: '<svg viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><circle cx="12" cy="12" r="2.5"/></svg>',
 };
 
 let uid = 0;
@@ -17,12 +19,12 @@ const STRINGS = {
   en: {
     play: 'Play', pause: 'Pause', replay: 'Replay', prev: 'Previous step', next: 'Next step',
     goTo: 'Go to step {n}', errors: 'This diagram has errors', parse: 'The JSON could not be read: {e}',
-    load: 'The diagram could not be loaded: {e}',
+    load: 'The diagram could not be loaded: {e}', recenter: 'Back to the step view',
   },
   es: {
     play: 'Reproducir', pause: 'Pausar', replay: 'Repetir', prev: 'Paso anterior', next: 'Paso siguiente',
     goTo: 'Ir al paso {n}', errors: 'Este diagrama tiene errores', parse: 'El JSON no se pudo leer: {e}',
-    load: 'No se pudo cargar el diagrama: {e}',
+    load: 'No se pudo cargar el diagrama: {e}', recenter: 'Volver a la vista del paso',
   },
 } satisfies Record<Locale, Record<string, string>>;
 
@@ -53,6 +55,8 @@ export class FluxyGram extends HTMLElement {
   private io?: IntersectionObserver;
   private uid = `fx${++uid}`;
   private narrow = false;
+  private detach?: () => void;
+  private hoverPaused = false;
   private ro?: ResizeObserver;
 
   private get locale(): Locale {
@@ -71,6 +75,7 @@ export class FluxyGram extends HTMLElement {
     play?: HTMLButtonElement;
     prev?: HTMLButtonElement;
     next?: HTMLButtonElement;
+    recenter?: HTMLButtonElement;
   } = { segs: [] };
 
   constructor() {
@@ -105,7 +110,7 @@ export class FluxyGram extends HTMLElement {
         this.seen = !!entry?.isIntersecting;
         if (this.seen) this.start();
         else if (this.playing) this.timer?.pause();
-        if (this.seen && this.playing) this.timer?.play();
+        if (this.seen && this.playing && !this.hoverPaused) this.timer?.play();
       },
       { threshold: 0.35 },
     );
@@ -133,6 +138,7 @@ export class FluxyGram extends HTMLElement {
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.io?.disconnect();
     this.ro?.disconnect();
+    this.detach?.();
     this.timer?.cancel();
     this.player?.destroy();
   }
@@ -208,7 +214,6 @@ export class FluxyGram extends HTMLElement {
     const motion = plan(this.data, lay);
     const scene = buildScene(lay, this.uid);
     if (this.data.title) scene.svg.setAttribute('aria-label', this.data.title);
-    scene.svg.addEventListener('click', () => this.next());
 
     this.body.replaceChildren();
     if (this.data.title) {
@@ -230,6 +235,18 @@ export class FluxyGram extends HTMLElement {
     if (hasCaptions) this.body.append(caption);
 
     this.player = new Player(scene, lay, motion, (text, dir) => this.setCaption(text, dir));
+    this.player.onFreeChange = (free) => this.els.recenter?.classList.toggle('is-on', free);
+    this.detach?.();
+    this.detach = attachInteractions(scene.svg, this.player, {
+      onInteract: () => this.pause(),
+      onBackgroundClick: () => this.next(),
+      onHover: (active) => {
+        // Mientras se explora un nodo, el autoplay espera.
+        this.hoverPaused = active;
+        if (active) this.timer?.pause();
+        else if (this.playing && this.seen && !document.hidden) this.timer?.play();
+      },
+    });
     if (this.getAttribute('controls') !== 'false' && motion.steps.length > 1) this.buildControls(motion.steps.length);
 
     this.started = false;
@@ -279,7 +296,7 @@ export class FluxyGram extends HTMLElement {
       easing: 'linear',
       fill: 'forwards',
     });
-    if (!this.seen || document.hidden) this.timer.pause();
+    if (!this.seen || document.hidden || this.hoverPaused) this.timer.pause();
     this.timer.onfinish = () => {
       if (this.playing) this.step(1);
     };
@@ -355,7 +372,9 @@ export class FluxyGram extends HTMLElement {
       return seg;
     });
 
-    bar.append(this.els.play, this.els.prev, track, this.els.next);
+    this.els.recenter = button(this.t('recenter'), ICON.recenter, () => this.player?.resetView());
+    this.els.recenter.classList.add('fx-recenter');
+    bar.append(this.els.play, this.els.prev, track, this.els.next, this.els.recenter);
     this.body.append(bar);
   }
 
@@ -382,6 +401,8 @@ export class FluxyGram extends HTMLElement {
   private showIssues(issues: ValidationIssue[]) {
     this.player?.destroy();
     this.player = undefined;
+    this.detach?.();
+    this.detach = undefined;
     const box = document.createElement('div');
     box.className = 'fx-error';
     box.innerHTML = '<strong></strong><ul></ul>';
@@ -404,6 +425,7 @@ export class FluxyGram extends HTMLElement {
     if (e.target !== this) return;
     const keys: Record<string, () => void> = {
       ArrowRight: () => this.next(),
+      Escape: () => this.player?.resetView(),
       ArrowLeft: () => this.prev(),
       ' ': () => (this.playing ? this.pause() : this.play()),
       Home: () => this.goTo(0),
@@ -419,7 +441,7 @@ export class FluxyGram extends HTMLElement {
   private onVisibility = () => {
     // Igual que Sonner: si la pestaña no está visible, el reloj se detiene.
     if (document.hidden) this.timer?.pause();
-    else if (this.playing && this.seen) this.timer?.play();
+    else if (this.playing && this.seen && !this.hoverPaused) this.timer?.play();
   };
 }
 

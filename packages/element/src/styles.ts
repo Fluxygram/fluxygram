@@ -62,7 +62,22 @@ ${darkTokens(':host')}
 .fx-title { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
 .fx-count { font-size: 12px; color: var(--fx-muted); font-variant-numeric: tabular-nums; }
 
-.fx-stage { display: block; width: 100%; height: auto; cursor: pointer; user-select: none; }
+.fx-stage {
+  display: block; width: 100%; height: auto; user-select: none; -webkit-user-select: none;
+  cursor: grab;
+  /* Un dedo en vertical sigue desplazando la página; horizontal mueve el diagrama y dos dedos hacen zoom. */
+  touch-action: pan-y;
+}
+.fx-stage.is-dragging { cursor: grabbing; }
+.fx-stage:not(.is-dragging) .fx-node.is-in { cursor: pointer; }
+.fx-node:not(.is-in) { pointer-events: none; }
+
+.fx-recenter {
+  opacity: 0; transform: scale(0.9); pointer-events: none;
+  transition: opacity 160ms ease-out, transform 160ms ease-out, background-color 160ms ease, color 160ms ease;
+}
+.fx-recenter.is-on { opacity: 1; transform: none; pointer-events: auto; color: var(--fx-accent); }
+.fx-recenter.is-on:active { transform: scale(0.94); }
 
 /* ---------- Cámara ---------- */
 .fx-camera {

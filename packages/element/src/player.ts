@@ -5,6 +5,8 @@ import { el } from './svg';
 const NODE_STAGGER = 70;
 const EDGE_STAGGER = 80;
 const EDGE_DRAW = 760;
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 3;
 
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -18,18 +20,44 @@ interface Flow {
   glow: SVGCircleElement;
 }
 
-/** Lleva la escena de un paso a otro. Todo el estado visual vive en clases CSS, así que cualquier salto es interrumpible. */
+/** Transformación de la cámara: punto del mundo (x, y) → (x·s + tx, y·s + ty) en el escenario. */
+export interface View {
+  tx: number;
+  ty: number;
+  s: number;
+}
+
+/**
+ * Lleva la escena de un paso a otro. Todo el estado visual vive en clases CSS, así que cualquier salto es interrumpible.
+ * También maneja la cámara libre (mover, zoom, enfocar un nodo) y el resaltado al pasar el mouse.
+ */
 export class Player {
   index = -1;
+  /** true cuando la persona movió la cámara por su cuenta. */
+  free = false;
+  onFreeChange?: (free: boolean) => void;
+
   private flows: Flow[] = [];
   private raf = 0;
+  private base: View = { tx: 0, ty: 0, s: 1 };
+  private view: View = { tx: 0, ty: 0, s: 1 };
+  private hovered?: string;
+  private neighbors = new Map<string, { nodes: string[]; edges: string[] }>();
 
   constructor(
     private scene: Scene,
     private layout: Layout,
     private plan: MotionPlan,
     private onCaption: (text: string | undefined, direction: 1 | -1) => void,
-  ) {}
+  ) {
+    for (const n of layout.nodes) this.neighbors.set(n.id, { nodes: [], edges: [] });
+    for (const e of layout.edges) {
+      this.neighbors.get(e.edge.from)?.nodes.push(e.edge.to);
+      this.neighbors.get(e.edge.from)?.edges.push(e.id);
+      this.neighbors.get(e.edge.to)?.nodes.push(e.edge.from);
+      this.neighbors.get(e.edge.to)?.edges.push(e.id);
+    }
+  }
 
   get count() {
     return this.plan.steps.length;
@@ -39,6 +67,10 @@ export class Player {
     return this.plan.steps;
   }
 
+  get stage() {
+    return this.layout.stage;
+  }
+
   go(i: number) {
     const target = Math.max(0, Math.min(this.count - 1, i));
     if (target === this.index) return;
@@ -46,6 +78,7 @@ export class Player {
     const first = this.index === -1;
     const state = this.plan.steps[target]!;
     this.index = target;
+    this.hovered = undefined;
 
     // Orden de entrada: primero grupos y nodos, después las conexiones que los unen.
     const enteringNodes = state.entering.filter((id) => !this.scene.paths.has(id));
@@ -62,22 +95,7 @@ export class Player {
     }
     this.scene.axis?.classList.add('is-in');
 
-    // Resaltado: lo destacado toma el color de acento y el resto se atenúa.
-    const hl = new Set(state.highlighted);
-    for (const [id, slot] of this.scene.slots) {
-      slot.classList.toggle('is-dim', hl.size > 0 && !hl.has(id));
-      const part = this.scene.parts.get(id)!;
-      const original = this.layout.nodes.find((n) => n.id === id)?.node.accent ?? false;
-      part.classList.toggle('is-accent', original || hl.has(id));
-    }
-
-    for (const [id, part] of this.scene.parts) {
-      if (!this.scene.paths.has(id)) continue;
-      const flowing = state.flowing.includes(id);
-      part.classList.toggle('is-flowing', flowing);
-      part.classList.toggle('is-dim', hl.size > 0 && !flowing && !hl.has(id));
-    }
-
+    this.emphasize(new Set(state.highlighted), state.flowing);
     this.moveCamera(state.camera, first);
     this.onCaption(state.caption, forward ? 1 : -1);
     this.startFlows(state.flowing, edgeDelay);
@@ -87,7 +105,7 @@ export class Player {
     this.index = -1;
     for (const part of this.scene.parts.values()) {
       part.style.setProperty('--d', '0ms');
-      part.classList.remove('is-in', 'is-flowing');
+      part.classList.remove('is-in', 'is-flowing', 'is-dim');
     }
     for (const slot of this.scene.slots.values()) slot.classList.remove('is-dim');
     this.scene.axis?.classList.remove('is-in');
@@ -98,25 +116,112 @@ export class Player {
     this.stopFlows();
   }
 
-  /** Encuadra un rectángulo del mundo en el escenario. */
-  private moveCamera(r: Rect, instant = false) {
-    const { w: W, h: H } = this.layout.stage;
-    const s = Math.min(W / r.w, H / r.h);
-    const tx = W / 2 - s * (r.x + r.w / 2);
-    const ty = H / 2 - s * (r.y + r.h / 2);
+  /* ---------- Resaltado ---------- */
+
+  /** Lo destacado toma el color de acento y el resto se atenúa; las conexiones con partículas se pintan de acento. */
+  private emphasize(hl: Set<string>, flowing: string[]) {
+    for (const [id, slot] of this.scene.slots) {
+      slot.classList.toggle('is-dim', hl.size > 0 && !hl.has(id));
+      const part = this.scene.parts.get(id)!;
+      const original = this.layout.nodes.find((n) => n.id === id)?.node.accent ?? false;
+      part.classList.toggle('is-accent', original || hl.has(id));
+    }
+    for (const [id, part] of this.scene.parts) {
+      if (!this.scene.paths.has(id)) continue;
+      const flows = flowing.includes(id);
+      part.classList.toggle('is-flowing', flows);
+      part.classList.toggle('is-dim', hl.size > 0 && !flows && !hl.has(id));
+    }
+  }
+
+  /** Al pasar el mouse por un nodo: él y sus vecinos destacan, y las partículas recorren sus conexiones. */
+  hover(id: string | undefined) {
+    if (id === this.hovered) return;
+    const state = this.plan.steps[this.index];
+    if (!state) return;
+    if (id && !state.visible.has(id)) id = undefined;
+    this.hovered = id;
+
+    if (!id) {
+      this.emphasize(new Set(state.highlighted), state.flowing);
+      this.startFlows(state.flowing, new Map());
+      return;
+    }
+    const near = this.neighbors.get(id) ?? { nodes: [], edges: [] };
+    const edges = near.edges.filter((e) => state.visible.has(e));
+    const nodes = near.nodes.filter((n) => state.visible.has(n));
+    this.emphasize(new Set([id, ...nodes]), edges);
+    this.startFlows(edges, new Map(), 0);
+  }
+
+  /* ---------- Cámara ---------- */
+
+  private apply(v: View, animate: boolean) {
     const cam = this.scene.camera;
-    // En el primer paso la cámara ya está en su lugar: no hay de dónde venir.
-    if (instant) cam.style.transition = 'none';
-    cam.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
-    if (instant) {
+    this.view = v;
+    if (!animate) cam.style.transition = 'none';
+    cam.style.transform = `translate(${v.tx}px, ${v.ty}px) scale(${v.s})`;
+    if (!animate) {
       cam.getBoundingClientRect();
       cam.style.transition = '';
     }
   }
 
+  private viewFor(r: Rect): View {
+    const { w: W, h: H } = this.layout.stage;
+    const s = Math.min(W / r.w, H / r.h);
+    return { s, tx: W / 2 - s * (r.x + r.w / 2), ty: H / 2 - s * (r.y + r.h / 2) };
+  }
+
+  private setFree(free: boolean) {
+    if (free === this.free) return;
+    this.free = free;
+    this.onFreeChange?.(free);
+  }
+
+  /** Encuadra un rectángulo del mundo. En el primer paso la cámara ya está en su lugar: no hay de dónde venir. */
+  private moveCamera(r: Rect, instant = false) {
+    this.base = this.viewFor(r);
+    this.setFree(false);
+    this.apply(this.base, !instant);
+  }
+
+  /** Mueve la cámara en unidades del escenario, sin transición (sigue al dedo). */
+  panBy(dx: number, dy: number) {
+    this.setFree(true);
+    this.apply({ ...this.view, tx: this.view.tx + dx, ty: this.view.ty + dy }, false);
+  }
+
+  /** Zoom alrededor de un punto del escenario, para que lo que está bajo el cursor no se mueva. */
+  zoomAt(factor: number, px: number, py: number, animate = false) {
+    const s = clamp(this.view.s * factor, this.base.s * MIN_ZOOM, this.base.s * MAX_ZOOM);
+    const k = s / this.view.s;
+    if (Math.abs(k - 1) < 1e-4) return;
+    this.setFree(true);
+    this.apply({ s, tx: px - (px - this.view.tx) * k, ty: py - (py - this.view.ty) * k }, animate);
+  }
+
+  /** La cámara se acerca a un nodo, con contexto alrededor. */
+  focusNode(id: string) {
+    const n = this.layout.nodes.find((x) => x.id === id);
+    if (!n) return;
+    const { w: W, h: H } = this.layout.stage;
+    const aspect = W / H;
+    const rw = Math.max(n.w * 2.2, W * 0.45, n.h * 2.2 * aspect);
+    const rh = rw / aspect;
+    this.setFree(true);
+    this.apply(this.viewFor({ x: n.x + n.w / 2 - rw / 2, y: n.y + n.h / 2 - rh / 2, w: rw, h: rh }), true);
+  }
+
+  /** Vuelve a la vista que corresponde al paso actual. */
+  resetView() {
+    this.setFree(false);
+    this.apply(this.base, true);
+  }
+
   /* ---------- Partículas ---------- */
 
-  private startFlows(ids: string[], edgeDelay: Map<string, number>) {
+  private startFlows(ids: string[], edgeDelay: Map<string, number>, idleWait = 120) {
     this.stopFlows();
     if (!ids.length || reducedMotion()) return;
     const now = performance.now();
@@ -130,7 +235,7 @@ export class Player {
         el('circle', { class: 'core', r: 4.5 * (1 - k * 0.17), opacity: 1 - k * 0.2 }, group),
       );
       // Si la conexión se está dibujando en este paso, la partícula sale cuando termina de dibujarse.
-      const wait = edgeDelay.has(id) ? edgeDelay.get(id)! + EDGE_DRAW - 120 : 120;
+      const wait = edgeDelay.has(id) ? edgeDelay.get(id)! + EDGE_DRAW - 120 : idleWait;
       const duration = Math.min(1700, Math.max(800, length * 4.2));
       this.flows.push({ path, length, start: now + wait, duration, group, dots, glow });
     }
@@ -173,4 +278,5 @@ export class Player {
   }
 }
 
+const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
