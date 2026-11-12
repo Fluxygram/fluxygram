@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowLeftRight, ArrowUp, PinOff, Trash2 } from 'lucide';
 import { ICON_NAMES, iconElement } from '@fluxygram/element';
-import type { NodeKind } from '@fluxygram/core';
+import { ENTER_STYLES, TRAVEL_STYLES, type EnterStyle, type NodeKind, type TravelStyle } from '@fluxygram/core';
 import { t } from '../i18n';
 import { h, icon } from './dom';
 import type { Model } from './model';
@@ -59,8 +59,44 @@ function diagramPanel(model: Model) {
       ),
     );
   }
+  box.append(motionPanel(model));
   box.append(h('p', { class: 'ed-tip' }, t('ed.tips')));
   return box;
+}
+
+/** Un selector compacto. `inherit` agrega la opción "Como el diagrama" (valor vacío). */
+function selectField<T extends string>(label: string, value: T | undefined, options: readonly T[], labelOf: (v: T) => string, onChange: (v: T | undefined) => void, inherit = false) {
+  const select = h('select', { onchange: (e) => onChange(((e.target as HTMLSelectElement).value || undefined) as T | undefined) },
+    ...(inherit ? [h('option', { value: '', selected: !value }, t('ed.inherit'))] : []),
+    ...options.map((o) => h('option', { value: o, selected: value === o }, labelOf(o))),
+  );
+  return h('label', { class: 'ed-field' }, h('span', {}, label), select);
+}
+
+function segField<T extends string>(label: string, value: T, options: readonly T[], labelOf: (v: T) => string, onChange: (v: T) => void) {
+  return h('div', { class: 'ed-field' },
+    h('span', {}, label),
+    h('div', { class: 'ed-seg' },
+      ...options.map((o) => h('button', { type: 'button', 'aria-pressed': String(value === o), onclick: () => onChange(o) }, labelOf(o))),
+    ),
+  );
+}
+
+function motionPanel(model: Model) {
+  const m = model.diagram.motion ?? {};
+  const finale = m.finale ?? model.diagram.finale ?? true;
+  return h('div', { class: 'ed-section' },
+    h('h3', { class: 'ed-h' }, t('ed.motion')),
+    selectField(t('ed.enter'), m.enter ?? 'fade', ENTER_STYLES, (v) => t(`enter.${v}`), (v) => model.setMotion({ enter: v === 'fade' ? undefined : v })),
+    selectField(t('ed.travel'), m.travel ?? 'particle', TRAVEL_STYLES, (v) => t(`travel.${v}`), (v) => model.setMotion({ travel: v === 'particle' ? undefined : v })),
+    segField(t('ed.speed'), m.speed ?? 'normal', ['slow', 'normal', 'fast'] as const, (v) => t(`speed.${v}`), (v) => model.setMotion({ speed: v === 'normal' ? undefined : v })),
+    segField(t('ed.camera'), m.camera ?? 'follow', ['follow', 'fixed'] as const, (v) => t(`camera.${v}`), (v) => model.setMotion({ camera: v === 'follow' ? undefined : v })),
+    h('label', { class: 'ed-check' },
+      h('input', { type: 'checkbox', checked: finale, onchange: (e) => model.setMotion({ finale: (e.target as HTMLInputElement).checked ? undefined : false }) }),
+      t('ed.finale'),
+    ),
+    h('button', { type: 'button', class: 'ed-btn', onclick: () => document.getElementById('preview')?.click() }, t('ed.preview')),
+  );
 }
 
 function nodePanel(model: Model, id: string) {
@@ -112,6 +148,8 @@ function nodePanel(model: Model, id: string) {
     box.append(h('div', { class: 'ed-field' }, h('span', {}, t('ed.icon')), grid));
   }
 
+  box.append(selectField<EnterStyle>(t('ed.enterNode'), n.enter, ENTER_STYLES, (v) => t(`enter.${v}`), (v) => model.updateNode(id, { enter: v }), true));
+
   box.append(
     h('label', { class: 'ed-check' },
       h('input', { type: 'checkbox', checked: !!n.accent, onchange: (e) => model.updateNode(id, { accent: (e.target as HTMLInputElement).checked }) }),
@@ -138,6 +176,7 @@ function edgePanel(model: Model, id: string) {
   box.append(h('p', { class: 'ed-field' }, `${from}  →  ${to}`));
   box.append(textField(t('ed.edgeLabel'), e.label, (v) => model.updateEdge(id, { label: v })));
   box.append(textField(t('ed.carries'), e.carries, (v) => model.updateEdge(id, { carries: v }), t('ed.carriesPh')));
+  box.append(selectField<TravelStyle>(t('ed.travel'), e.travel, TRAVEL_STYLES, (v) => t(`travel.${v}`), (v) => model.updateEdge(id, { travel: v }), true));
   box.append(
     h('div', { class: 'ed-row' },
       h('button', { type: 'button', class: 'ed-btn', onclick: () => model.updateEdge(id, { from: e.to, to: e.from }) }, icon(ArrowLeftRight, 14), ' ', t('ed.reverse')),

@@ -6,6 +6,27 @@ export type Direction = 'LR' | 'TB';
 export type NodeKind = 'default' | 'decision' | 'start' | 'end' | 'data' | 'database' | 'note';
 export const NODE_KINDS: NodeKind[] = ['default', 'decision', 'start', 'end', 'data', 'database', 'note'];
 
+/** Cómo entra un bloque: aparecer subiendo, crecer, trazarse como un dibujo, o llegar deslizándose. */
+export type EnterStyle = 'fade' | 'scale' | 'draw' | 'slide';
+export const ENTER_STYLES: EnterStyle[] = ['fade', 'scale', 'draw', 'slide'];
+
+/** Qué recorre una conexión: una partícula, una onda de luz, guiones que avanzan, o paquetes. */
+export type TravelStyle = 'particle' | 'pulse' | 'dash' | 'packets';
+export const TRAVEL_STYLES: TravelStyle[] = ['particle', 'pulse', 'dash', 'packets'];
+
+export type Speed = 'slow' | 'normal' | 'fast';
+export const SPEEDS: Speed[] = ['slow', 'normal', 'fast'];
+
+/** Animación por defecto del diagrama. Cada bloque y conexión puede tener la suya. */
+export interface Motion {
+  enter?: EnterStyle;
+  travel?: TravelStyle;
+  speed?: Speed;
+  /** `follow`: la cámara sigue la acción. `fixed`: todo siempre a la vista. */
+  camera?: 'follow' | 'fixed';
+  finale?: boolean;
+}
+
 /** Estado de un nodo en un paso. `default` lo devuelve a su aspecto normal. */
 export type NodeState = 'success' | 'error' | 'warning' | 'pending' | 'default';
 export const NODE_STATES: NodeState[] = ['success', 'error', 'warning', 'pending', 'default'];
@@ -28,6 +49,8 @@ export interface FluxNode {
   date?: string;
   /** Resalta el nodo con el color de acento. */
   accent?: boolean;
+  /** Entrada propia de este bloque (si no, la del diagrama). */
+  enter?: EnterStyle;
   /** Posición fijada a mano (esquina superior izquierda). Sin ella, el nodo se acomoda solo. */
   x?: number;
   y?: number;
@@ -40,6 +63,8 @@ export interface FluxEdge {
   label?: string;
   /** Lo que viaja por la conexión: se muestra junto a la partícula ("token", "$", "evento"). */
   carries?: string;
+  /** Recorrido propio de esta conexión (si no, el del diagrama). */
+  travel?: TravelStyle;
 }
 
 export interface FluxGroup {
@@ -69,8 +94,10 @@ export interface Diagram {
   type: DiagramType;
   title?: string;
   theme?: 'dark' | 'light';
-  /** Final automático que aleja la cámara y muestra todo funcionando. Por defecto true. */
+  /** Final automático que aleja la cámara y muestra todo funcionando. Por defecto true. (También motion.finale.) */
   finale?: boolean;
+  /** Animación por defecto: entrada de bloques, recorrido de conexiones, velocidad, cámara, final. */
+  motion?: Motion;
   /** Dirección del layout para `flow` (por defecto LR). */
   direction?: Direction;
   nodes: FluxNode[];
@@ -125,6 +152,7 @@ export interface Layout {
   edges: LaidEdge[];
   groups: LaidGroup[];
   axis?: LaidAxis;
+  motion?: Motion;
 }
 
 /* ---------- Plan de movimiento ---------- */

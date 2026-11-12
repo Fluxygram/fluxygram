@@ -235,6 +235,7 @@ export class FluxyGram extends HTMLElement {
     if (hasCaptions) this.body.append(caption);
 
     this.player = new Player(scene, lay, motion, (text, dir) => this.setCaption(text, dir));
+    this.style.setProperty('--fx-speed', String(this.player.speed));
     this.player.onFreeChange = (free) => this.els.recenter?.classList.toggle('is-on', free);
     this.detach?.();
     this.detach = attachInteractions(scene.svg, this.player, {
@@ -307,7 +308,7 @@ export class FluxyGram extends HTMLElement {
     if (!s) return 2600;
     const words = s.caption ? s.caption.split(/\s+/).length : 0;
     const t = 1700 + s.entering.length * 90 + words * 220 + (s.flowing.length ? 1500 : 0);
-    return Math.max(2400, Math.min(6500, t));
+    return Math.max(2400, Math.min(6500, t)) * (this.player?.speed ?? 1);
   }
 
   /* ---------- UI ---------- */

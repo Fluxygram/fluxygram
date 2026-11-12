@@ -89,7 +89,7 @@ ${darkTokens(':host')}
 .fx-camera {
   transform-box: view-box;
   transform-origin: 0 0;
-  transition: transform 1000ms var(--fx-ease-camera);
+  transition: transform calc(1000ms * var(--fx-speed, 1)) var(--fx-ease-camera);
 }
 :host([data-instant]) .fx-camera { transition: none; }
 
@@ -123,7 +123,7 @@ ${darkTokens(':host')}
 }
 .fx-edge.is-in .fx-edge-line {
   stroke-dashoffset: 0;
-  transition: stroke-dashoffset 760ms var(--fx-ease-in-out) var(--d, 0ms), stroke 300ms ease;
+  transition: stroke-dashoffset calc(760ms * var(--fx-speed, 1)) var(--fx-ease-in-out) var(--d, 0ms), stroke 300ms ease;
 }
 .fx-edge-head {
   fill: var(--fx-edge); opacity: 0;
@@ -131,7 +131,7 @@ ${darkTokens(':host')}
 }
 .fx-edge.is-in .fx-edge-head {
   opacity: 1;
-  transition: opacity 240ms ease-out calc(var(--d, 0ms) + 640ms), fill 300ms ease;
+  transition: opacity 240ms ease-out calc(var(--d, 0ms) + 640ms * var(--fx-speed, 1)), fill 300ms ease;
 }
 .fx-edge { transition: opacity 320ms ease; }
 .fx-edge.is-dim { opacity: 0.35; }
@@ -139,12 +139,20 @@ ${darkTokens(':host')}
 .fx-edge.is-flowing .fx-edge-head { fill: var(--fx-accent); }
 
 .fx-edge-label { opacity: 0; transition: opacity 160ms ease-out; }
-.fx-edge.is-in .fx-edge-label { opacity: 1; transition: opacity 320ms ease-out calc(var(--d, 0ms) + 420ms); }
+.fx-edge.is-in .fx-edge-label { opacity: 1; transition: opacity 320ms ease-out calc(var(--d, 0ms) + 420ms * var(--fx-speed, 1)); }
 .fx-edge-label rect { fill: var(--fx-bg); }
 .fx-edge-label text { fill: var(--fx-muted); font-size: 11.5px; font-weight: 500; }
 
-/* ---------- Partículas ---------- */
+/* ---------- Recorridos: partícula, pulso, línea en movimiento, paquetes ---------- */
 .fx-particle { pointer-events: none; }
+.fx-travel-line { fill: none; stroke: var(--fx-accent); stroke-linecap: round; }
+.fx-travel-glow { fill: none; stroke: var(--fx-accent); stroke-linecap: round; opacity: 0.22; }
+.fx-march {
+  fill: none; stroke: var(--fx-accent); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 5 9;
+  animation: fx-march calc(900ms * var(--fx-speed, 1)) linear infinite;
+}
+@keyframes fx-march { to { stroke-dashoffset: -28; } }
+.fx-packet { fill: var(--fx-accent); }
 .fx-particle .core { fill: var(--fx-accent); }
 .fx-particle .glow { fill: var(--fx-accent); opacity: 0.16; }
 
@@ -152,14 +160,35 @@ ${darkTokens(':host')}
 .fx-slot { transition: opacity 320ms ease; }
 .fx-slot.is-dim { opacity: 0.4; }
 
+/* Entrada de bloques. fade: sube un poco. scale: crece con un rebote mínimo. slide: llega deslizándose.
+   draw: el borde se traza y después aparecen el relleno y el texto. */
 .fx-node {
-  opacity: 0; transform: translateY(10px) scale(0.96);
+  --fx-from: translateY(10px) scale(0.96);
+  --fx-curve: var(--fx-ease-out);
+  opacity: 0; transform: var(--fx-from);
   transform-box: fill-box; transform-origin: center;
   transition: opacity 200ms ease-out, transform 200ms ease-out;
 }
+.fx-node[data-enter='scale'] { --fx-from: scale(0.82); --fx-curve: cubic-bezier(0.34, 1.32, 0.64, 1); }
+.fx-node[data-enter='slide'] { --fx-from: translateX(-28px); }
 .fx-node.is-in {
   opacity: 1; transform: none;
-  transition: opacity 460ms var(--fx-ease-out) var(--d, 0ms), transform 620ms var(--fx-ease-out) var(--d, 0ms);
+  transition: opacity calc(460ms * var(--fx-speed, 1)) var(--fx-ease-out) var(--d, 0ms),
+    transform calc(620ms * var(--fx-speed, 1)) var(--fx-curve) var(--d, 0ms);
+}
+.fx-node[data-enter='draw'] { opacity: 1; transform: none; transition: none; }
+.fx-node[data-enter='draw'] :is(.fx-shape, .fx-rim) {
+  stroke-dasharray: 1; stroke-dashoffset: 1; fill-opacity: 0;
+  transition: stroke-dashoffset 200ms ease-out, fill-opacity 160ms ease-out;
+}
+.fx-node[data-enter='draw'].is-in :is(.fx-shape, .fx-rim) {
+  stroke-dashoffset: 0; fill-opacity: 1;
+  transition: stroke-dashoffset calc(820ms * var(--fx-speed, 1)) var(--fx-ease-in-out) var(--d, 0ms),
+    fill-opacity calc(420ms * var(--fx-speed, 1)) ease-out calc(var(--d, 0ms) + 560ms * var(--fx-speed, 1));
+}
+.fx-node[data-enter='draw'] :is(text, .fx-icon, .fx-stem, .fx-dot) { opacity: 0; transition: opacity 150ms ease-out; }
+.fx-node[data-enter='draw'].is-in :is(text, .fx-icon, .fx-stem, .fx-dot) {
+  opacity: 1; transition: opacity calc(360ms * var(--fx-speed, 1)) ease-out calc(var(--d, 0ms) + 520ms * var(--fx-speed, 1));
 }
 .fx-shape {
   fill: var(--fx-surface); stroke: var(--fx-border); stroke-width: 1;
@@ -284,6 +313,8 @@ ${darkTokens(':host')}
   .fx-edge.is-in .fx-edge-line { opacity: 1; }
   .fx-caption span, .fx-caption span.is-entering, .fx-caption span.is-leaving { transform: none; filter: none; }
   .fx-badge, .fx-node[data-state] .fx-badge { transform: none; }
+  .fx-node[data-enter='draw'] :is(.fx-shape, .fx-rim) { stroke-dasharray: none; stroke-dashoffset: 0; }
+  .fx-march { animation: none; }
 }
 `;
 

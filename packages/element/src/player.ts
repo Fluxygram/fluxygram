@@ -1,16 +1,24 @@
-import type { Layout, MotionPlan, Rect } from '@fluxygram/core';
+import type { Layout, MotionPlan, Rect, TravelStyle } from '@fluxygram/core';
 import type { Scene } from './svg';
 import { el } from './svg';
 
 const NODE_STAGGER = 70;
 const EDGE_STAGGER = 80;
 const EDGE_DRAW = 760;
+/** Multiplicador de duraciones según la velocidad elegida. */
+export const SPEED_FACTOR = { slow: 1.45, normal: 1, fast: 0.68 } as const;
 const MIN_ZOOM = 0.5;
 const MAX_ZOOM = 3;
 
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 interface Flow {
+  style: TravelStyle;
+  /** Pulso: el tramo de luz y su halo. */
+  line?: SVGPathElement;
+  glowLine?: SVGPathElement;
+  /** Paquetes: bloques pequeños espaciados. */
+  packets?: SVGRectElement[];
   path: SVGPathElement;
   length: number;
   start: number;
@@ -49,6 +57,8 @@ export class Player {
   private view: View = { tx: 0, ty: 0, s: 1 };
   private hovered?: string;
   private appliedStates: Record<string, string> = {};
+  /** Factor de velocidad (lenta > 1, rápida < 1). */
+  readonly speed: number;
   private neighbors = new Map<string, { nodes: string[]; edges: string[] }>();
 
   constructor(
@@ -57,6 +67,7 @@ export class Player {
     private plan: MotionPlan,
     private onCaption: (text: string | undefined, direction: 1 | -1) => void,
   ) {
+    this.speed = SPEED_FACTOR[layout.motion?.speed ?? 'normal'] ?? 1;
     for (const n of layout.nodes) this.neighbors.set(n.id, { nodes: [], edges: [] });
     for (const e of layout.edges) {
       this.neighbors.get(e.edge.from)?.nodes.push(e.edge.to);
@@ -90,9 +101,10 @@ export class Player {
     // Orden de entrada: primero grupos y nodos, después las conexiones que los unen.
     const enteringNodes = state.entering.filter((id) => !this.scene.paths.has(id));
     const enteringEdges = state.entering.filter((id) => this.scene.paths.has(id));
-    const nodeDelay = new Map(enteringNodes.map((id, k) => [id, Math.min(k, 8) * NODE_STAGGER]));
-    const edgeBase = enteringNodes.length ? 200 + Math.min(enteringNodes.length - 1, 8) * NODE_STAGGER : 0;
-    const edgeDelay = new Map(enteringEdges.map((id, k) => [id, edgeBase + Math.min(k, 8) * EDGE_STAGGER]));
+    const v = this.speed;
+    const nodeDelay = new Map(enteringNodes.map((id, k) => [id, Math.min(k, 8) * NODE_STAGGER * v]));
+    const edgeBase = enteringNodes.length ? (200 + Math.min(enteringNodes.length - 1, 8) * NODE_STAGGER) * v : 0;
+    const edgeDelay = new Map(enteringEdges.map((id, k) => [id, edgeBase + Math.min(k, 8) * EDGE_STAGGER * v]));
 
     for (const [id, part] of this.scene.parts) {
       const visible = state.visible.has(id);
@@ -279,15 +291,28 @@ export class Player {
       const path = this.scene.paths.get(id);
       if (!path) continue;
       const length = path.getTotalLength();
+      const laid = this.layout.edges.find((e) => e.id === id);
+      const style: TravelStyle = laid?.edge.travel ?? this.layout.motion?.travel ?? 'particle';
       const group = el('g', { class: 'fx-particle', opacity: 0 }, this.scene.particles);
-      const glow = el('circle', { class: 'glow', r: 11 }, group);
-      const dots = [0, 1, 2, 3, 4].map((k) =>
+      const d = path.getAttribute('d') ?? '';
+      let line: SVGPathElement | undefined;
+      let glowLine: SVGPathElement | undefined;
+      let packets: SVGRectElement[] | undefined;
+      if (style === 'pulse') {
+        glowLine = el('path', { class: 'fx-travel-glow', d, 'stroke-width': 9 }, group);
+        line = el('path', { class: 'fx-travel-line', d, 'stroke-width': 3 }, group);
+      } else if (style === 'dash') {
+        el('path', { class: 'fx-march', d }, group);
+      } else if (style === 'packets') {
+        packets = [0, 1, 2].map(() => el('rect', { class: 'fx-packet', width: 7, height: 7, rx: 2, x: -3.5, y: -3.5 }, group));
+      }
+      const glow = el('circle', { class: 'glow', r: style === 'particle' ? 11 : 0 }, group);
+      const dots = (style === 'particle' ? [0, 1, 2, 3, 4] : []).map((k) =>
         el('circle', { class: 'core', r: 4.5 * (1 - k * 0.17), opacity: 1 - k * 0.2 }, group),
       );
-      // Si la conexión se está dibujando en este paso, la partícula sale cuando termina de dibujarse.
-      const wait = edgeDelay.has(id) ? edgeDelay.get(id)! + EDGE_DRAW - 120 : idleWait;
-      const duration = Math.min(1700, Math.max(800, length * 4.2));
-      const laid = this.layout.edges.find((e) => e.id === id);
+      // Si la conexión se está dibujando en este paso, el recorrido sale cuando termina de dibujarse.
+      const wait = edgeDelay.has(id) ? edgeDelay.get(id)! + (EDGE_DRAW - 120) * this.speed : idleWait;
+      const duration = Math.min(1700, Math.max(800, length * 4.2)) * this.speed * (style === 'packets' ? 1.3 : 1);
       let tag: SVGGElement | undefined;
       if (laid?.edge.carries) {
         const text = laid.edge.carries;
@@ -297,7 +322,7 @@ export class Player {
         const label = el('text', { 'text-anchor': 'middle', y: -14.5 }, tag);
         label.textContent = text;
       }
-      this.flows.push({ path, length, start: now + wait, duration, group, dots, glow, to: laid?.edge.to ?? '', pulsed: -1, tag });
+      this.flows.push({ style, line, glowLine, packets, path, length, start: now + wait, duration, group, dots, glow, to: laid?.edge.to ?? '', pulsed: -1, tag });
     }
     const tick = (t: number) => {
       for (const f of this.flows) this.drawFlow(f, t);
@@ -309,7 +334,16 @@ export class Player {
   private drawFlow(f: Flow, now: number) {
     const elapsed = now - f.start;
     if (elapsed < 0) return;
-    const period = f.duration + 520;
+    if (f.style === 'dash') {
+      // Movimiento continuo (CSS); la etiqueta queda a mitad de camino.
+      if (f.group.getAttribute('opacity') !== '1') {
+        f.group.setAttribute('opacity', '1');
+        const mid = f.path.getPointAtLength(f.length / 2);
+        f.tag?.setAttribute('transform', `translate(${mid.x} ${mid.y})`);
+      }
+      return;
+    }
+    const period = f.duration + 520 * this.speed;
     const local = elapsed % period;
     const cycle = Math.floor(elapsed / period);
     if (local >= f.duration * 0.94 && f.pulsed !== cycle) {
@@ -325,6 +359,22 @@ export class Player {
     const fade = Math.min(1, p / 0.08, (1 - p) / 0.1);
     f.group.setAttribute('opacity', String(fade));
     const head = easeInOut(p);
+    if (f.line && f.glowLine) {
+      // Un tramo de luz que avanza: el guion visible va de (head - seg) a head.
+      const seg = Math.min(70, f.length * 0.4);
+      const dash = `${seg} ${f.length * 2 + seg}`;
+      const offset = String(seg - head * (f.length + seg));
+      for (const l of [f.line, f.glowLine]) {
+        l.setAttribute('stroke-dasharray', dash);
+        l.setAttribute('stroke-dashoffset', offset);
+      }
+    }
+    f.packets?.forEach((rect, k) => {
+      const t = head - k * 0.12;
+      rect.setAttribute('opacity', t < 0 ? '0' : '1');
+      const pt = f.path.getPointAtLength(Math.max(0, t) * f.length);
+      rect.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
+    });
     f.dots.forEach((dot, k) => {
       const t = Math.max(0, head - k * 0.022);
       const pt = f.path.getPointAtLength(t * f.length);

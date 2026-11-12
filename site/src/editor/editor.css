@@ -200,3 +200,5 @@
   .ed-tour-spot, .ed-tour-card { transition: none; }
   .ed-tour-card.is-in { animation: none; }
 }
+
+.ed-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }

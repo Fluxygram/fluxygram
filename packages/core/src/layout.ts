@@ -22,6 +22,7 @@ export function layout(diagram: Diagram, options: LayoutOptions = {}): Layout {
         ? layoutLayers(diagram)
         : layoutLayered(diagram, diagram.type === 'architecture' ? 'TB' : (diagram.direction ?? 'LR'));
   const pinned = diagram.type === 'timeline' ? result : applyPins(diagram, result);
+  pinned.motion = diagram.motion;
   return withStage(diagram, pinned, options);
 }
 

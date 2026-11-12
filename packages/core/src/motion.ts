@@ -15,7 +15,7 @@ export function plan(diagram: Diagram, layout: Layout): MotionPlan {
   const steps = diagram.steps?.length ? diagram.steps : defaultSteps(diagram);
   const resolved = resolve(diagram, layout, steps);
   const last = resolved[resolved.length - 1];
-  if (last && diagram.finale !== false) resolved.push(finale(layout, last));
+  if (last && (diagram.motion?.finale ?? diagram.finale) !== false) resolved.push(finale(layout, last));
   return { steps: resolved };
 }
 
@@ -183,6 +183,7 @@ function cameraFor(
   const { w: W, h: H } = layout.stage;
   const aspect = W / H;
   const wide = full.w > W + 1 || full.h > H + 1;
+  const fixed = layout.motion?.camera === 'fixed';
 
   const target = step.focus ? (nodes.get(step.focus) ?? groups.get(step.focus)) : undefined;
   if (target) {
@@ -191,6 +192,9 @@ function cameraFor(
     const rh = rw / aspect;
     return { x: target.x + target.w / 2 - rw / 2, y: target.y + target.h / 2 - rh / 2, w: rw, h: rh };
   }
+
+  // Cámara fija: todo siempre a la vista (salvo un acercamiento pedido explícitamente con focus).
+  if (fixed) return full;
 
   if (layout.type === 'timeline') {
     const anchor = lastNode ? nodes.get(lastNode) : undefined;

@@ -1,4 +1,4 @@
-import { NODE_KINDS, NODE_STATES, type Diagram } from './types';
+import { ENTER_STYLES, NODE_KINDS, NODE_STATES, SPEEDS, TRAVEL_STYLES, type Diagram } from './types';
 
 export type Locale = 'en' | 'es';
 
@@ -25,6 +25,7 @@ const MESSAGES: Record<string, Record<Locale, string>> = {
   },
   nodeObj: { en: 'Each node must be an object.', es: 'Cada nodo debe ser un objeto.' },
   label: { en: 'Each node needs a "label".', es: 'Cada nodo necesita un "label".' },
+  oneOf: { en: '"{field}" must be one of: {list}.', es: '"{field}" debe ser uno de: {list}.' },
   kind: { en: '"kind" must be one of: {list}.', es: '"kind" debe ser uno de: {list}.' },
   pos: { en: '"x" and "y" must both be numbers.', es: '"x" e "y" deben ser números, los dos.' },
   date: { en: '"date" must be a string, like "1995" or "2026-03".', es: '"date" debe ser texto, por ejemplo "1995" o "2026-03".' },
@@ -82,6 +83,19 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
     return { ok: false, issues };
   }
 
+  const oneOf = (v: unknown, path: string, list: readonly string[]) => {
+    if (v !== undefined && !list.includes(v as string)) add(path, 'oneOf', { field: path.split('.').pop()!, list: list.join(', ') });
+  };
+  if (input.motion !== undefined) {
+    if (!isObj(input.motion)) add('motion', 'oneOf', { field: 'motion', list: '{ enter, travel, speed, camera, finale }' });
+    else {
+      oneOf(input.motion.enter, 'motion.enter', ENTER_STYLES);
+      oneOf(input.motion.travel, 'motion.travel', TRAVEL_STYLES);
+      oneOf(input.motion.speed, 'motion.speed', SPEEDS);
+      oneOf(input.motion.camera, 'motion.camera', ['follow', 'fixed']);
+    }
+  }
+
   const ids = new Set<string>();
   const nodeIds = new Set<string>();
   const claim = (id: unknown, path: string) => {
@@ -98,6 +112,7 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
     if (typeof n.label !== 'string' || n.label.trim() === '') add(`${p}.label`, 'label');
     if (n.date !== undefined && typeof n.date !== 'string') add(`${p}.date`, 'date');
     if (n.kind !== undefined && !NODE_KINDS.includes(n.kind as never)) add(`${p}.kind`, 'kind', { list: NODE_KINDS.join(', ') });
+    oneOf(n.enter, `${p}.enter`, ENTER_STYLES);
     if ((n.x !== undefined || n.y !== undefined) && (typeof n.x !== 'number' || typeof n.y !== 'number')) add(`${p}.x`, 'pos');
   });
 
@@ -126,6 +141,7 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
         if (!isObj(e)) return add(p, 'edgeObj');
         if (e.id !== undefined) claim(e.id, `${p}.id`);
         else ids.add(`${String(e.from)}->${String(e.to)}`);
+        oneOf(e.travel, `${p}.travel`, TRAVEL_STYLES);
         if (!nodeIds.has(e.from as string)) add(`${p}.from`, 'from', { id: String(e.from) });
         if (!nodeIds.has(e.to as string)) add(`${p}.to`, 'to', { id: String(e.to) });
       });

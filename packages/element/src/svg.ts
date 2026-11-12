@@ -64,7 +64,11 @@ export function buildScene(layout: Layout, uid: string): Scene {
   const nodeLayer = el('g', { class: 'fx-nodes' }, camera);
   for (const n of layout.nodes) {
     const slot = el('g', { class: 'fx-slot', 'data-id': n.id, transform: `translate(${n.x} ${n.y})` }, nodeLayer);
+    const enter = n.node.enter ?? layout.motion?.enter ?? 'fade';
     const part = layout.type === 'timeline' ? drawMilestone(n, layout.axis!.y, slot) : drawNode(n, slot);
+    part.setAttribute('data-enter', enter);
+    // Para "dibujar" el borde, la longitud del trazo se normaliza a 1.
+    if (enter === 'draw') part.querySelectorAll('.fx-shape, .fx-rim').forEach((s) => s.setAttribute('pathLength', '1'));
     slots.set(n.id, slot);
     parts.set(n.id, part);
   }
@@ -96,6 +100,10 @@ function drawEdge(e: LaidEdge, parent: Element) {
   }
   return { group, path };
 }
+
+/** Rectángulo redondeado como path: un <rect> no siempre acepta pathLength para animar su trazo. */
+const roundRect = (w: number, h: number, r: number) =>
+  `M${r} 0 H${w - r} A${r} ${r} 0 0 1 ${w} ${r} V${h - r} A${r} ${r} 0 0 1 ${w - r} ${h} H${r} A${r} ${r} 0 0 1 0 ${h - r} V${r} A${r} ${r} 0 0 1 ${r} 0 Z`;
 
 /** Insignia de estado (éxito, error, alerta, espera). Está siempre y el CSS muestra la que corresponde. */
 function drawBadge(part: Element, x: number, y: number) {
@@ -131,7 +139,7 @@ function drawNode(n: LaidNode, slot: Element) {
       break;
     default: {
       const rx = node.kind === 'start' || node.kind === 'end' ? h / 2 : 12;
-      el('rect', { class: 'fx-shape', width: w, height: h, rx }, part);
+      el('path', { class: 'fx-shape', d: roundRect(w, h, rx) }, part);
     }
   }
 
@@ -165,7 +173,7 @@ function drawMilestone(n: LaidNode, axisY: number, slot: Element) {
   el('line', { class: 'fx-stem', x1: cx, x2: cx, y1: above ? h : 0, y2: localAxis + (above ? -6 : 6) }, part);
   el('circle', { class: 'fx-dot', cx, cy: localAxis, r: 5 }, part);
 
-  el('rect', { class: 'fx-shape', width: w, height: h, rx: 12 }, part);
+  el('path', { class: 'fx-shape', d: roundRect(w, h, 12) }, part);
   let ty = 26;
   if (node.date) {
     const date = el('text', { class: 'fx-date', x: 18, y: ty }, part);

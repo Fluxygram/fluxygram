@@ -98,9 +98,26 @@ Steps are **cumulative**: whatever appears stays visible until a later step `hid
 | `hide` | Elements that disappear. Rarely needed. |
 | `caption` | The sentence shown under the diagram. |
 
+### Motion
+
+The default motion is good; change it to match the tone of what is being explained.
+
+```json
+"motion": { "enter": "draw", "travel": "pulse", "speed": "slow", "camera": "follow", "finale": true }
+```
+
+| Field | Values | Use it when |
+| --- | --- | --- |
+| `enter` | `fade` (default), `scale`, `draw`, `slide` | `draw` for whiteboard-style explanations, `scale` for playful or product content, `slide` for pipelines that move one way |
+| `travel` | `particle` (default), `pulse`, `dash`, `packets` | `pulse` for signals or energy, `dash` for continuous streams (logs, events), `packets` for data or requests in batches |
+| `speed` | `slow`, `normal`, `fast` | `slow` for teaching or dense diagrams, `fast` for short loops on a landing page |
+| `camera` | `follow` (default), `fixed` | `fixed` when the whole picture should stay in view (small diagrams, presentations) |
+
+Any node can set its own `"enter"` and any edge its own `"travel"`, overriding the diagram: for example one `"enter": "scale"` on the outcome node, or `"travel": "dash"` on a background stream while the main path uses particles. Use overrides to make one thing stand apart, not on every element.
+
 ### Ending
 
-After the last step, Fluxygram adds an automatic finale: the camera zooms out to the whole diagram and particles run along every visible connection. Leave it on (the default); set `"finale": false` only when the last step must stay framed on a detail.
+After the last step, Fluxygram adds an automatic finale: the camera zooms out to the whole diagram and particles run along every visible connection. Leave it on (the default); set `"motion": { "finale": false }` only when the last step must stay framed on a detail.
 
 ## Storytelling rules
 

@@ -1,4 +1,4 @@
-import type { Diagram, DiagramType, FluxEdge, FluxGroup, FluxNode, FluxStep, NodeState } from '@fluxygram/core';
+import type { Diagram, DiagramType, FluxEdge, FluxGroup, FluxNode, FluxStep, Motion, NodeState } from '@fluxygram/core';
 
 export type Selection =
   | { kind: 'node'; id: string }
@@ -209,6 +209,10 @@ export class Model {
         if (patch.carries) e.carries = patch.carries;
         else delete e.carries;
       }
+      if ('travel' in patch) {
+        if (patch.travel) e.travel = patch.travel;
+        else delete e.travel;
+      }
       if (patch.from && patch.to) {
         e.from = patch.from;
         e.to = patch.to;
@@ -255,6 +259,21 @@ export class Model {
     }, 'remove');
     this.selection = null;
     this.emit('select');
+  }
+
+  /** Cambia la animación por defecto del diagrama. Un valor vacío vuelve al comportamiento por defecto. */
+  setMotion(patch: Partial<Motion>) {
+    this.change((d) => {
+      const m: Record<string, unknown> = { ...(d.motion ?? {}) };
+      for (const [k, v] of Object.entries(patch)) {
+        if (v === undefined) delete m[k];
+        else m[k] = v;
+      }
+      // El final vive en motion; se limpia el campo antiguo para no tener dos fuentes.
+      delete d.finale;
+      if (Object.keys(m).length) d.motion = m as Motion;
+      else delete d.motion;
+    }, 'motion');
   }
 
   /** Quita todas las posiciones fijadas: vuelve el acomodo automático. */
