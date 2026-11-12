@@ -1,0 +1,48 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "architecture",
+  "title": "Así responde una app a cada pedido",
+  "groups": [
+    { "id": "clients", "label": "Clientes" },
+    { "id": "edge", "label": "Borde" },
+    { "id": "services", "label": "Servicios" },
+    { "id": "data", "label": "Datos" }
+  ],
+  "nodes": [
+    { "id": "web", "label": "App web", "icon": "browser", "group": "clients" },
+    { "id": "mobile", "label": "App móvil", "icon": "mobile", "group": "clients" },
+    { "id": "gw", "label": "API Gateway", "icon": "api", "group": "edge" },
+    { "id": "cdn", "label": "CDN", "icon": "globe", "group": "edge" },
+    { "id": "auth", "label": "Auth", "icon": "shield", "group": "services" },
+    { "id": "orders", "label": "Pedidos", "icon": "package", "group": "services" },
+    { "id": "payments", "label": "Pagos", "icon": "card", "group": "services" },
+    { "id": "db", "label": "Postgres", "icon": "database", "group": "data" },
+    { "id": "cache", "label": "Redis", "icon": "zap", "group": "data" },
+    { "id": "files", "label": "Archivos", "icon": "disk", "group": "data" }
+  ],
+  "edges": [
+    { "id": "web-gw", "from": "web", "to": "gw" },
+    { "id": "mobile-gw", "from": "mobile", "to": "gw" },
+    { "id": "web-cdn", "from": "web", "to": "cdn" },
+    { "id": "gw-auth", "from": "gw", "to": "auth" },
+    { "id": "gw-orders", "from": "gw", "to": "orders" },
+    { "id": "orders-payments", "from": "orders", "to": "payments" },
+    { "id": "auth-db", "from": "auth", "to": "db" },
+    { "id": "orders-db", "from": "orders", "to": "db" },
+    { "id": "orders-cache", "from": "orders", "to": "cache" },
+    { "id": "payments-db", "from": "payments", "to": "db" },
+    { "id": "cdn-files", "from": "cdn", "to": "files" }
+  ],
+  "steps": [
+    { "show": ["db", "cache", "files"], "caption": "Abajo, los datos: lo que el sistema recuerda" },
+    { "show": ["auth", "orders", "payments", "auth-db", "orders-db", "orders-cache", "payments-db", "orders-payments"], "caption": "Encima, los servicios que hacen el trabajo" },
+    { "show": ["gw", "cdn", "gw-auth", "gw-orders", "cdn-files"], "caption": "El borde recibe todo lo que llega de afuera" },
+    { "show": ["web", "mobile", "web-gw", "mobile-gw", "web-cdn"], "caption": "Arriba, las apps que usa la gente" },
+    {
+      "flow": ["web-gw", "gw-orders", "orders-payments", "payments-db"],
+      "highlight": ["web", "gw", "orders", "payments", "db"],
+      "caption": "Un pedido viaja desde la app hasta la base de datos"
+    },
+    { "focus": "payments", "highlight": ["payments"], "flow": "orders-payments", "caption": "Pagos confirma el cobro antes de guardarlo" }
+  ]
+}

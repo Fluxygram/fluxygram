@@ -1,0 +1,11 @@
+{
+  "name": "@fluxygram/core",
+  "version": "0.0.1",
+  "description": "Formato, validación, layout y gramática de movimiento de Fluxygram. Sin dependencias de framework.",
+  "type": "module",
+  "license": "MIT",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

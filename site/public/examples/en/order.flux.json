@@ -1,0 +1,20 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "How an order gets processed",
+  "nodes": [
+    { "id": "start", "label": "Order received", "kind": "start", "icon": "cart" },
+    { "id": "stock", "label": "In stock?", "kind": "decision" },
+    { "id": "pay", "label": "Charge", "description": "card or bank transfer", "icon": "card" },
+    { "id": "notify", "label": "Notify customer", "description": "restock date", "icon": "mail" },
+    { "id": "ship", "label": "Prepare shipment", "icon": "package" },
+    { "id": "done", "label": "Delivered", "kind": "end", "icon": "check", "accent": true }
+  ],
+  "edges": [
+    { "from": "start", "to": "stock" },
+    { "from": "stock", "to": "pay", "label": "yes" },
+    { "from": "stock", "to": "notify", "label": "no" },
+    { "from": "pay", "to": "ship" },
+    { "from": "ship", "to": "done" }
+  ]
+}

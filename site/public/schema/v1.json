@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fluxygram.dev/schema/v1.json",
+  "title": "Fluxygram diagram",
+  "description": "An animated diagram that explains something step by step.",
+  "type": "object",
+  "required": ["type", "nodes"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "type": {
+      "description": "Diagram type. Each one has its own default motion.",
+      "enum": ["flow", "architecture", "timeline"]
+    },
+    "title": { "type": "string", "description": "Shown above the diagram. Say what it shows." },
+    "theme": { "enum": ["dark", "light"], "default": "dark" },
+    "direction": { "enum": ["LR", "TB"], "default": "LR", "description": "Layout direction for flow diagrams." },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/node" }
+    },
+    "edges": { "type": "array", "items": { "$ref": "#/$defs/edge" } },
+    "groups": {
+      "type": "array",
+      "description": "Layers for architecture diagrams, listed top to bottom.",
+      "items": { "$ref": "#/$defs/group" }
+    },
+    "steps": {
+      "type": "array",
+      "description": "Optional story. Steps are cumulative. Without steps, the type's default motion is used.",
+      "items": { "$ref": "#/$defs/step" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9_.:-]+$" },
+    "ref": {
+      "oneOf": [{ "$ref": "#/$defs/id" }, { "type": "array", "items": { "$ref": "#/$defs/id" } }]
+    },
+    "node": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "type": "string", "description": "Short name, ideally 1 to 3 words." },
+        "description": { "type": "string", "description": "One short line under the name." },
+        "icon": {
+          "description": "Built-in icon name.",
+          "enum": [
+            "alert", "api", "book", "bot", "browser", "building", "cart", "chart", "check", "clock", "cloud", "code",
+            "cpu", "card", "database", "disk", "file", "flag", "git", "globe", "heart", "idea", "image", "key", "layers",
+            "lock", "mail", "message", "mobile", "monitor", "network", "notification", "package", "rocket", "search",
+            "server", "settings", "shield", "sparkles", "store", "truck", "user", "users", "workflow", "zap"
+          ]
+        },
+        "kind": { "enum": ["default", "decision", "start", "end"], "description": "flow only." },
+        "group": { "$ref": "#/$defs/id", "description": "architecture only: the layer this node belongs to." },
+        "date": { "type": "string", "description": "timeline only, for example \"1995\" or \"2026-03\"." },
+        "accent": { "type": "boolean", "description": "Highlight this node with the accent color." }
+      }
+    },
+    "edge": {
+      "type": "object",
+      "required": ["from", "to"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id", "description": "Needed to reference the edge from steps. Defaults to \"from->to\"." },
+        "from": { "$ref": "#/$defs/id" },
+        "to": { "$ref": "#/$defs/id" },
+        "label": { "type": "string" }
+      }
+    },
+    "group": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "label": { "type": "string" }
+      }
+    },
+    "step": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "show": { "type": "array", "items": { "$ref": "#/$defs/id" }, "description": "Elements that appear. Showing an edge also shows its two nodes." },
+        "hide": { "type": "array", "items": { "$ref": "#/$defs/id" } },
+        "focus": { "$ref": "#/$defs/id", "description": "The camera moves in on this node or group." },
+        "flow": { "$ref": "#/$defs/ref", "description": "Edges a particle travels along while the step is active." },
+        "highlight": { "$ref": "#/$defs/ref", "description": "Elements that stand out; the rest dims." },
+        "caption": { "type": "string", "description": "Text for the step. Keep it under 12 words." }
+      }
+    }
+  }
+}

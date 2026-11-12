@@ -1,0 +1,15 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "timeline",
+  "title": "Moments that changed the web",
+  "nodes": [
+    { "id": "www", "date": "1991", "label": "First web page", "description": "Tim Berners-Lee, at CERN" },
+    { "id": "js", "date": "1995", "label": "JavaScript is born", "description": "pages that react" },
+    { "id": "css", "date": "1996", "label": "CSS", "description": "design apart from content" },
+    { "id": "web2", "date": "2004", "label": "Web 2.0", "description": "the web goes social" },
+    { "id": "iphone", "date": "2007", "label": "iPhone", "description": "the web in your pocket" },
+    { "id": "responsive", "date": "2010", "label": "Responsive design", "description": "one site, every screen" },
+    { "id": "es6", "date": "2015", "label": "ES2015", "description": "modern JavaScript" },
+    { "id": "ai", "date": "2022", "label": "Generative AI", "description": "talking to the web", "accent": true }
+  ]
+}

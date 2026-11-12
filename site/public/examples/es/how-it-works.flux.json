@@ -1,0 +1,25 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Cómo funciona Fluxygram",
+  "nodes": [
+    { "id": "idea", "label": "Tu pregunta", "description": "“explícame OAuth”", "icon": "message" },
+    { "id": "agent", "label": "Agente + skill", "icon": "bot" },
+    { "id": "json", "label": ".flux.json", "description": "nodos, conexiones, pasos", "icon": "code", "accent": true },
+    { "id": "core", "label": "Fluxygram", "description": "layout + movimiento", "icon": "sparkles" },
+    { "id": "out", "label": "Diagrama animado", "icon": "rocket" }
+  ],
+  "edges": [
+    { "id": "e1", "from": "idea", "to": "agent" },
+    { "id": "e2", "from": "agent", "to": "json" },
+    { "id": "e3", "from": "json", "to": "core" },
+    { "id": "e4", "from": "core", "to": "out" }
+  ],
+  "steps": [
+    { "show": ["idea"], "caption": "Empieza con algo que quieres explicar" },
+    { "show": ["e1"], "flow": "e1", "caption": "Un agente con la skill de Fluxygram lo entiende" },
+    { "show": ["e2"], "flow": "e2", "caption": "y escribe un JSON con nodos, conexiones y pasos" },
+    { "show": ["e3"], "flow": "e3", "caption": "Fluxygram calcula el layout y el movimiento" },
+    { "show": ["e4"], "flow": "e4", "highlight": ["out"], "caption": "y lo convierte en una historia animada" }
+  ]
+}

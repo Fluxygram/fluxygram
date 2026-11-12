@@ -1,0 +1,24 @@
+{
+  "type": "flow",
+  "title": "How Fluxygram works",
+  "nodes": [
+    { "id": "idea", "label": "Your question", "description": "“explain OAuth to me”", "icon": "message" },
+    { "id": "agent", "label": "Agent + skill", "icon": "bot" },
+    { "id": "json", "label": ".flux.json", "description": "nodes, edges, steps", "icon": "code", "accent": true },
+    { "id": "core", "label": "Fluxygram", "description": "layout + motion", "icon": "sparkles" },
+    { "id": "out", "label": "Animated diagram", "icon": "rocket" }
+  ],
+  "edges": [
+    { "id": "e1", "from": "idea", "to": "agent" },
+    { "id": "e2", "from": "agent", "to": "json" },
+    { "id": "e3", "from": "json", "to": "core" },
+    { "id": "e4", "from": "core", "to": "out" }
+  ],
+  "steps": [
+    { "show": ["idea"], "caption": "It starts with something you want to explain" },
+    { "show": ["e1"], "flow": "e1", "caption": "An agent with the Fluxygram skill understands it" },
+    { "show": ["e2"], "flow": "e2", "caption": "and writes JSON with nodes, edges and steps" },
+    { "show": ["e3"], "flow": "e3", "caption": "Fluxygram works out the layout and the motion" },
+    { "show": ["e4"], "flow": "e4", "highlight": ["out"], "caption": "and turns it into an animated story" }
+  ]
+}

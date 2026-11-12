@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" data-i18n-title="meta.title">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fluxygram — diagrams that explain themselves</title>
+    <meta name="description" content="Describe anything in JSON. Fluxygram draws it and tells it step by step, with motion that helps people understand." />
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/site.css" />
+  </head>
+  <body>
+    <header class="wrap nav">
+      <a class="brand" href="/"><img src="/mark.svg" alt="" width="26" height="26" />fluxygram</a>
+      <nav class="nav-links">
+        <a href="#examples" data-i18n="nav.examples">Examples</a>
+        <a href="/play" data-i18n="nav.playground">Playground</a>
+        <a href="https://github.com/Fluxygram" rel="noopener">GitHub</a>
+        <button class="lang-switch" type="button" data-lang-switch>Español</button>
+      </nav>
+    </header>
+
+    <main>
+      <div class="wrap hero">
+        <span class="eyebrow" data-i18n="hero.eyebrow">Open source · v0.0.1</span>
+        <h1 data-i18n="hero.title">Diagrams that explain themselves.</h1>
+        <p data-i18n="hero.lead">Describe anything in JSON. Fluxygram draws it and tells it step by step, with motion that helps people understand instead of distracting them.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="/play" data-i18n="hero.play">Open the playground</a>
+          <a class="btn" href="https://github.com/Fluxygram" rel="noopener" data-i18n="hero.github">View on GitHub</a>
+        </div>
+        <div class="hero-demo">
+          <fluxy-gram id="hero" data-example="how-it-works"></fluxy-gram>
+        </div>
+      </div>
+
+      <section id="examples">
+        <div class="wrap">
+          <div class="section-head">
+            <h2 data-i18n="examples.title">Every kind of diagram moves its own way.</h2>
+            <p data-i18n="examples.lead">Pick the type and Fluxygram applies its motion grammar. Steps are optional: without them, the diagram still tells its story.</p>
+          </div>
+          <div class="tabs" role="tablist">
+            <button class="tab" role="tab" aria-selected="true" data-example="order" data-i18n="examples.flow">Flow</button>
+            <button class="tab" role="tab" aria-selected="false" data-example="architecture" data-i18n="examples.architecture">Architecture</button>
+            <button class="tab" role="tab" aria-selected="false" data-example="web-history" data-i18n="examples.timeline">Timeline</button>
+          </div>
+          <div class="example">
+            <fluxy-gram id="example"></fluxy-gram>
+            <details class="json">
+              <summary data-i18n="examples.json">See the JSON behind this diagram</summary>
+              <pre id="example-json"></pre>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="wrap">
+          <div class="section-head">
+            <h2 data-i18n="motion.title">Motion with a purpose.</h2>
+            <p data-i18n="motion.lead">Every animation answers a question: what appears, where it goes, what changes.</p>
+          </div>
+          <div class="grid-3">
+            <div class="card"><h3 data-i18n="examples.flow">Flow</h3><p data-i18n="motion.flow"></p></div>
+            <div class="card"><h3 data-i18n="examples.architecture">Architecture</h3><p data-i18n="motion.architecture"></p></div>
+            <div class="card"><h3 data-i18n="examples.timeline">Timeline</h3><p data-i18n="motion.timeline"></p></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="wrap agent">
+          <div class="section-head">
+            <h2 data-i18n="agents.title">Built for agents.</h2>
+            <p data-i18n="agents.lead"></p>
+          </div>
+<pre class="code"><span class="c" data-i18n="agents.c1"></span>
+<span class="k">import</span> "@fluxygram/element"
+<span class="k">&lt;fluxy-gram</span> src="order.flux.json"<span class="k">&gt;&lt;/fluxy-gram&gt;</span>
+
+<span class="c" data-i18n="agents.c2"></span>
+<span data-i18n="agents.ask"></span></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <span data-i18n="footer.tag">Fluxygram · open source</span>
+        <span><a href="/schema/v1.json" data-i18n="nav.schema">Schema</a> · <a href="https://github.com/Fluxygram" rel="noopener">GitHub</a></span>
+      </div>
+    </footer>
+
+    <script src="/i18n.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

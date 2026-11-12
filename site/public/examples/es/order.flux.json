@@ -1,0 +1,20 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Cómo se procesa un pedido",
+  "nodes": [
+    { "id": "start", "label": "Pedido recibido", "kind": "start", "icon": "cart" },
+    { "id": "stock", "label": "¿Hay stock?", "kind": "decision" },
+    { "id": "pay", "label": "Cobrar", "description": "tarjeta o transferencia", "icon": "card" },
+    { "id": "notify", "label": "Avisar al cliente", "description": "fecha de reposición", "icon": "mail" },
+    { "id": "ship", "label": "Preparar envío", "icon": "package" },
+    { "id": "done", "label": "Entregado", "kind": "end", "icon": "check", "accent": true }
+  ],
+  "edges": [
+    { "from": "start", "to": "stock" },
+    { "from": "stock", "to": "pay", "label": "sí" },
+    { "from": "stock", "to": "notify", "label": "no" },
+    { "from": "pay", "to": "ship" },
+    { "from": "ship", "to": "done" }
+  ]
+}

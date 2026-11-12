@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-i18n-title="play.title">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Playground — Fluxygram</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/site.css" />
+  </head>
+  <body>
+    <header class="wrap nav" style="max-width: none">
+      <a class="brand" href="/"><img src="/mark.svg" alt="" width="26" height="26" />fluxygram</a>
+      <nav class="nav-links">
+        <a href="/#examples" data-i18n="nav.examples">Examples</a>
+        <a href="/schema/v1.json" data-i18n="nav.schema">Schema</a>
+        <a href="https://github.com/Fluxygram" rel="noopener">GitHub</a>
+        <button class="lang-switch" type="button" data-lang-switch>Español</button>
+      </nav>
+    </header>
+    <main class="wrap play" style="max-width: none">
+      <div class="editor">
+        <div class="editor-bar">
+          <select id="preset" data-i18n-attr="aria-label:play.preset">
+            <option value="how-it-works" data-i18n="play.p.how">How Fluxygram works</option>
+            <option value="order" data-i18n="play.p.order">Flow: an order</option>
+            <option value="architecture" data-i18n="play.p.arch">Architecture: an app</option>
+            <option value="web-history" data-i18n="play.p.web">Timeline: the web</option>
+          </select>
+          <span class="editor-status" id="status" aria-live="polite"></span>
+        </div>
+        <textarea id="source" spellcheck="false" data-i18n-attr="aria-label:play.source"></textarea>
+      </div>
+      <div class="preview">
+        <fluxy-gram id="preview"></fluxy-gram>
+      </div>
+    </main>
+    <script src="/i18n.js"></script>
+    <script type="module" src="/src/play.ts"></script>
+  </body>
+</html>
