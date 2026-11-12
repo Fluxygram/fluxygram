@@ -74,7 +74,8 @@
       "show": [
         "start"
       ],
-      "caption": "Llega un pedido"
+      "caption": "Llega un pedido",
+      "notes": "Empieza por el cliente: acaba de llegar un pedido desde la tienda."
     },
     {
       "show": [
@@ -84,7 +85,8 @@
       "state": {
         "stock": "pending"
       },
-      "caption": "Se revisa el inventario"
+      "caption": "Se revisa el inventario",
+      "notes": "Antes de cobrar revisamos el almacén. Tarda un momento, por eso el spinner."
     },
     {
       "show": [
@@ -96,7 +98,8 @@
         "no": "error",
         "notify": "error"
       },
-      "caption": "Sin stock: se avisa al cliente"
+      "caption": "Sin stock: se avisa al cliente",
+      "notes": "Primero el peor caso: no hay stock. No cobramos y le avisamos cuándo vuelve."
     },
     {
       "show": [
@@ -109,7 +112,8 @@
         "notify": "default",
         "pay": "pending"
       },
-      "caption": "Con stock: se intenta el cobro"
+      "caption": "Con stock: se intenta el cobro",
+      "notes": "El camino feliz: con stock, intentamos cobrar la tarjeta o la transferencia."
     },
     {
       "show": [
@@ -120,7 +124,8 @@
         "pay": "success",
         "ship": "pending"
       },
-      "caption": "Cobro aprobado, empieza el envío"
+      "caption": "Cobro aprobado, empieza el envío",
+      "notes": "Cobro aprobado, así que el almacén empieza a preparar la caja."
     },
     {
       "show": [
@@ -131,7 +136,8 @@
         "ship": "success",
         "done": "success"
       },
-      "caption": "Entregado"
+      "caption": "Entregado",
+      "notes": "Y se entrega. Pregunta al público: ¿dónde más podría fallar este proceso?"
     }
   ]
 }

@@ -9,6 +9,7 @@ export default defineConfig({
         index: resolve(import.meta.dirname, 'index.html'),
         play: resolve(import.meta.dirname, 'play.html'),
         view: resolve(import.meta.dirname, 'view.html'),
+        present: resolve(import.meta.dirname, 'present.html'),
         notFound: resolve(import.meta.dirname, '404.html'),
       },
     },

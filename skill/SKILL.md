@@ -100,6 +100,7 @@ Steps are **cumulative**: whatever appears stays visible until a later step `hid
 | `hide` | Elements that disappear. Rarely needed. |
 | `caption` | The sentence shown under the diagram. |
 | `duration` | Seconds this step stays on screen in autoplay (overrides `motion.hold`). |
+| `notes` | Speaker notes: what the presenter says during this step. Only visible in the presenter view, never in the diagram. Write them when the user will present the diagram live (a class, a meeting, a demo). |
 
 ### Motion
 

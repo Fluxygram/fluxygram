@@ -93,6 +93,8 @@ export interface FluxStep {
   caption?: string;
   /** Segundos que se queda este paso en la reproducción automática (anula motion.hold). */
   duration?: number;
+  /** Notas del presentador: solo se ven en la vista del presentador, nunca en el diagrama. */
+  notes?: string;
   /** Cambia el estado de nodos o conexiones: { "pay": "success", "e3": "error" }. Se mantiene hasta que otro paso lo cambie. */
   state?: Record<string, NodeState>;
 }

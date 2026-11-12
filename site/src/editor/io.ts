@@ -40,7 +40,7 @@ export async function diagramFromHash(): Promise<unknown | undefined> {
   }
 }
 
-export async function shareUrl(d: Diagram, page: 'view' | 'play' = 'view') {
+export async function shareUrl(d: Diagram, page: 'view' | 'play' | 'present' = 'view') {
   return `${location.origin}/${page}#d=${await encodeDiagram(d)}`;
 }
 

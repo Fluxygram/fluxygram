@@ -29,7 +29,7 @@ code, pre { font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monos
 .wrap { width: 100%; max-width: 1080px; margin: 0 auto; padding: 0 20px; }
 
 /* ---------- Nav ---------- */
-.nav-links { align-items: center; }
+.nav-links { align-items: center; gap: 8px; }
 .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.02em; text-decoration: none; }
 .brand svg { width: 26px; height: 26px; }

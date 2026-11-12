@@ -282,6 +282,13 @@ ${darkTokens(':host')}
   .fx-controls { gap: 8px; padding: 6px 10px 12px; }
 }
 
+/* ---------- Modo presentación: texto grande, pensado para proyectar ---------- */
+:host([present]) { border: 0; border-radius: 0; background: transparent; }
+:host([present]) .fx-head { padding: 0 4px 8px; }
+:host([present]) .fx-title { font-size: clamp(16px, 2vw, 26px); }
+:host([present]) .fx-count { font-size: clamp(12px, 1.2vw, 16px); }
+:host([present]) .fx-caption { height: clamp(44px, 6vh, 72px); margin: 12px 4px 0; font-size: clamp(18px, 2.2vw, 32px); line-height: clamp(44px, 6vh, 72px); }
+
 /* ---------- Controles ---------- */
 .fx-controls {
   display: flex; align-items: center; gap: 12px;

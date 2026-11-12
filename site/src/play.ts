@@ -99,6 +99,11 @@ $('export').onclick = async () => {
   download(`${slug(model.diagram.title)}.html`, await exportHtml(clean(model.diagram), lang), 'text/html');
 };
 
+$('present').onclick = async () => {
+  if (!model.diagram.nodes.length) return toast(t('ed.needNodes'));
+  window.open(await shareUrl(clean(model.diagram), 'present'), '_blank');
+};
+
 $('share').onclick = async () => {
   if (!model.diagram.nodes.length) return toast(t('ed.needNodes'));
   const url = await shareUrl(clean(model.diagram));

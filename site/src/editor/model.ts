@@ -336,6 +336,16 @@ export class Model {
     }, 'steps');
   }
 
+  setNotes(text: string) {
+    const i = this.step;
+    if (i === null) return;
+    this.change((d) => {
+      const s = d.steps![i]!;
+      if (text) s.notes = text;
+      else delete s.notes;
+    }, 'notes');
+  }
+
   setCaption(text: string) {
     const i = this.step;
     if (i === null) return;

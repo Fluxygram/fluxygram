@@ -209,3 +209,9 @@
   background: var(--bg); color: var(--text); font: inherit; font-size: 14px; outline: none; font-variant-numeric: tabular-nums;
 }
 .ed-seconds:focus { border-color: var(--accent); }
+
+.ed-notes {
+  width: 100%; min-height: 52px; padding: 8px 12px; border: 1px dashed var(--border); border-radius: 9px; resize: vertical;
+  background: var(--bg); color: var(--text); font: inherit; font-size: 13.5px; line-height: 1.5; outline: none;
+}
+.ed-notes:focus { border-color: var(--accent); border-style: solid; }

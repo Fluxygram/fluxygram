@@ -376,6 +376,10 @@
           "minimum": 0.5,
           "maximum": 60,
           "description": "Seconds this step stays on screen during autoplay (overrides motion.hold)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Speaker notes for this step. Shown only in the presenter view (/present), never in the diagram."
         }
       }
     }

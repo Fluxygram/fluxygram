@@ -16,7 +16,9 @@ if (result?.ok) {
   if (result.diagram.title) document.title = `${result.diagram.title} — Fluxygram`;
   // "Editar una copia" abre el editor con el mismo diagrama.
   edit.href = `/play${location.hash}`;
+  document.querySelector<HTMLAnchorElement>('#present')!.href = `/present${location.hash}`;
 } else {
   el.hidden = true;
   missing.hidden = false;
+  document.querySelector<HTMLElement>('#present')!.hidden = true;
 }

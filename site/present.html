@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fluxygram</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/site.css" />
+    <link rel="stylesheet" href="/src/present.css" />
+  </head>
+  <body class="pr-body">
+    <!-- Ventana del público -->
+    <main class="pr-stage" id="audience" hidden>
+      <fluxy-gram id="diagram" present controls="false" autoplay="false" gestures="full" tabindex="-1"></fluxy-gram>
+      <div class="pr-hint" id="hint">
+        <span><kbd>→</kbd> <span data-i18n="pr.next"></span></span>
+        <span><kbd>N</kbd> <span data-i18n="pr.notes"></span></span>
+        <span><kbd>F</kbd> <span data-i18n="pr.full"></span></span>
+      </div>
+    </main>
+
+    <!-- Vista del presentador -->
+    <main class="pr-presenter" id="presenter" hidden>
+      <header class="pr-top">
+        <strong class="pr-count" id="count">1 / 1</strong>
+        <span class="pr-timer" id="timer">00:00</span>
+        <button type="button" class="ed-btn" id="timerReset" data-i18n="pr.reset"></button>
+        <span class="ed-spacer"></span>
+        <button type="button" class="ed-btn" id="prev" data-i18n="pr.prev"></button>
+        <button type="button" class="ed-btn ed-primary" id="next" data-i18n="pr.next"></button>
+      </header>
+      <section class="pr-grid">
+        <div class="pr-notes">
+          <h2 class="pr-label" data-i18n="pr.notesTitle"></h2>
+          <p class="pr-notes-text" id="notes"></p>
+        </div>
+        <aside class="pr-side">
+          <fluxy-gram id="mini" controls="false" autoplay="false" tabindex="-1"></fluxy-gram>
+          <h2 class="pr-label" data-i18n="pr.now"></h2>
+          <p class="pr-caption" id="nowCaption"></p>
+          <h2 class="pr-label" data-i18n="pr.upNext"></h2>
+          <p class="pr-caption pr-muted" id="nextCaption"></p>
+        </aside>
+      </section>
+    </main>
+
+    <p class="pr-missing" id="missing" hidden data-i18n="view.missing"></p>
+
+    <script src="/i18n.js"></script>
+    <script type="module" src="/src/present.ts"></script>
+  </body>
+</html>

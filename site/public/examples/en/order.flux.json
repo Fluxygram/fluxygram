@@ -74,7 +74,8 @@
       "show": [
         "start"
       ],
-      "caption": "An order comes in"
+      "caption": "An order comes in",
+      "notes": "Start with the customer: an order just came in from the store."
     },
     {
       "show": [
@@ -84,7 +85,8 @@
       "state": {
         "stock": "pending"
       },
-      "caption": "The inventory is checked"
+      "caption": "The inventory is checked",
+      "notes": "Before charging anything we check the warehouse. This takes a moment, hence the spinner."
     },
     {
       "show": [
@@ -96,7 +98,8 @@
         "no": "error",
         "notify": "error"
       },
-      "caption": "Out of stock: the customer is told"
+      "caption": "Out of stock: the customer is told",
+      "notes": "Worst case first: no stock. We don't charge, we tell the customer when it comes back."
     },
     {
       "show": [
@@ -109,7 +112,8 @@
         "notify": "default",
         "pay": "pending"
       },
-      "caption": "In stock: the payment is attempted"
+      "caption": "In stock: the payment is attempted",
+      "notes": "Happy path: with stock, we try to charge the card or transfer."
     },
     {
       "show": [
@@ -120,7 +124,8 @@
         "pay": "success",
         "ship": "pending"
       },
-      "caption": "Payment approved, shipping starts"
+      "caption": "Payment approved, shipping starts",
+      "notes": "Payment approved, so the warehouse starts preparing the box."
     },
     {
       "show": [
@@ -131,7 +136,8 @@
         "ship": "success",
         "done": "success"
       },
-      "caption": "Delivered"
+      "caption": "Delivered",
+      "notes": "And it's delivered. Ask: where could this process fail besides stock?"
     }
   ]
 }

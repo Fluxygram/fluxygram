@@ -7,7 +7,7 @@ const MODES: StepMode[] = ['show', 'flow', 'highlight', 'focus', 'state'];
 
 /** Barra inferior: lista de pasos y, con uno seleccionado, qué hace ese paso. */
 export function renderSteps(root: HTMLElement, model: Model) {
-  if (root.contains(document.activeElement) && (document.activeElement as HTMLElement).tagName === 'INPUT') return;
+  if (root.contains(document.activeElement) && ['INPUT', 'TEXTAREA'].includes((document.activeElement as HTMLElement).tagName)) return;
   const steps = model.diagram.steps ?? [];
   const i = model.step;
   root.replaceChildren();
@@ -72,4 +72,19 @@ export function renderSteps(root: HTMLElement, model: Model) {
     h('button', { type: 'button', class: 'ed-btn', onclick: () => model.setStep(null) }, t('ed.done')),
   );
   root.append(h('p', { class: 'ed-hint' }, t(`ed.hint.${model.stepMode}`)));
+
+  // Notas del presentador: solo se ven en la vista del presentador.
+  let notesTimer: number | undefined;
+  const notes = h('textarea', { class: 'ed-notes', rows: 2, placeholder: t('ed.notesPh'), 'aria-label': t('ed.notes') });
+  notes.value = step.notes ?? '';
+  const commitNotes = () => {
+    clearTimeout(notesTimer);
+    if (notes.value.trim() !== (step.notes ?? '')) model.setNotes(notes.value.trim());
+  };
+  notes.addEventListener('input', () => {
+    clearTimeout(notesTimer);
+    notesTimer = window.setTimeout(commitNotes, 700);
+  });
+  notes.addEventListener('blur', commitNotes);
+  root.append(notes);
 }
