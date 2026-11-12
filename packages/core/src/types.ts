@@ -20,6 +20,9 @@ export interface FluxNode {
   date?: string;
   /** Resalta el nodo con el color de acento. */
   accent?: boolean;
+  /** Posición fijada a mano (esquina superior izquierda). Sin ella, el nodo se acomoda solo. */
+  x?: number;
+  y?: number;
 }
 
 export interface FluxEdge {

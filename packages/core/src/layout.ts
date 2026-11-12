@@ -21,11 +21,54 @@ export function layout(diagram: Diagram, options: LayoutOptions = {}): Layout {
       : diagram.type === 'architecture' && diagram.groups?.length
         ? layoutLayers(diagram)
         : layoutLayered(diagram, diagram.type === 'architecture' ? 'TB' : (diagram.direction ?? 'LR'));
+  const pinned = diagram.type === 'timeline' ? result : applyPins(diagram, result);
+  return withStage(diagram, pinned, options);
+}
+
+function withStage(diagram: Diagram, result: Layout, options: LayoutOptions): Layout {
   const maxW = options.maxStageWidth ?? MAX_STAGE.w;
   // La línea de tiempo se recorre de lado: su alto es siempre el del contenido.
   const maxH = diagram.type === 'timeline' ? Infinity : MAX_STAGE.h;
   result.stage = { w: Math.min(result.bounds.w, maxW), h: Math.min(result.bounds.h, maxH) };
   return result;
+}
+
+/* ------------------------------------------------------------------ */
+/* Nodos fijados a mano (x, y)                                         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Layout híbrido: todo se acomoda solo, y los nodos con `x`, `y` (los que alguien arrastró en el editor)
+ * quedan donde se soltaron. Las conexiones se vuelven a trazar y los grupos crecen para contener a sus nodos.
+ */
+function applyPins(diagram: Diagram, result: Layout): Layout {
+  const pins = diagram.nodes.filter((n) => typeof n.x === 'number' && typeof n.y === 'number');
+  if (!pins.length) return result;
+  const nodes = result.nodes.map((n) =>
+    typeof n.node.x === 'number' && typeof n.node.y === 'number' ? { ...n, x: n.node.x, y: n.node.y } : n,
+  );
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+
+  const groups = result.groups.map((g) => {
+    const members = nodes.filter((n) => n.node.group === g.id);
+    if (!members.length) return g;
+    const x1 = Math.min(g.x, ...members.map((m) => m.x - GROUP_PAD));
+    const y1 = Math.min(g.y, ...members.map((m) => m.y - GROUP_HEAD));
+    const x2 = Math.max(g.x + g.w, ...members.map((m) => m.x + m.w + GROUP_PAD));
+    const y2 = Math.max(g.y + g.h, ...members.map((m) => m.y + m.h + GROUP_PAD));
+    return { ...g, x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+  });
+
+  const edges = (diagram.edges ?? []).map((e) => {
+    const a = byId.get(e.from)!;
+    const b = byId.get(e.to)!;
+    const apart = b.x >= a.x + a.w + 16 || a.x >= b.x + b.w + 16;
+    const dx = Math.abs(b.x + b.w / 2 - (a.x + a.w / 2));
+    const dy = Math.abs(b.y + b.h / 2 - (a.y + a.h / 2));
+    return routeCurve(e, a, b, apart && dx >= dy * 0.6 ? 'LR' : 'TB');
+  });
+
+  return finish(diagram, nodes, edges, groups, result.axis);
 }
 
 /* ------------------------------------------------------------------ */

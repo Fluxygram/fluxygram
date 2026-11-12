@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Fluxygram</title>
+    <link rel="icon" href="/mark.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/site.css" />
+    <style>
+      body { min-height: 100dvh; display: flex; flex-direction: column; }
+      .view-main { flex: 1; display: grid; place-items: center; padding: 8px 20px 40px; }
+      .view-main fluxy-gram { width: min(100%, 1040px); }
+      .view-missing { color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <header class="wrap nav">
+      <a class="brand" href="/"><img src="/mark.svg" alt="" width="26" height="26" />fluxygram</a>
+      <nav class="nav-links">
+        <a class="btn" id="edit" href="/play" data-i18n="view.edit">Edit a copy</a>
+      </nav>
+    </header>
+    <main class="view-main">
+      <fluxy-gram id="diagram"></fluxy-gram>
+      <p class="view-missing" id="missing" hidden data-i18n="view.missing"></p>
+    </main>
+    <script src="/i18n.js"></script>
+    <script type="module" src="/src/view.ts"></script>
+  </body>
+</html>

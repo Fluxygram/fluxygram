@@ -25,6 +25,7 @@ const MESSAGES: Record<string, Record<Locale, string>> = {
   },
   nodeObj: { en: 'Each node must be an object.', es: 'Cada nodo debe ser un objeto.' },
   label: { en: 'Each node needs a "label".', es: 'Cada nodo necesita un "label".' },
+  pos: { en: '"x" and "y" must both be numbers.', es: '"x" e "y" deben ser números, los dos.' },
   date: { en: '"date" must be a string, like "1995" or "2026-03".', es: '"date" debe ser texto, por ejemplo "1995" o "2026-03".' },
   groups: { en: '"groups" must be a list.', es: '"groups" debe ser una lista.' },
   groupObj: { en: 'Each group must be an object.', es: 'Cada grupo debe ser un objeto.' },
@@ -90,6 +91,7 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
     if (typeof n.id === 'string') nodeIds.add(n.id);
     if (typeof n.label !== 'string' || n.label.trim() === '') add(`${p}.label`, 'label');
     if (n.date !== undefined && typeof n.date !== 'string') add(`${p}.date`, 'date');
+    if ((n.x !== undefined || n.y !== undefined) && (typeof n.x !== 'number' || typeof n.y !== 'number')) add(`${p}.x`, 'pos');
   });
 
   const groupIds = new Set<string>();

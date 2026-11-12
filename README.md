@@ -37,6 +37,12 @@
 
 Steps are optional. With them you control the story: `show`, `flow`, `highlight`, `focus`, `caption`. See [`skill/SKILL.md`](skill/SKILL.md) for the full format and the storytelling rules, and [`site/public/schema/v1.json`](site/public/schema/v1.json) for the JSON Schema.
 
+## Visual editor
+
+`/play` is a canvas editor that runs entirely in the browser: drag nodes from the toolbar, drag from a node's dot to connect it, edit properties on the side, and build the story step by step at the bottom. Open or drop a `.flux.json` to edit it; download the JSON, share a link (the diagram is compressed into the URL, no server involved) or export a single self-contained HTML file.
+
+Dragging a node pins it (`x`, `y` in the JSON); everything else keeps its automatic layout. "Auto layout" removes the pins.
+
 ## For agents
 
 [`skill/`](skill) is an agent skill: it teaches an agent the format, how to pick the diagram type and how to write good steps. Copy it into your agent's skills folder (for Claude Code: `~/.claude/skills/fluxygram/`).

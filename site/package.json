@@ -3,13 +3,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "element": "vite build -c vite.element.config.ts",
+    "dev": "vite build -c vite.element.config.ts && vite",
+    "build": "vite build -c vite.element.config.ts && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@fluxygram/core": "workspace:*",
-    "@fluxygram/element": "workspace:*"
+    "@fluxygram/element": "workspace:*",
+    "lucide": "^1.72.0"
   },
   "devDependencies": {
     "vite": "^7.1.0"

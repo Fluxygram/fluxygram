@@ -34,6 +34,9 @@ importers:
       '@fluxygram/element':
         specifier: workspace:*
         version: link:../packages/element
+      lucide:
+        specifier: ^1.72.0
+        version: 1.72.0
     devDependencies:
       vite:
         specifier: ^7.1.0
