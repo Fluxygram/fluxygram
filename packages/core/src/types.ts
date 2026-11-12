@@ -51,6 +51,8 @@ export interface FluxNode {
   accent?: boolean;
   /** Entrada propia de este bloque (si no, la del diagrama). */
   enter?: EnterStyle;
+  /** Estado desde el principio (los pasos pueden cambiarlo). */
+  state?: NodeState;
   /** Posición fijada a mano (esquina superior izquierda). Sin ella, el nodo se acomoda solo. */
   x?: number;
   y?: number;
@@ -65,6 +67,8 @@ export interface FluxEdge {
   carries?: string;
   /** Recorrido propio de esta conexión (si no, el del diagrama). */
   travel?: TravelStyle;
+  /** Estado desde el principio: tiñe la línea, la partícula y la etiqueta (ej. un camino que falla). */
+  state?: NodeState;
 }
 
 export interface FluxGroup {
@@ -85,7 +89,7 @@ export interface FluxStep {
   highlight?: string | string[];
   /** Texto que acompaña el paso. Mejor si tiene menos de 12 palabras. */
   caption?: string;
-  /** Cambia el estado de nodos: { "pay": "success" }. Se mantiene en los pasos siguientes hasta que cambie. */
+  /** Cambia el estado de nodos o conexiones: { "pay": "success", "e3": "error" }. Se mantiene hasta que otro paso lo cambie. */
   state?: Record<string, NodeState>;
 }
 
@@ -167,7 +171,7 @@ export interface StepState {
   /** Rectángulo del mundo que la cámara encuadra. */
   camera: Rect;
   caption?: string;
-  /** Estado de cada nodo que no está en su aspecto normal (acumulado). */
+  /** Estado de cada nodo o conexión que no está en su aspecto normal (acumulado). */
   states: Record<string, Exclude<NodeState, 'default'>>;
   /** El paso final automático (vista completa con todo funcionando). */
   finale?: boolean;

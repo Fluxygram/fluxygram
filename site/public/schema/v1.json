@@ -244,6 +244,16 @@
             "slide"
           ],
           "description": "How a block enters. fade: fades up (default). scale: grows with a slight bounce. draw: its outline is traced, then fill and text appear. slide: slides in."
+        },
+        "state": {
+          "enum": [
+            "success",
+            "error",
+            "warning",
+            "pending",
+            "default"
+          ],
+          "description": "State from the start (steps can change it). success: green + check. error: red, shakes. warning: amber, badge blinks. pending: in progress, dashed border spins."
         }
       }
     },
@@ -280,6 +290,16 @@
             "packets"
           ],
           "description": "What travels along a connection when it flows. particle: comet dot (default). pulse: a stretch of light. dash: dashes marching continuously. packets: small spaced blocks."
+        },
+        "state": {
+          "enum": [
+            "success",
+            "error",
+            "warning",
+            "pending",
+            "default"
+          ],
+          "description": "State from the start. Colors the line, the particle and the label (e.g. a path that fails)."
         }
       }
     },
@@ -334,7 +354,7 @@
         },
         "state": {
           "type": "object",
-          "description": "Changes node states from this step on: { \"pay\": \"success\" }. \"default\" clears it.",
+          "description": "Changes node or connection states from this step on: { \"pay\": \"success\", \"e3\": \"error\" }. \"default\" clears it.",
           "additionalProperties": {
             "enum": [
               "success",

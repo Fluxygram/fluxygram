@@ -3,18 +3,135 @@
   "type": "flow",
   "title": "Cómo se procesa un pedido",
   "nodes": [
-    { "id": "start", "label": "Pedido recibido", "kind": "start", "icon": "cart" },
-    { "id": "stock", "label": "¿Hay stock?", "kind": "decision" },
-    { "id": "pay", "label": "Cobrar", "description": "tarjeta o transferencia", "icon": "card" },
-    { "id": "notify", "label": "Avisar al cliente", "description": "fecha de reposición", "icon": "mail" },
-    { "id": "ship", "label": "Preparar envío", "icon": "package" },
-    { "id": "done", "label": "Entregado", "kind": "end", "icon": "check", "accent": true }
+    {
+      "id": "start",
+      "label": "Pedido recibido",
+      "kind": "start",
+      "icon": "cart"
+    },
+    {
+      "id": "stock",
+      "label": "¿Hay stock?",
+      "kind": "decision"
+    },
+    {
+      "id": "notify",
+      "label": "Avisar al cliente",
+      "description": "fecha de reposición",
+      "icon": "mail"
+    },
+    {
+      "id": "pay",
+      "label": "Cobrar",
+      "description": "tarjeta o transferencia",
+      "icon": "card"
+    },
+    {
+      "id": "ship",
+      "label": "Preparar envío",
+      "icon": "package"
+    },
+    {
+      "id": "done",
+      "label": "Entregado",
+      "kind": "end",
+      "icon": "check"
+    }
   ],
   "edges": [
-    { "from": "start", "to": "stock" },
-    { "from": "stock", "to": "pay", "label": "sí" },
-    { "from": "stock", "to": "notify", "label": "no" },
-    { "from": "pay", "to": "ship" },
-    { "from": "ship", "to": "done" }
+    {
+      "id": "e1",
+      "from": "start",
+      "to": "stock",
+      "carries": "pedido"
+    },
+    {
+      "id": "no",
+      "from": "stock",
+      "to": "notify",
+      "label": "no"
+    },
+    {
+      "id": "yes",
+      "from": "stock",
+      "to": "pay",
+      "label": "sí"
+    },
+    {
+      "id": "e4",
+      "from": "pay",
+      "to": "ship",
+      "carries": "$"
+    },
+    {
+      "id": "e5",
+      "from": "ship",
+      "to": "done"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "start"
+      ],
+      "caption": "Llega un pedido"
+    },
+    {
+      "show": [
+        "e1"
+      ],
+      "flow": "e1",
+      "state": {
+        "stock": "pending"
+      },
+      "caption": "Se revisa el inventario"
+    },
+    {
+      "show": [
+        "no"
+      ],
+      "flow": "no",
+      "state": {
+        "stock": "warning",
+        "no": "error",
+        "notify": "error"
+      },
+      "caption": "Sin stock: se avisa al cliente"
+    },
+    {
+      "show": [
+        "yes"
+      ],
+      "flow": "yes",
+      "state": {
+        "stock": "success",
+        "no": "default",
+        "notify": "default",
+        "pay": "pending"
+      },
+      "caption": "Con stock: se intenta el cobro"
+    },
+    {
+      "show": [
+        "e4"
+      ],
+      "flow": "e4",
+      "state": {
+        "pay": "success",
+        "ship": "pending"
+      },
+      "caption": "Cobro aprobado, empieza el envío"
+    },
+    {
+      "show": [
+        "e5"
+      ],
+      "flow": "e5",
+      "state": {
+        "ship": "success",
+        "done": "success"
+      },
+      "caption": "Entregado"
+    }
   ]
 }

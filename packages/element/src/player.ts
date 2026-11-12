@@ -32,6 +32,8 @@ interface Flow {
   pulsed: number;
   /** Etiqueta que viaja con la partícula (lo que "lleva" la conexión). */
   tag?: SVGGElement;
+  /** Estado de la conexión (color del recorrido y del pulso al llegar). */
+  tone?: string;
 }
 
 /** Transformación de la cámara: punto del mundo (x, y) → (x·s + tx, y·s + ty) en el escenario. */
@@ -141,16 +143,33 @@ export class Player {
 
   /** Pinta el estado de cada nodo; los que cambian en este paso laten con el color de su nuevo estado. */
   private applyStates(states: Record<string, string>, delays: Map<string, number>, pulse = true) {
-    for (const n of this.layout.nodes) {
-      const part = this.scene.parts.get(n.id);
-      if (!part) continue;
-      const next = states[n.id];
-      const prev = this.appliedStates[n.id];
+    for (const [id, part] of this.scene.parts) {
+      const isNode = this.scene.slots.has(id);
+      const isEdge = this.scene.paths.has(id);
+      if (!isNode && !isEdge) continue;
+      const next = states[id];
+      const prev = this.appliedStates[id];
       if (next) part.setAttribute('data-state', next);
       else part.removeAttribute('data-state');
-      if (pulse && next && next !== prev) {
-        setTimeout(() => this.pulse(n.id, `var(--fx-${next})`), (delays.get(n.id) ?? 0) + 120);
-      }
+      if (!pulse || !next || next === prev || !isNode) continue;
+      const wait = (delays.get(id) ?? 0) + 120;
+      setTimeout(() => {
+        this.pulse(id, `var(--fx-${next})`);
+        // Error: el bloque se sacude (un "no" visible, no solo un color).
+        if (next === 'error' && !reducedMotion()) {
+          part.animate(
+            [
+              { transform: 'translateX(0)' },
+              { transform: 'translateX(-6px)' },
+              { transform: 'translateX(5px)' },
+              { transform: 'translateX(-3px)' },
+              { transform: 'translateX(2px)' },
+              { transform: 'translateX(0)' },
+            ],
+            { duration: 460, easing: 'ease-out' },
+          );
+        }
+      }, wait);
     }
     this.appliedStates = { ...states };
   }
@@ -294,6 +313,8 @@ export class Player {
       const laid = this.layout.edges.find((e) => e.id === id);
       const style: TravelStyle = laid?.edge.travel ?? this.layout.motion?.travel ?? 'particle';
       const group = el('g', { class: 'fx-particle', opacity: 0 }, this.scene.particles);
+      const tone = this.appliedStates[id];
+      if (tone) group.style.setProperty('--fx-accent', `var(--fx-${tone})`);
       const d = path.getAttribute('d') ?? '';
       let line: SVGPathElement | undefined;
       let glowLine: SVGPathElement | undefined;
@@ -322,7 +343,7 @@ export class Player {
         const label = el('text', { 'text-anchor': 'middle', y: -14.5 }, tag);
         label.textContent = text;
       }
-      this.flows.push({ style, line, glowLine, packets, path, length, start: now + wait, duration, group, dots, glow, to: laid?.edge.to ?? '', pulsed: -1, tag });
+      this.flows.push({ style, line, glowLine, packets, path, length, start: now + wait, duration, group, dots, glow, to: laid?.edge.to ?? '', pulsed: -1, tag, tone });
     }
     const tick = (t: number) => {
       for (const f of this.flows) this.drawFlow(f, t);
@@ -348,7 +369,7 @@ export class Player {
     const cycle = Math.floor(elapsed / period);
     if (local >= f.duration * 0.94 && f.pulsed !== cycle) {
       f.pulsed = cycle;
-      this.pulse(f.to, 'var(--fx-accent)', 0.5);
+      this.pulse(f.to, f.tone ? `var(--fx-${f.tone})` : 'var(--fx-accent)', 0.5);
     }
     if (local > f.duration) {
       f.group.setAttribute('opacity', '0');

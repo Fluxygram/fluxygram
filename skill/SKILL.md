@@ -54,7 +54,8 @@ If two types fit, prefer the one whose motion matches the question: "how does X 
     { "show": ["e1"], "flow": "e1", "caption": "The card never touches your server" },
     { "show": ["e2"], "flow": "e2", "caption": "The gateway asks the bank" },
     { "show": ["e3"], "flow": "e3", "state": { "bank": "pending" }, "caption": "The bank approves or declines" },
-    { "show": ["yes", "no"], "flow": "yes", "state": { "bank": "success" }, "highlight": ["done"], "caption": "Approved: the order is confirmed" }
+    { "show": ["no"], "flow": "no", "state": { "bank": "error", "no": "error" }, "caption": "Declined: the customer tries another card" },
+    { "show": ["yes"], "flow": "yes", "state": { "bank": "success", "no": "default" }, "highlight": ["done"], "caption": "Approved: the order is confirmed" }
   ]
 }
 ```
@@ -71,6 +72,7 @@ If two types fit, prefer the one whose motion matches the question: "how does X 
 | `group` | no | `architecture` only: the id of the layer it belongs to. |
 | `date` | no | `timeline` only: `"1995"`, `"2026-03"`, `"Q3 2026"`. Milestones are sorted by it when every node has one. |
 | `accent` | no | `true` on the one node that matters most (the outcome, the key service). Use it at most once or twice. |
+| `state` | no | State from the start (`success`, `error`, `warning`, `pending`); steps can change it. Edges accept `state` too. |
 
 Icons: `alert api book bot browser building cart chart check clock cloud code cpu card database disk file flag git globe heart idea image key layers lock mail message mobile monitor network notification package rocket search server settings shield store truck user users workflow zap`.
 
@@ -94,7 +96,7 @@ Steps are **cumulative**: whatever appears stays visible until a later step `hid
 | `flow` | Edge id or list of ids: a particle travels along them while the step is active. Also shows them. |
 | `highlight` | Node ids that stand out; everything else dims. Use it to follow one path through a busy diagram. |
 | `focus` | The camera moves in on one node or group. Use it for a detail, typically near the end. |
-| `state` | Node states from this step on: `{ "bank": "pending" }`. Values: `success`, `error`, `warning`, `pending`, `default` (back to normal). The node changes color, gets a badge and pulses once. Persists until a later step changes it. |
+| `state` | Node **or connection** states from this step on: `{ "bank": "pending", "declined": "error" }`. Values: `success` (green, check), `error` (red, the node shakes), `warning` (amber, badge blinks), `pending` (in progress: dashed border spins), `default` (back to normal). On a connection it colors the line, its particle and its label. Persists until a later step changes it. |
 | `hide` | Elements that disappear. Rarely needed. |
 | `caption` | The sentence shown under the diagram. |
 
@@ -128,7 +130,7 @@ These make the difference between a diagram that moves and one that explains.
 3. **Captions under 12 words**, in plain language, saying *what happens*, not what the box is ("The gateway asks the bank", not "Payment gateway").
 4. **Follow the reading order**: the order of `show` is the order things enter. Show a node before the edge that leaves it.
 5. **Use `flow` for movement of something real** (a request, money, data, a message), not as decoration, and name it with `carries`.
-6. **Use `state` for outcomes**: approved/declined, healthy/failing, waiting. Show the result on the node instead of describing it in the caption.
+6. **Use `state` for outcomes**: approved/declined, healthy/failing, in progress. Show the result on the node instead of describing it in the caption. **Not everything is green**: when a path fails, mark the node `error` and the connection that carries the failure `error` too, so the bad path reads red at a glance. Use `pending` while something is being processed and switch it to `success` or `error` in the next step.
 7. **End on the outcome**: the last step highlights or focuses the result, and the full diagram is visible.
 8. **Architecture**: build it bottom-up (data → services → edge → clients), then trace one request with `flow` + `highlight`.
 9. **Timeline**: no steps needed unless you want captions; keep 4 to 10 milestones.

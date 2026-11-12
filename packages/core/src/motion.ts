@@ -88,6 +88,9 @@ function resolve(diagram: Diagram, layout: Layout, steps: FluxStep[]): StepState
   const visible = new Set<string>();
   const states: StepState[] = [];
   const nodeStates: Record<string, Exclude<NodeState, 'default'>> = {};
+  // Estados iniciales declarados en los propios nodos y conexiones.
+  for (const n of diagram.nodes) if (n.state && n.state !== 'default') nodeStates[n.id] = n.state;
+  for (const e of layout.edges) if (e.edge.state && e.edge.state !== 'default') nodeStates[e.id] = e.edge.state;
   let lastNode: string | undefined;
 
   for (const step of steps) {
@@ -118,7 +121,7 @@ function resolve(diagram: Diagram, layout: Layout, steps: FluxStep[]): StepState
       }
     }
 
-    const changed = Object.keys(step.state ?? {}).filter((id) => nodes.has(id));
+    const changed = Object.keys(step.state ?? {}).filter((id) => nodes.has(id) || edges.has(id));
     for (const id of changed) {
       const v = step.state![id]!;
       if (v === 'default') delete nodeStates[id];

@@ -114,7 +114,7 @@ function drawBadge(part: Element, x: number, y: number) {
   el('path', { class: 'i-success', d: 'M-3.6 0.2 L-1.1 2.7 L3.6 -2.4' }, g);
   el('path', { class: 'i-error', d: 'M-2.8 -2.8 L2.8 2.8 M2.8 -2.8 L-2.8 2.8' }, g);
   el('path', { class: 'i-warning', d: 'M0 -4 V0.6 M0 3.4 V3.6' }, g);
-  el('path', { class: 'i-pending', d: 'M0 -3.6 V0 L2.4 1.6' }, g);
+  el('path', { class: 'i-pending', d: 'M0 -3.8 A3.8 3.8 0 1 1 -3.8 0' }, g);
 }
 
 function drawNode(n: LaidNode, slot: Element) {

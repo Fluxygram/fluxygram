@@ -113,6 +113,7 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
     if (n.date !== undefined && typeof n.date !== 'string') add(`${p}.date`, 'date');
     if (n.kind !== undefined && !NODE_KINDS.includes(n.kind as never)) add(`${p}.kind`, 'kind', { list: NODE_KINDS.join(', ') });
     oneOf(n.enter, `${p}.enter`, ENTER_STYLES);
+    oneOf(n.state, `${p}.state`, NODE_STATES);
     if ((n.x !== undefined || n.y !== undefined) && (typeof n.x !== 'number' || typeof n.y !== 'number')) add(`${p}.x`, 'pos');
   });
 
@@ -142,6 +143,7 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
         if (e.id !== undefined) claim(e.id, `${p}.id`);
         else ids.add(`${String(e.from)}->${String(e.to)}`);
         oneOf(e.travel, `${p}.travel`, TRAVEL_STYLES);
+        oneOf(e.state, `${p}.state`, NODE_STATES);
         if (!nodeIds.has(e.from as string)) add(`${p}.from`, 'from', { id: String(e.from) });
         if (!nodeIds.has(e.to as string)) add(`${p}.to`, 'to', { id: String(e.to) });
       });
@@ -162,7 +164,7 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
           if (!isObj(s.state)) add(`${p}.state`, 'stateObj');
           else
             for (const [id, v] of Object.entries(s.state)) {
-              if (!nodeIds.has(id)) add(`${p}.state`, 'ref', { id });
+              if (!ids.has(id)) add(`${p}.state`, 'ref', { id });
               if (!NODE_STATES.includes(v as never)) add(`${p}.state.${id}`, 'stateVal', { v: String(v), list: NODE_STATES.join(', ') });
             }
         }

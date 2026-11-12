@@ -342,7 +342,7 @@ export class Model {
     if (i === null) return;
     const mode = this.stepMode;
     if (mode === 'flow' && !isEdge) return;
-    if ((mode === 'highlight' || mode === 'focus' || mode === 'state') && isEdge) return;
+    if ((mode === 'highlight' || mode === 'focus') && isEdge) return;
     this.change((d) => {
       const s = d.steps![i]!;
       if (mode === 'state') {

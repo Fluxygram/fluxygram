@@ -221,7 +221,23 @@ ${darkTokens(':host')}
   fill: color-mix(in oklab, var(--fx-state) 9%, var(--fx-surface));
 }
 .fx-node[data-state] .fx-icon { stroke: var(--fx-state); }
-.fx-node[data-state='pending'] .fx-shape { stroke-dasharray: 5 4; }
+/* En proceso: el borde punteado gira y la insignia es un spinner. */
+.fx-node[data-state='pending'] .fx-shape { stroke-dasharray: 6 5; animation: fx-orbit 1.4s linear infinite; }
+@keyframes fx-orbit { to { stroke-dashoffset: -22; } }
+.fx-node[data-state='pending'] .i-pending { transform-box: view-box; transform-origin: 0 0; animation: fx-spin 0.9s linear infinite; }
+@keyframes fx-spin { to { transform: rotate(360deg); } }
+/* Alerta: la insignia parpadea dos veces al aparecer. */
+.fx-node[data-state='warning'] .fx-badge circle { animation: fx-blink 0.7s ease-in-out 3; }
+@keyframes fx-blink { 50% { opacity: 0.3; } }
+
+/* Estados en conexiones: línea, punta, partícula y etiqueta toman el color del estado. */
+.fx-edge[data-state='success'] { --fx-state: var(--fx-success); }
+.fx-edge[data-state='error'] { --fx-state: var(--fx-error); }
+.fx-edge[data-state='warning'] { --fx-state: var(--fx-warning); }
+.fx-edge[data-state='pending'] { --fx-state: var(--fx-pending); }
+.fx-edge[data-state] .fx-edge-line { stroke: var(--fx-state); }
+.fx-edge[data-state] .fx-edge-head { fill: var(--fx-state); }
+.fx-edge[data-state] .fx-edge-label text { fill: var(--fx-state); }
 .fx-badge {
   opacity: 0; transform: scale(0.7); transform-box: fill-box; transform-origin: center;
   transition: opacity 160ms ease-out, transform 160ms ease-out;
@@ -315,6 +331,7 @@ ${darkTokens(':host')}
   .fx-badge, .fx-node[data-state] .fx-badge { transform: none; }
   .fx-node[data-enter='draw'] :is(.fx-shape, .fx-rim) { stroke-dasharray: none; stroke-dashoffset: 0; }
   .fx-march { animation: none; }
+  .fx-node[data-state] .fx-shape, .fx-node[data-state] .i-pending, .fx-node[data-state] .fx-badge circle { animation: none; }
 }
 `;
 
