@@ -3,6 +3,11 @@
 (function () {
   var STRINGS = {
     en: {
+      "ed.hold": "Time per step",
+      "ed.holdAuto": "Automatic (by content)",
+      "ed.seconds": "{n} seconds",
+      "ed.stepTime": "Seconds this step stays on screen (empty: same as the diagram)",
+      "ed.auto.short": "auto",
       "ed.motion": "Animation",
       "ed.enter": "Block entrance",
       "ed.enterNode": "Entrance",
@@ -176,6 +181,11 @@
       'lang.switch': 'Español',
     },
     es: {
+      "ed.hold": "Tiempo por paso",
+      "ed.holdAuto": "Automático (según el contenido)",
+      "ed.seconds": "{n} segundos",
+      "ed.stepTime": "Segundos que se queda este paso (vacío: como el diagrama)",
+      "ed.auto.short": "auto",
       "ed.motion": "Animación",
       "ed.enter": "Entrada de bloques",
       "ed.enterNode": "Entrada",

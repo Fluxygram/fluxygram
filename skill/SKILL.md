@@ -99,6 +99,7 @@ Steps are **cumulative**: whatever appears stays visible until a later step `hid
 | `state` | Node **or connection** states from this step on: `{ "bank": "pending", "declined": "error" }`. Values: `success` (green, check), `error` (red, the node shakes), `warning` (amber, badge blinks), `pending` (in progress: dashed border spins), `default` (back to normal). On a connection it colors the line, its particle and its label. Persists until a later step changes it. |
 | `hide` | Elements that disappear. Rarely needed. |
 | `caption` | The sentence shown under the diagram. |
+| `duration` | Seconds this step stays on screen in autoplay (overrides `motion.hold`). |
 
 ### Motion
 
@@ -114,6 +115,9 @@ The default motion is good; change it to match the tone of what is being explain
 | `travel` | `particle` (default), `pulse`, `dash`, `packets` | `pulse` for signals or energy, `dash` for continuous streams (logs, events), `packets` for data or requests in batches |
 | `speed` | `slow`, `normal`, `fast` | `slow` for teaching or dense diagrams, `fast` for short loops on a landing page |
 | `camera` | `follow` (default), `fixed` | `fixed` when the whole picture should stay in view (small diagrams, presentations) |
+| `hold` | seconds (0.5–60) | Time each step stays on screen in autoplay. Omit it: Fluxygram times each step by how much enters and how long the caption is. |
+
+A single step can set `"duration": 6` (seconds) to stay longer, for example one with a dense caption or a key outcome. `speed` changes how fast things move; `hold` and `duration` change how long each step waits.
 
 Any node can set its own `"enter"` and any edge its own `"travel"`, overriding the diagram: for example one `"enter": "scale"` on the outcome node, or `"travel": "dash"` on a background stream while the main path uses particles. Use overrides to make one thing stand apart, not on every element.
 

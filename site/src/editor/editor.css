@@ -202,3 +202,10 @@
 }
 
 .ed-section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+
+.ed-seconds-wrap { display: inline-flex; align-items: center; gap: 4px; color: var(--muted); font-size: 13px; }
+.ed-seconds {
+  width: 64px; height: 34px; padding: 0 8px; border: 1px solid var(--border); border-radius: 9px;
+  background: var(--bg); color: var(--text); font: inherit; font-size: 14px; outline: none; font-variant-numeric: tabular-nums;
+}
+.ed-seconds:focus { border-color: var(--accent); }

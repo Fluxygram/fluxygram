@@ -138,6 +138,7 @@ function resolve(diagram: Diagram, layout: Layout, steps: FluxStep[]): StepState
       camera: cameraFor(step, layout, full, nodes, groups, lastNode, active, isLast),
       caption: step.caption,
       states: { ...nodeStates },
+      duration: step.duration,
     });
   }
   return states;

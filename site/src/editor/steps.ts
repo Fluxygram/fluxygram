@@ -52,6 +52,19 @@ export function renderSteps(root: HTMLElement, model: Model) {
   caption.addEventListener('keydown', (e) => e.key === 'Enter' && caption.blur());
   root.append(caption);
 
+  // Tiempo de este paso: vacío = el del diagrama (o automático).
+  const fallback = model.diagram.motion?.hold;
+  const seconds = h('input', {
+    type: 'number', class: 'ed-seconds', min: 0.5, max: 60, step: 0.5,
+    value: step.duration ?? '', placeholder: fallback ? String(fallback) : t('ed.auto.short'),
+    title: t('ed.stepTime'), 'aria-label': t('ed.stepTime'),
+  });
+  seconds.addEventListener('change', () => {
+    const v = Number(seconds.value);
+    model.setStepDuration(v >= 0.5 && v <= 60 ? v : undefined);
+  });
+  root.append(h('label', { class: 'ed-seconds-wrap', title: t('ed.stepTime') }, seconds, h('span', {}, 's')));
+
   root.append(
     h('button', { type: 'button', class: 'ed-icon', title: t('ed.stepLeft'), 'aria-label': t('ed.stepLeft'), disabled: i === 0, onclick: () => model.moveStep(i, -1) }, icon(ArrowLeft)),
     h('button', { type: 'button', class: 'ed-icon', title: t('ed.stepRight'), 'aria-label': t('ed.stepRight'), disabled: i === steps.length - 1, onclick: () => model.moveStep(i, 1) }, icon(ArrowRight)),

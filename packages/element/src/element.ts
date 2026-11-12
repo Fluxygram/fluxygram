@@ -306,6 +306,9 @@ export class FluxyGram extends HTMLElement {
   private holdFor(i: number) {
     const s = this.player?.steps[i];
     if (!s) return 2600;
+    // Tiempo pedido: el del paso, o el del diagrama. Es tiempo de lectura: la velocidad no lo cambia.
+    const fixed = s.duration ?? this.data?.motion?.hold;
+    if (fixed) return fixed * 1000;
     const words = s.caption ? s.caption.split(/\s+/).length : 0;
     const t = 1700 + s.entering.length * 90 + words * 220 + (s.flowing.length ? 1500 : 0);
     return Math.max(2400, Math.min(6500, t)) * (this.player?.speed ?? 1);

@@ -326,6 +326,16 @@ export class Model {
     this.emit('step');
   }
 
+  setStepDuration(seconds: number | undefined) {
+    const i = this.step;
+    if (i === null) return;
+    this.change((d) => {
+      const s = d.steps![i]!;
+      if (seconds) s.duration = seconds;
+      else delete s.duration;
+    }, 'steps');
+  }
+
   setCaption(text: string) {
     const i = this.step;
     if (i === null) return;

@@ -113,6 +113,12 @@
         "finale": {
           "type": "boolean",
           "default": true
+        },
+        "hold": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 60,
+          "description": "Seconds each step stays on screen during autoplay. Omit it to let Fluxygram time each step by its content."
         }
       }
     }
@@ -364,6 +370,12 @@
               "default"
             ]
           }
+        },
+        "duration": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 60,
+          "description": "Seconds this step stays on screen during autoplay (overrides motion.hold)."
         }
       }
     }

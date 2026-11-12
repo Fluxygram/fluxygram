@@ -39,6 +39,7 @@ const MESSAGES: Record<string, Record<Locale, string>> = {
   to: { en: '"to" points to "{id}", which is not a node.', es: '"to" apunta a "{id}", que no es un nodo.' },
   steps: { en: '"steps" must be a list.', es: '"steps" debe ser una lista.' },
   stepObj: { en: 'Each step must be an object.', es: 'Cada paso debe ser un objeto.' },
+  seconds: { en: '"{field}" must be a number of seconds between 0.5 and 60.', es: '"{field}" debe ser una cantidad de segundos entre 0.5 y 60.' },
   stateVal: {
     en: '"{v}" is not a state. Use one of: {list}.',
     es: '"{v}" no es un estado. Usa uno de: {list}.',
@@ -83,6 +84,9 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
     return { ok: false, issues };
   }
 
+  const seconds = (v: unknown, path: string) => {
+    if (v !== undefined && (typeof v !== 'number' || v < 0.5 || v > 60)) add(path, 'seconds', { field: path.split('.').pop()! });
+  };
   const oneOf = (v: unknown, path: string, list: readonly string[]) => {
     if (v !== undefined && !list.includes(v as string)) add(path, 'oneOf', { field: path.split('.').pop()!, list: list.join(', ') });
   };
@@ -93,6 +97,7 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
       oneOf(input.motion.travel, 'motion.travel', TRAVEL_STYLES);
       oneOf(input.motion.speed, 'motion.speed', SPEEDS);
       oneOf(input.motion.camera, 'motion.camera', ['follow', 'fixed']);
+      seconds(input.motion.hold, 'motion.hold');
     }
   }
 
@@ -160,6 +165,7 @@ export function validate(input: unknown, options: { locale?: Locale } = {}): Val
             if (!ids.has(ref)) add(`${p}.${key}`, 'ref', { id: ref });
           });
         }
+        seconds(s.duration, `${p}.duration`);
         if (s.state !== undefined) {
           if (!isObj(s.state)) add(`${p}.state`, 'stateObj');
           else

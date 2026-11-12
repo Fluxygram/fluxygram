@@ -90,6 +90,16 @@ function motionPanel(model: Model) {
     selectField(t('ed.enter'), m.enter ?? 'fade', ENTER_STYLES, (v) => t(`enter.${v}`), (v) => model.setMotion({ enter: v === 'fade' ? undefined : v })),
     selectField(t('ed.travel'), m.travel ?? 'particle', TRAVEL_STYLES, (v) => t(`travel.${v}`), (v) => model.setMotion({ travel: v === 'particle' ? undefined : v })),
     segField(t('ed.speed'), m.speed ?? 'normal', ['slow', 'normal', 'fast'] as const, (v) => t(`speed.${v}`), (v) => model.setMotion({ speed: v === 'normal' ? undefined : v })),
+    h('label', { class: 'ed-field' },
+      h('span', {}, t('ed.hold')),
+      h('select', { onchange: (e) => {
+        const v = Number((e.target as HTMLSelectElement).value);
+        model.setMotion({ hold: v || undefined });
+      } },
+        h('option', { value: '', selected: !m.hold }, t('ed.holdAuto')),
+        ...[2, 3, 4, 5, 7, 10].map((s) => h('option', { value: String(s), selected: m.hold === s }, t('ed.seconds', { n: String(s) }))),
+      ),
+    ),
     segField(t('ed.camera'), m.camera ?? 'follow', ['follow', 'fixed'] as const, (v) => t(`camera.${v}`), (v) => model.setMotion({ camera: v === 'follow' ? undefined : v })),
     h('label', { class: 'ed-check' },
       h('input', { type: 'checkbox', checked: finale, onchange: (e) => model.setMotion({ finale: (e.target as HTMLInputElement).checked ? undefined : false }) }),
