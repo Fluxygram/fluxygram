@@ -50,7 +50,7 @@
             "alert", "api", "book", "bot", "browser", "building", "cart", "chart", "check", "clock", "cloud", "code",
             "cpu", "card", "database", "disk", "file", "flag", "git", "globe", "heart", "idea", "image", "key", "layers",
             "lock", "mail", "message", "mobile", "monitor", "network", "notification", "package", "rocket", "search",
-            "server", "settings", "shield", "sparkles", "store", "truck", "user", "users", "workflow", "zap"
+            "server", "settings", "shield", "store", "truck", "user", "users", "workflow", "zap"
           ]
         },
         "kind": { "enum": ["default", "decision", "start", "end"], "description": "flow only." },

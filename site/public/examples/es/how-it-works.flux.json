@@ -6,7 +6,7 @@
     { "id": "idea", "label": "Tu pregunta", "description": "“explícame OAuth”", "icon": "message" },
     { "id": "agent", "label": "Agente + skill", "icon": "bot" },
     { "id": "json", "label": ".flux.json", "description": "nodos, conexiones, pasos", "icon": "code", "accent": true },
-    { "id": "core", "label": "Fluxygram", "description": "layout + movimiento", "icon": "sparkles" },
+    { "id": "core", "label": "Fluxygram", "description": "layout + movimiento", "icon": "workflow" },
     { "id": "out", "label": "Diagrama animado", "icon": "rocket" }
   ],
   "edges": [

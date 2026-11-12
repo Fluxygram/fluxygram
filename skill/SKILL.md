@@ -72,7 +72,7 @@ If two types fit, prefer the one whose motion matches the question: "how does X 
 | `date` | no | `timeline` only: `"1995"`, `"2026-03"`, `"Q3 2026"`. Milestones are sorted by it when every node has one. |
 | `accent` | no | `true` on the one node that matters most (the outcome, the key service). Use it at most once or twice. |
 
-Icons: `alert api book bot browser building cart chart check clock cloud code cpu card database disk file flag git globe heart idea image key layers lock mail message mobile monitor network notification package rocket search server settings shield sparkles store truck user users workflow zap`.
+Icons: `alert api book bot browser building cart chart check clock cloud code cpu card database disk file flag git globe heart idea image key layers lock mail message mobile monitor network notification package rocket search server settings shield store truck user users workflow zap`.
 
 ### Edges
 

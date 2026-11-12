@@ -5,7 +5,7 @@
     { "id": "idea", "label": "Your question", "description": "“explain OAuth to me”", "icon": "message" },
     { "id": "agent", "label": "Agent + skill", "icon": "bot" },
     { "id": "json", "label": ".flux.json", "description": "nodes, edges, steps", "icon": "code", "accent": true },
-    { "id": "core", "label": "Fluxygram", "description": "layout + motion", "icon": "sparkles" },
+    { "id": "core", "label": "Fluxygram", "description": "layout + motion", "icon": "workflow" },
     { "id": "out", "label": "Animated diagram", "icon": "rocket" }
   ],
   "edges": [

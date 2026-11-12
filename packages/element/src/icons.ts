@@ -1,7 +1,7 @@
 import {
   AppWindow, Bell, Book, Bot, Building, ChartLine, CircleCheck, Clock, Cloud, Code, Cpu, CreditCard, Database,
   FileText, Flag, GitBranch, Globe, HardDrive, Heart, Image, Key, Layers, Lightbulb, Lock, Mail, MessageSquare,
-  Monitor, Network, Package, Rocket, Search, Server, Settings, Shield, ShoppingCart, Smartphone, Sparkles, Store,
+  Monitor, Network, Package, Rocket, Search, Server, Settings, Shield, ShoppingCart, Smartphone, Store,
   TriangleAlert, Truck, User, Users, Webhook, Workflow, Zap,
   type IconNode,
 } from 'lucide';
@@ -13,7 +13,7 @@ export const ICONS: Record<string, IconNode> = {
   database: Database, disk: HardDrive, file: FileText, flag: Flag, git: GitBranch, globe: Globe, heart: Heart,
   idea: Lightbulb, image: Image, key: Key, layers: Layers, lock: Lock, mail: Mail, message: MessageSquare,
   mobile: Smartphone, monitor: Monitor, network: Network, notification: Bell, package: Package, rocket: Rocket,
-  search: Search, server: Server, settings: Settings, shield: Shield, sparkles: Sparkles, store: Store,
+  search: Search, server: Server, settings: Settings, shield: Shield, store: Store,
   truck: Truck, user: User, users: Users, workflow: Workflow, zap: Zap,
 };
 
