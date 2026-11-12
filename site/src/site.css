@@ -116,13 +116,16 @@ details.json pre { margin: 0; padding: 0 16px 16px; max-height: 420px; overflow:
 .agent { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 24px; align-items: start; }
 .code {
   margin: 0; min-width: 0; padding: 18px 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--code-bg);
-  font-size: 13px; line-height: 1.7; overflow-x: auto;
+  font-size: 13px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .code .c { color: var(--muted); }
 .code .k { color: var(--accent); }
 
 footer { padding: 40px 0 56px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.footer-gh { display: inline-grid; place-items: center; color: var(--muted); transition: color 160ms ease; }
+.footer-gh svg { width: 20px; height: 20px; }
+@media (hover: hover) and (pointer: fine) { .footer-gh:hover { color: var(--text); } }
 
 /* ---------- Playground ---------- */
 .play { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 16px; height: calc(100dvh - 64px - 20px); padding-bottom: 20px; }
