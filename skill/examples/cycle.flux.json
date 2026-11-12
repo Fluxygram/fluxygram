@@ -1,0 +1,58 @@
+{
+  "type": "cycle",
+  "title": "The water cycle",
+  "motion": {
+    "travel": "pulse",
+    "speed": "slow"
+  },
+  "nodes": [
+    {
+      "id": "evap",
+      "label": "Evaporation",
+      "description": "the sun heats the sea",
+      "icon": "zap"
+    },
+    {
+      "id": "cond",
+      "label": "Condensation",
+      "description": "vapor forms clouds",
+      "icon": "cloud"
+    },
+    {
+      "id": "prec",
+      "label": "Precipitation",
+      "description": "rain and snow",
+      "icon": "globe"
+    },
+    {
+      "id": "coll",
+      "label": "Collection",
+      "description": "rivers return to the sea",
+      "icon": "layers"
+    }
+  ],
+  "edges": [
+    {
+      "id": "c1",
+      "from": "evap",
+      "to": "cond",
+      "carries": "vapor"
+    },
+    {
+      "id": "c2",
+      "from": "cond",
+      "to": "prec"
+    },
+    {
+      "id": "c3",
+      "from": "prec",
+      "to": "coll",
+      "carries": "water"
+    },
+    {
+      "id": "c4",
+      "from": "coll",
+      "to": "evap"
+    }
+  ]
+}

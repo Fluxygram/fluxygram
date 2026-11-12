@@ -295,7 +295,7 @@ export class Canvas {
       if (this.model.selection?.kind !== 'node' || this.model.selection.id !== nodeId) {
         this.model.select({ kind: 'node', id: nodeId });
       }
-      if (n && this.model.diagram.type !== 'timeline') {
+      if (n && this.model.diagram.type !== 'timeline' && this.model.diagram.type !== 'sequence') {
         this.drag = { kind: 'node', id: nodeId, dx: w.x - n.x, dy: w.y - n.y, moved: false, startX: e.clientX, startY: e.clientY };
       }
       return;

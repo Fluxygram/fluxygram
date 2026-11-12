@@ -1,5 +1,6 @@
-/** Tipos de diagrama soportados en la v1. Cada uno trae su propia gramática de movimiento. */
-export type DiagramType = 'flow' | 'architecture' | 'timeline';
+/** Tipos de diagrama. Cada uno trae su propio layout y su propia gramática de movimiento. */
+export type DiagramType = 'flow' | 'architecture' | 'timeline' | 'tree' | 'cycle' | 'sequence' | 'mindmap';
+export const DIAGRAM_TYPES: DiagramType[] = ['flow', 'architecture', 'timeline', 'tree', 'cycle', 'sequence', 'mindmap'];
 
 export type Direction = 'LR' | 'TB';
 
@@ -146,6 +147,14 @@ export interface LaidGroup extends Rect {
   group: FluxGroup;
 }
 
+/** Línea de vida de un participante (diagramas de secuencia). */
+export interface LaidLifeline {
+  id: string;
+  x: number;
+  y1: number;
+  y2: number;
+}
+
 export interface LaidAxis {
   /** Línea base de la línea de tiempo. */
   x1: number;
@@ -162,6 +171,7 @@ export interface Layout {
   edges: LaidEdge[];
   groups: LaidGroup[];
   axis?: LaidAxis;
+  lifelines?: LaidLifeline[];
   motion?: Motion;
 }
 

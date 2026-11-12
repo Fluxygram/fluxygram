@@ -139,7 +139,7 @@ export class Model {
         d.groups = [{ id: this.nextId('g'), label: 'Layer 1' }];
       }
       if (type === 'architecture') for (const n of d.nodes) n.group ??= d.groups![0]!.id;
-      if (type === 'timeline') for (const n of d.nodes) delete n.x, delete n.y;
+      // Nada se borra: posiciones, capas, fechas y pasos se conservan aunque el tipo nuevo no los use.
     }, 'type');
   }
 
@@ -148,7 +148,7 @@ export class Model {
     this.change((d) => {
       const node: FluxNode = { id, label, ...partial };
       if (d.type === 'architecture') node.group ??= d.groups?.[d.groups.length - 1]?.id;
-      if (d.type === 'timeline') {
+      if (d.type === 'timeline' || d.type === 'sequence') {
         delete node.x;
         delete node.y;
       }

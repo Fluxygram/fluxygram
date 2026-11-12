@@ -1,4 +1,4 @@
-import { ENTER_STYLES, NODE_KINDS, NODE_STATES, SPEEDS, TRAVEL_STYLES, type Diagram } from './types';
+import { DIAGRAM_TYPES, ENTER_STYLES, NODE_KINDS, NODE_STATES, SPEEDS, TRAVEL_STYLES, type Diagram } from './types';
 
 export type Locale = 'en' | 'es';
 
@@ -11,7 +11,7 @@ export type ValidationResult =
   | { ok: true; diagram: Diagram }
   | { ok: false; issues: ValidationIssue[] };
 
-const TYPES = ['flow', 'architecture', 'timeline'];
+const TYPES: string[] = DIAGRAM_TYPES;
 
 type Params = Record<string, string>;
 const MESSAGES: Record<string, Record<Locale, string>> = {

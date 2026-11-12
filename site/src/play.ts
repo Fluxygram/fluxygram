@@ -1,9 +1,9 @@
 import '@fluxygram/element';
 import type { FluxyGram } from '@fluxygram/element';
-import { validate, type Diagram, type FluxNode } from '@fluxygram/core';
+import { DIAGRAM_TYPES, validate, type Diagram, type DiagramType, type FluxNode } from '@fluxygram/core';
 import {
   Circle, CircleDot, Database, Diamond, Download, FileCode, FilePlus, FolderOpen, LayoutGrid, Maximize, Milestone, Minus, Plus,
-  CircleHelp, RectangleHorizontal, Redo2, Square, StickyNote, Undo2, X, type IconNode,
+  ArrowLeftRight, BrainCircuit, CircleHelp, Layers, Lightbulb, Network, RectangleHorizontal, RefreshCw, Redo2, Square, StickyNote, Undo2, User, Workflow, X, type IconNode,
 } from 'lucide';
 import { exampleUrl, lang, t } from './i18n';
 import { Canvas } from './editor/canvas';
@@ -68,14 +68,35 @@ $('auto').onclick = () => model.autoLayout();
 $('fit').onclick = () => canvas.fit();
 $('zoomIn').onclick = () => canvas.zoomBy(1.2);
 $('zoomOut').onclick = () => canvas.zoomBy(1 / 1.2);
-$('new').onclick = () => model.load(emptyDiagram());
+$('new').onclick = () => openPicker();
 $('tour').onclick = () => startTour();
 
-for (const btn of document.querySelectorAll<HTMLButtonElement>('#type button')) {
-  btn.onclick = () => {
-    if (model.diagram.type !== btn.dataset.type) model.setType(btn.dataset.type as Diagram['type']);
-  };
+/* ---------- Tipo de diagrama: se elige al crear; cambiarlo después no borra nada ---------- */
+
+const TYPE_ICONS: Record<DiagramType, IconNode> = {
+  flow: Workflow, architecture: Layers, timeline: Milestone, tree: Network, cycle: RefreshCw, sequence: ArrowLeftRight, mindmap: BrainCircuit,
+};
+const picker = $('picker');
+setIcon('pickerClose', X);
+$('typeGrid').replaceChildren(
+  ...DIAGRAM_TYPES.map((type) =>
+    h('button', { type: 'button', class: 'ed-type', onclick: () => {
+      picker.hidden = true;
+      model.load({ ...emptyDiagram(), type, ...(type === 'architecture' ? { groups: [{ id: 'g1', label: t('ed.newLayer') }] } : {}) });
+    } }, icon(TYPE_ICONS[type], 22), h('strong', {}, t(`type.${type}`)), h('span', {}, t(`type.${type}.desc`))),
+  ),
+);
+function openPicker() {
+  picker.hidden = false;
+  picker.querySelector<HTMLButtonElement>('.ed-type')?.focus();
 }
+$('pickerClose').onclick = () => (picker.hidden = true);
+picker.addEventListener('click', (e) => e.target === picker && (picker.hidden = true));
+
+document.addEventListener('ed:type-changed', (e) => {
+  const type = (e as CustomEvent<DiagramType>).detail;
+  toast(t('ed.typeChanged', { t: t(`type.${type}`) }), 6000, { label: t('ed.undo'), run: () => model.undo() });
+});
 
 $<HTMLSelectElement>('examples').onchange = async (e) => {
   const select = e.target as HTMLSelectElement;
@@ -126,7 +147,7 @@ function paletteItems(): PaletteItem[] {
   const type = model.diagram.type;
   const node = (partial: Partial<FluxNode>, labelKey: string) => (at?: { x: number; y: number }) => {
     const p: Partial<FluxNode> = { ...partial };
-    if (at && type !== 'timeline') {
+    if (at && type !== 'timeline' && type !== 'sequence') {
       // Se fija donde se soltó (centrado bajo el cursor).
       p.x = Math.round((at.x - 70) / 8) * 8;
       p.y = Math.round((at.y - 24) / 8) * 8;
@@ -136,6 +157,24 @@ function paletteItems(): PaletteItem[] {
   };
   if (type === 'timeline') {
     return [{ label: t('ed.add.milestone'), icon: Milestone, add: node({ date: String(new Date().getFullYear()) }, 'ed.newMilestone') }];
+  }
+  if (type === 'sequence') {
+    return [{ label: t('ed.add.actor'), icon: User, add: node({ icon: 'user' }, 'ed.newActor') }];
+  }
+  if (type === 'mindmap') {
+    return [
+      { label: t('ed.add.idea'), icon: Lightbulb, add: node({}, 'ed.newIdea') },
+      { label: t('ed.add.note'), icon: StickyNote, add: node({ kind: 'note' }, 'ed.newNote') },
+    ];
+  }
+  if (type === 'cycle') {
+    return [{ label: t('ed.add.stage'), icon: RefreshCw, add: node({}, 'ed.newStage') }];
+  }
+  if (type === 'tree') {
+    return [
+      { label: t('ed.add.node'), icon: Square, add: node({}, 'ed.newNode') },
+      { label: t('ed.add.note'), icon: StickyNote, add: node({ kind: 'note' }, 'ed.newNote') },
+    ];
   }
   if (type === 'architecture') {
     return [
@@ -306,6 +345,10 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
     return;
   }
+  if (!picker.hidden) {
+    if (e.key === 'Escape') picker.hidden = true;
+    return;
+  }
   const mod = e.ctrlKey || e.metaKey;
   if (mod && e.key.toLowerCase() === 'z' && !typing) {
     e.preventDefault();
@@ -326,9 +369,15 @@ window.addEventListener('keydown', (e) => {
 /* ---------- Render ---------- */
 
 let toastTimer: number | undefined;
-function toast(text: string, ms = 2200) {
+function toast(text: string, ms = 2200, action?: { label: string; run: () => void }) {
   const el = $('toast');
   el.textContent = text;
+  if (action) {
+    el.append(h('button', { type: 'button', onclick: () => {
+      action.run();
+      el.classList.remove('is-on');
+    } }, action.label));
+  }
   el.classList.add('is-on');
   clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => el.classList.remove('is-on'), ms);
@@ -344,13 +393,11 @@ function clean(d: Diagram): Diagram {
 let saveTimer: number | undefined;
 function renderAll(reason: string) {
   const d = model.diagram;
-  for (const btn of document.querySelectorAll<HTMLButtonElement>('#type button')) {
-    btn.setAttribute('aria-checked', String(btn.dataset.type === d.type));
-  }
+  $('typeChip').textContent = t(`type.${d.type}`);
   if (reason === 'load' || reason === 'type' || reason === 'init' || reason === 'history') renderPalette();
   $<HTMLButtonElement>('undo').disabled = !model.canUndo;
   $<HTMLButtonElement>('redo').disabled = !model.canRedo;
-  $<HTMLButtonElement>('auto').disabled = d.type === 'timeline' || !d.nodes.some((n) => typeof n.x === 'number');
+  $<HTMLButtonElement>('auto').disabled = d.type === 'timeline' || d.type === 'sequence' || !d.nodes.some((n) => typeof n.x === 'number');
   $('empty').hidden = d.nodes.length > 0;
   if (reason !== 'move') {
     renderInspector($('props'), model);

@@ -1,0 +1,128 @@
+{
+  "type": "sequence",
+  "title": "How an OAuth login works",
+  "nodes": [
+    {
+      "id": "user",
+      "label": "User",
+      "icon": "user"
+    },
+    {
+      "id": "app",
+      "label": "Your app",
+      "icon": "browser"
+    },
+    {
+      "id": "google",
+      "label": "Google",
+      "icon": "shield"
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "icon": "server"
+    }
+  ],
+  "edges": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "app",
+      "label": "click Login"
+    },
+    {
+      "id": "m2",
+      "from": "app",
+      "to": "google",
+      "label": "redirect"
+    },
+    {
+      "id": "m3",
+      "from": "google",
+      "to": "user",
+      "label": "asks for consent"
+    },
+    {
+      "id": "m4",
+      "from": "google",
+      "to": "app",
+      "label": "code",
+      "carries": "code"
+    },
+    {
+      "id": "m5",
+      "from": "app",
+      "to": "api",
+      "label": "request + token",
+      "carries": "token"
+    },
+    {
+      "id": "m6",
+      "from": "api",
+      "to": "app",
+      "label": "user data"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "user",
+        "app",
+        "google",
+        "api"
+      ],
+      "caption": "Four parties take part"
+    },
+    {
+      "show": [
+        "m1"
+      ],
+      "flow": "m1",
+      "caption": "The user wants to sign in"
+    },
+    {
+      "show": [
+        "m2"
+      ],
+      "flow": "m2",
+      "caption": "The app sends them to Google"
+    },
+    {
+      "show": [
+        "m3"
+      ],
+      "flow": "m3",
+      "state": {
+        "google": "pending"
+      },
+      "caption": "Google asks for permission"
+    },
+    {
+      "show": [
+        "m4"
+      ],
+      "flow": "m4",
+      "state": {
+        "google": "success"
+      },
+      "caption": "Google returns a one-time code"
+    },
+    {
+      "show": [
+        "m5"
+      ],
+      "flow": "m5",
+      "caption": "The app calls the API with a token"
+    },
+    {
+      "show": [
+        "m6"
+      ],
+      "flow": "m6",
+      "state": {
+        "app": "success"
+      },
+      "caption": "And the user is in"
+    }
+  ]
+}

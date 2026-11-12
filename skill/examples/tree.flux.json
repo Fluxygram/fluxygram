@@ -1,0 +1,92 @@
+{
+  "type": "tree",
+  "title": "How a product team is organized",
+  "motion": {
+    "enter": "scale"
+  },
+  "nodes": [
+    {
+      "id": "ceo",
+      "label": "CEO",
+      "icon": "user",
+      "accent": true
+    },
+    {
+      "id": "cto",
+      "label": "CTO",
+      "description": "technology",
+      "icon": "code"
+    },
+    {
+      "id": "cpo",
+      "label": "CPO",
+      "description": "product",
+      "icon": "idea"
+    },
+    {
+      "id": "coo",
+      "label": "COO",
+      "description": "operations",
+      "icon": "settings"
+    },
+    {
+      "id": "be",
+      "label": "Backend",
+      "icon": "server"
+    },
+    {
+      "id": "fe",
+      "label": "Frontend",
+      "icon": "browser"
+    },
+    {
+      "id": "design",
+      "label": "Design",
+      "icon": "image"
+    },
+    {
+      "id": "research",
+      "label": "Research",
+      "icon": "search"
+    },
+    {
+      "id": "support",
+      "label": "Support",
+      "icon": "message"
+    }
+  ],
+  "edges": [
+    {
+      "from": "ceo",
+      "to": "cto"
+    },
+    {
+      "from": "ceo",
+      "to": "cpo"
+    },
+    {
+      "from": "ceo",
+      "to": "coo"
+    },
+    {
+      "from": "cto",
+      "to": "be"
+    },
+    {
+      "from": "cto",
+      "to": "fe"
+    },
+    {
+      "from": "cpo",
+      "to": "design"
+    },
+    {
+      "from": "cpo",
+      "to": "research"
+    },
+    {
+      "from": "coo",
+      "to": "support"
+    }
+  ]
+}

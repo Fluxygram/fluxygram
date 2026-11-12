@@ -1,0 +1,102 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "mindmap",
+  "title": "Lanzar un producto",
+  "motion": {
+    "travel": "dash"
+  },
+  "nodes": [
+    {
+      "id": "launch",
+      "label": "Lanzamiento",
+      "icon": "rocket",
+      "accent": true
+    },
+    {
+      "id": "product",
+      "label": "Producto",
+      "icon": "package"
+    },
+    {
+      "id": "mkt",
+      "label": "Marketing",
+      "icon": "chart"
+    },
+    {
+      "id": "sales",
+      "label": "Ventas",
+      "icon": "store"
+    },
+    {
+      "id": "support",
+      "label": "Soporte",
+      "icon": "message"
+    },
+    {
+      "id": "beta",
+      "label": "Beta"
+    },
+    {
+      "id": "docs",
+      "label": "Documentación"
+    },
+    {
+      "id": "launchday",
+      "label": "Día de lanzamiento"
+    },
+    {
+      "id": "social",
+      "label": "Redes sociales"
+    },
+    {
+      "id": "pricing",
+      "label": "Precios"
+    },
+    {
+      "id": "faq",
+      "label": "FAQ"
+    }
+  ],
+  "edges": [
+    {
+      "from": "launch",
+      "to": "product"
+    },
+    {
+      "from": "launch",
+      "to": "mkt"
+    },
+    {
+      "from": "launch",
+      "to": "sales"
+    },
+    {
+      "from": "launch",
+      "to": "support"
+    },
+    {
+      "from": "product",
+      "to": "beta"
+    },
+    {
+      "from": "product",
+      "to": "docs"
+    },
+    {
+      "from": "mkt",
+      "to": "launchday"
+    },
+    {
+      "from": "mkt",
+      "to": "social"
+    },
+    {
+      "from": "sales",
+      "to": "pricing"
+    },
+    {
+      "from": "support",
+      "to": "faq"
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "mindmap",
+  "title": "Launching a product",
+  "motion": {
+    "travel": "dash"
+  },
+  "nodes": [
+    {
+      "id": "launch",
+      "label": "Launch",
+      "icon": "rocket",
+      "accent": true
+    },
+    {
+      "id": "product",
+      "label": "Product",
+      "icon": "package"
+    },
+    {
+      "id": "mkt",
+      "label": "Marketing",
+      "icon": "chart"
+    },
+    {
+      "id": "sales",
+      "label": "Sales",
+      "icon": "store"
+    },
+    {
+      "id": "support",
+      "label": "Support",
+      "icon": "message"
+    },
+    {
+      "id": "beta",
+      "label": "Beta"
+    },
+    {
+      "id": "docs",
+      "label": "Docs"
+    },
+    {
+      "id": "launchday",
+      "label": "Launch day"
+    },
+    {
+      "id": "social",
+      "label": "Social media"
+    },
+    {
+      "id": "pricing",
+      "label": "Pricing"
+    },
+    {
+      "id": "faq",
+      "label": "FAQ"
+    }
+  ],
+  "edges": [
+    {
+      "from": "launch",
+      "to": "product"
+    },
+    {
+      "from": "launch",
+      "to": "mkt"
+    },
+    {
+      "from": "launch",
+      "to": "sales"
+    },
+    {
+      "from": "launch",
+      "to": "support"
+    },
+    {
+      "from": "product",
+      "to": "beta"
+    },
+    {
+      "from": "product",
+      "to": "docs"
+    },
+    {
+      "from": "mkt",
+      "to": "launchday"
+    },
+    {
+      "from": "mkt",
+      "to": "social"
+    },
+    {
+      "from": "sales",
+      "to": "pricing"
+    },
+    {
+      "from": "support",
+      "to": "faq"
+    }
+  ]
+}

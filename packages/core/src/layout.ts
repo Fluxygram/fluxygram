@@ -2,7 +2,7 @@ import { nodeSize } from './measure';
 import type { Diagram, FluxEdge, LaidEdge, LaidGroup, LaidNode, Layout, Rect } from './types';
 
 const PAD = 40;
-const RANK_GAP = 88;
+const RANK_GAP = 112;
 const NODE_GAP = 28;
 /** Tamaño máximo del escenario: si el contenido es más grande, la cámara lo recorre. */
 const MAX_STAGE = { w: 760, h: 600 };
@@ -18,10 +18,17 @@ export function layout(diagram: Diagram, options: LayoutOptions = {}): Layout {
   const result =
     diagram.type === 'timeline'
       ? layoutTimeline(diagram)
-      : diagram.type === 'architecture' && diagram.groups?.length
-        ? layoutLayers(diagram)
-        : layoutLayered(diagram, diagram.type === 'architecture' ? 'TB' : (diagram.direction ?? 'LR'));
-  const pinned = diagram.type === 'timeline' ? result : applyPins(diagram, result);
+      : diagram.type === 'cycle'
+        ? layoutCycle(diagram)
+        : diagram.type === 'sequence'
+          ? layoutSequence(diagram)
+          : diagram.type === 'mindmap'
+            ? layoutMindmap(diagram)
+            : diagram.type === 'architecture' && diagram.groups?.length
+              ? layoutLayers(diagram)
+              : layoutLayered(diagram, diagram.type === 'architecture' || diagram.type === 'tree' ? 'TB' : (diagram.direction ?? 'LR'));
+  // La línea de tiempo y la secuencia tienen posiciones con significado (orden en el tiempo): no se fijan a mano.
+  const pinned = diagram.type === 'timeline' || diagram.type === 'sequence' ? result : applyPins(diagram, result);
   pinned.motion = diagram.motion;
   return withStage(diagram, pinned, options);
 }
@@ -265,6 +272,195 @@ function layoutTimeline(diagram: Diagram): Layout {
 }
 
 /* ------------------------------------------------------------------ */
+/* Ciclo: nodos en un anillo, conexiones como arcos hacia afuera        */
+/* ------------------------------------------------------------------ */
+
+function layoutCycle(diagram: Diagram): Layout {
+  const n = diagram.nodes.length;
+  const sizes = diagram.nodes.map((node) => nodeSize(node, diagram.type));
+  const avg = sizes.reduce((s, z) => s + Math.max(z.w, z.h * 2), 0) / Math.max(1, n);
+  const R = Math.max(150, (n * avg * 0.62) / (2 * Math.PI) + 60);
+  const nodes: LaidNode[] = diagram.nodes.map((node, i) => {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / Math.max(1, n);
+    const s = sizes[i]!;
+    return { id: node.id, node, x: Math.cos(a) * R - s.w / 2, y: Math.sin(a) * R - s.h / 2, ...s };
+  });
+  const byId = new Map(nodes.map((x) => [x.id, x]));
+  const edges = (diagram.edges ?? []).map((e) => routeArc(e, byId.get(e.from)!, byId.get(e.to)!, { x: 0, y: 0 }));
+  return finish(diagram, nodes, edges, []);
+}
+
+/** Punto del borde de un rectángulo en dirección a (tx, ty). */
+function borderPoint(r: Rect, tx: number, ty: number, pad = 4) {
+  const cx = r.x + r.w / 2;
+  const cy = r.y + r.h / 2;
+  const dx = tx - cx;
+  const dy = ty - cy;
+  const t = Math.min((r.w / 2 + pad) / Math.abs(dx || 1e-6), (r.h / 2 + pad) / Math.abs(dy || 1e-6));
+  return { x: cx + dx * t, y: cy + dy * t };
+}
+
+/** Arco entre dos nodos que se curva hacia afuera de un centro. */
+function routeArc(e: FluxEdge, a: Rect, b: Rect, center: { x: number; y: number }): LaidEdge {
+  const ac = { x: a.x + a.w / 2, y: a.y + a.h / 2 };
+  const bc = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+  const mid = { x: (ac.x + bc.x) / 2, y: (ac.y + bc.y) / 2 };
+  let ox = mid.x - center.x;
+  let oy = mid.y - center.y;
+  const len = Math.hypot(ox, oy) || 1;
+  ox /= len;
+  oy /= len;
+  const bulge = Math.hypot(bc.x - ac.x, bc.y - ac.y) * 0.22;
+  const c = { x: mid.x + ox * bulge, y: mid.y + oy * bulge };
+  const p1 = borderPoint(a, c.x, c.y);
+  const p2 = borderPoint(b, c.x, c.y);
+  const angle = (Math.atan2(p2.y - c.y, p2.x - c.x) * 180) / Math.PI;
+  return {
+    id: edgeId(e), edge: e,
+    d: `M${p1.x} ${p1.y} Q${c.x} ${c.y} ${p2.x} ${p2.y}`,
+    end: { x: p2.x, y: p2.y, angle },
+    labelAt: { x: (p1.x + 2 * c.x + p2.x) / 4 + ox * 14, y: (p1.y + 2 * c.y + p2.y) / 4 + oy * 14 },
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Secuencia: participantes arriba, mensajes en orden hacia abajo      */
+/* ------------------------------------------------------------------ */
+
+const SEQ_GAP = 72;
+const SEQ_ROW = 56;
+
+function layoutSequence(diagram: Diagram): Layout {
+  const sizes = diagram.nodes.map((node) => nodeSize(node, diagram.type));
+  const colW = Math.max(160, ...sizes.map((s) => s.w)) + SEQ_GAP;
+  const top = Math.max(...sizes.map((s) => s.h));
+  const nodes: LaidNode[] = diagram.nodes.map((node, i) => {
+    const s = sizes[i]!;
+    return { id: node.id, node, x: i * colW + (colW - SEQ_GAP - s.w) / 2, y: top - s.h, ...s };
+  });
+  const cx = new Map(nodes.map((n) => [n.id, n.x + n.w / 2]));
+  const edges: LaidEdge[] = (diagram.edges ?? []).map((e, i) => {
+    const y = top + 52 + i * SEQ_ROW;
+    const x1 = cx.get(e.from)!;
+    const x2 = cx.get(e.to)!;
+    if (e.from === e.to) {
+      // Mensaje a sí mismo: un pequeño lazo a la derecha.
+      const d = `M${x1} ${y - 8} H${x1 + 36} V${y + 12} H${x1 + 6}`;
+      return { id: edgeId(e), edge: e, d, end: { x: x1 + 6, y: y + 12, angle: 180 }, labelAt: { x: x1 + 70, y } };
+    }
+    const dir = x2 > x1 ? 1 : -1;
+    const end = x2 - dir * 6;
+    return {
+      id: edgeId(e), edge: e,
+      d: `M${x1 + dir * 6} ${y} H${end}`,
+      end: { x: end, y, angle: dir > 0 ? 0 : 180 },
+      labelAt: { x: (x1 + x2) / 2, y: y - 15 },
+    };
+  });
+  const bottom = top + 52 + Math.max(0, edges.length - 1) * SEQ_ROW + 36;
+  const lifelines = nodes.map((n) => ({ id: n.id, x: n.x + n.w / 2, y1: n.y + n.h, y2: bottom }));
+  const result = finish(diagram, nodes, edges, [], undefined, lifelines.map((l) => ({ x: l.x - 1, y: l.y1, w: 2, h: l.y2 - l.y1 })));
+  result.lifelines = lifelines;
+  return result;
+}
+
+/* ------------------------------------------------------------------ */
+/* Mapa mental: una idea central y ramas alrededor                     */
+/* ------------------------------------------------------------------ */
+
+function layoutMindmap(diagram: Diagram): Layout {
+  const edges = diagram.edges ?? [];
+  const degree = new Map(diagram.nodes.map((n) => [n.id, 0]));
+  for (const e of edges) {
+    degree.set(e.from, (degree.get(e.from) ?? 0) + 1);
+    degree.set(e.to, (degree.get(e.to) ?? 0) + 1);
+  }
+  const root = mindmapRoot(diagram);
+  const { parent, children } = spanningTree(diagram, root);
+  const sizes = new Map(diagram.nodes.map((n) => [n.id, nodeSize(n, diagram.type)]));
+
+  // Ángulo de cada rama proporcional a cuántas hojas tiene, para que no se amontonen.
+  const leaves = (id: string): number => {
+    const c = children.get(id) ?? [];
+    return c.length ? c.reduce((s, k) => s + leaves(k), 0) : 1;
+  };
+  const center = new Map<string, { x: number; y: number }>();
+  center.set(root, { x: 0, y: 0 });
+  const place = (id: string, a0: number, a1: number, depth: number) => {
+    const kids = children.get(id) ?? [];
+    const total = kids.reduce((s, k) => s + leaves(k), 0) || 1;
+    let a = a0;
+    for (const k of kids) {
+      const span = ((a1 - a0) * leaves(k)) / total;
+      const mid = a + span / 2;
+      const r = 230 + (depth - 1) * 190;
+      center.set(k, { x: Math.cos(mid) * r * 1.25, y: Math.sin(mid) * r * 0.8 });
+      place(k, a, a + span, depth + 1);
+      a += span;
+    }
+  };
+  place(root, -Math.PI / 2, (Math.PI * 3) / 2, 1);
+  // Nodos sueltos (sin conexión al centro): abajo, en fila.
+  let loose = 0;
+  for (const n of diagram.nodes) if (!center.has(n.id)) center.set(n.id, { x: -200 + loose++ * 200, y: 420 });
+
+  const nodes: LaidNode[] = diagram.nodes.map((node) => {
+    const s = sizes.get(node.id)!;
+    const c = center.get(node.id)!;
+    return { id: node.id, node, x: c.x - s.w / 2, y: c.y - s.h / 2, ...s };
+  });
+  const byId = new Map(nodes.map((x) => [x.id, x]));
+  const laid = edges.map((e) => {
+    const a = byId.get(e.from)!;
+    const b = byId.get(e.to)!;
+    const apart = b.x >= a.x + a.w + 16 || a.x >= b.x + b.w + 16;
+    const dx = Math.abs(b.x + b.w / 2 - (a.x + a.w / 2));
+    const dy = Math.abs(b.y + b.h / 2 - (a.y + a.h / 2));
+    return routeCurve(e, a, b, apart && dx >= dy * 0.6 ? 'LR' : 'TB');
+  });
+  void parent;
+  void degree;
+  return finish(diagram, nodes, laid, []);
+}
+
+/** La idea central: el primer nodo, salvo que otro tenga claramente más conexiones. */
+export function mindmapRoot(diagram: Diagram): string {
+  const degree = new Map(diagram.nodes.map((n) => [n.id, 0]));
+  for (const e of diagram.edges ?? []) {
+    degree.set(e.from, (degree.get(e.from) ?? 0) + 1);
+    degree.set(e.to, (degree.get(e.to) ?? 0) + 1);
+  }
+  const first = diagram.nodes[0]!.id;
+  let best = first;
+  for (const n of diagram.nodes) if ((degree.get(n.id) ?? 0) > (degree.get(best) ?? 0) + 1) best = n.id;
+  return best;
+}
+
+/** Árbol de recorrido en anchura desde la raíz, ignorando la dirección de las conexiones. */
+export function spanningTree(diagram: Diagram, root: string) {
+  const adj = new Map<string, string[]>(diagram.nodes.map((n) => [n.id, []]));
+  for (const e of diagram.edges ?? []) {
+    adj.get(e.from)?.push(e.to);
+    adj.get(e.to)?.push(e.from);
+  }
+  const parent = new Map<string, string>();
+  const children = new Map<string, string[]>();
+  const seen = new Set([root]);
+  const queue = [root];
+  while (queue.length) {
+    const id = queue.shift()!;
+    for (const k of adj.get(id) ?? []) {
+      if (seen.has(k)) continue;
+      seen.add(k);
+      parent.set(k, id);
+      (children.get(id) ?? children.set(id, []).get(id)!).push(k);
+      queue.push(k);
+    }
+  }
+  return { parent, children };
+}
+
+/* ------------------------------------------------------------------ */
 /* Rutas de conexiones                                                 */
 /* ------------------------------------------------------------------ */
 
@@ -325,8 +521,8 @@ function bbox(rects: Rect[]): Rect {
   return { x, y, w: x2 - x, h: y2 - y };
 }
 
-function finish(diagram: Diagram, nodes: LaidNode[], edges: LaidEdge[], groups: LaidGroup[], axis?: Layout['axis']): Layout {
-  const rects: Rect[] = [...nodes, ...groups];
+function finish(diagram: Diagram, nodes: LaidNode[], edges: LaidEdge[], groups: LaidGroup[], axis?: Layout['axis'], extra: Rect[] = []): Layout {
+  const rects: Rect[] = [...nodes, ...groups, ...extra];
   // Las rutas que rodean el diagrama y las etiquetas también ocupan espacio.
   for (const e of edges) if (e.labelAt) rects.push({ x: e.labelAt.x - 40, y: e.labelAt.y - 14, w: 80, h: 28 });
   if (axis) rects.push({ x: axis.x1, y: axis.y - 1, w: axis.x2 - axis.x1, h: 2 });

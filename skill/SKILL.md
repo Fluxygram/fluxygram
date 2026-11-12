@@ -25,8 +25,18 @@ Write the labels and captions in the user's language.
 | Steps, a process, decisions, a pipeline, a user journey | `flow` | The path builds column by column; a particle runs along each new edge |
 | A system: services, layers, who calls whom, where data lives | `architecture` | Layers appear bottom-up, then requests flow through every edge |
 | History, a roadmap, releases, milestones in order | `timeline` | The camera moves from milestone to milestone |
+| A hierarchy: org chart, categories, a family tree | `tree` | Grows from the root, level by level |
+| A process that repeats: a loop, seasons, feedback | `cycle` | Each stage appears around the ring with the arrow into it; at the end everything loops |
+| Who talks to whom, in order: an API call, a login, a protocol | `sequence` | Participants appear, then each message crosses between lifelines, in order |
+| Ideas around one topic: brainstorming, a plan, a syllabus | `mindmap` | The central idea first, then one branch at a time |
 
-If two types fit, prefer the one whose motion matches the question: "how does X happen" → `flow`; "how is X built" → `architecture`; "how did X change over time" → `timeline`.
+If two types fit, prefer the one whose motion matches the question: "how does X happen" → `flow`; "how is X built" → `architecture`; "how did X change over time" → `timeline`; "who sends what to whom" → `sequence`; "how is X organized" → `tree`; "what keeps repeating" → `cycle`; "what does X involve" → `mindmap`.
+
+Type-specific notes:
+- `sequence`: nodes are the participants, left to right in the order listed. **Edges are the messages, in the order they happen** (the edge list is the timeline). Give each message a short `label`.
+- `cycle`: list the nodes in the order of the cycle and connect each to the next, with the last back to the first.
+- `tree`: connect each parent to its children; the root is the node nothing points to.
+- `mindmap`: the first node is the central idea; connect it to the branches and each branch to its sub-ideas.
 
 ## Format
 
@@ -153,4 +163,4 @@ The renderer validates the file and shows readable errors (`edges[2].to "to" poi
 
 ## More examples
 
-See `examples/` next to this file: `order.flux.json` (flow with a decision, no steps), `architecture.flux.json` (layers + traced request + focus), `web-history.flux.json` (timeline), `how-it-works.flux.json` (flow with captions).
+See `examples/` next to this file: `sequence.flux.json`, `cycle.flux.json`, `tree.flux.json`, `mindmap.flux.json`, `order.flux.json` (flow with a decision and an error path), `architecture.flux.json` (layers + traced request + focus), `web-history.flux.json` (timeline), `how-it-works.flux.json` (flow with captions).

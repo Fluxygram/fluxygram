@@ -15,11 +15,7 @@
     <header class="ed-top">
       <a class="brand" href="/"><img src="/mark.svg" alt="" width="24" height="24" />fluxygram</a>
 
-      <div class="ed-seg" id="type" role="radiogroup">
-        <button type="button" role="radio" data-type="flow" data-i18n="examples.flow">Flow</button>
-        <button type="button" role="radio" data-type="architecture" data-i18n="examples.architecture">Architecture</button>
-        <button type="button" role="radio" data-type="timeline" data-i18n="examples.timeline">Timeline</button>
-      </div>
+      <span class="ed-type-chip" id="typeChip"></span>
 
       <div class="ed-spacer"></div>
 
@@ -35,6 +31,10 @@
           <option value="order" data-i18n="play.p.order">Flow: an order</option>
           <option value="architecture" data-i18n="play.p.arch">Architecture: an app</option>
           <option value="web-history" data-i18n="play.p.web">Timeline: the web</option>
+          <option value="tree" data-i18n="play.p.tree">Tree: a team</option>
+          <option value="cycle" data-i18n="play.p.cycle">Cycle: the water cycle</option>
+          <option value="sequence" data-i18n="play.p.sequence">Sequence: OAuth login</option>
+          <option value="mindmap" data-i18n="play.p.mindmap">Mind map: a launch</option>
         </select>
         <button type="button" class="ed-icon" id="new" data-i18n-attr="aria-label:ed.new;title:ed.new"></button>
         <button type="button" class="ed-icon" id="open" data-i18n-attr="aria-label:ed.open;title:ed.open"></button>
@@ -78,6 +78,14 @@
       <div class="ed-modal-box">
         <button type="button" class="ed-icon ed-modal-close" id="modalClose" data-i18n-attr="aria-label:ed.close;title:ed.close"></button>
         <fluxy-gram id="player" gestures="full"></fluxy-gram>
+      </div>
+    </div>
+    <div class="ed-modal" id="picker" hidden>
+      <div class="ed-picker" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+        <button type="button" class="ed-icon ed-modal-close" id="pickerClose" data-i18n-attr="aria-label:ed.close;title:ed.close"></button>
+        <h2 class="ed-picker-title" id="pickerTitle" data-i18n="ed.pickType"></h2>
+        <p class="ed-picker-sub" data-i18n="ed.pickTypeSub"></p>
+        <div class="ed-types" id="typeGrid"></div>
       </div>
     </div>
     <div class="ed-toast" id="toast" role="status" aria-live="polite"></div>

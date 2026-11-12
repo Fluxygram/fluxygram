@@ -1,0 +1,93 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "tree",
+  "title": "Cómo se organiza un equipo de producto",
+  "motion": {
+    "enter": "scale"
+  },
+  "nodes": [
+    {
+      "id": "ceo",
+      "label": "CEO",
+      "icon": "user",
+      "accent": true
+    },
+    {
+      "id": "cto",
+      "label": "CTO",
+      "description": "tecnología",
+      "icon": "code"
+    },
+    {
+      "id": "cpo",
+      "label": "CPO",
+      "description": "producto",
+      "icon": "idea"
+    },
+    {
+      "id": "coo",
+      "label": "COO",
+      "description": "operaciones",
+      "icon": "settings"
+    },
+    {
+      "id": "be",
+      "label": "Backend",
+      "icon": "server"
+    },
+    {
+      "id": "fe",
+      "label": "Frontend",
+      "icon": "browser"
+    },
+    {
+      "id": "design",
+      "label": "Diseño",
+      "icon": "image"
+    },
+    {
+      "id": "research",
+      "label": "Research",
+      "icon": "search"
+    },
+    {
+      "id": "support",
+      "label": "Soporte",
+      "icon": "message"
+    }
+  ],
+  "edges": [
+    {
+      "from": "ceo",
+      "to": "cto"
+    },
+    {
+      "from": "ceo",
+      "to": "cpo"
+    },
+    {
+      "from": "ceo",
+      "to": "coo"
+    },
+    {
+      "from": "cto",
+      "to": "be"
+    },
+    {
+      "from": "cto",
+      "to": "fe"
+    },
+    {
+      "from": "cpo",
+      "to": "design"
+    },
+    {
+      "from": "cpo",
+      "to": "research"
+    },
+    {
+      "from": "coo",
+      "to": "support"
+    }
+  ]
+}

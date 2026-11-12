@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowLeftRight, ArrowUp, PinOff, Trash2 } from 'lucide';
 import { ICON_NAMES, iconElement } from '@fluxygram/element';
-import { ENTER_STYLES, TRAVEL_STYLES, type EnterStyle, type NodeKind, type TravelStyle } from '@fluxygram/core';
+import { DIAGRAM_TYPES, ENTER_STYLES, TRAVEL_STYLES, type DiagramType, type EnterStyle, type NodeKind, type TravelStyle } from '@fluxygram/core';
 import { t } from '../i18n';
 import { h, icon } from './dom';
 import type { Model } from './model';
@@ -42,6 +42,11 @@ function diagramPanel(model: Model) {
   const box = h('div', {});
   box.append(h('h3', { class: 'ed-h' }, t('ed.diagram')));
   box.append(textField(t('ed.title'), d.title, (v) => model.change((x) => (v ? (x.title = v) : delete x.title)), t('ed.titlePh')));
+  box.append(selectField<DiagramType>(t('ed.type'), d.type, DIAGRAM_TYPES, (v) => t(`type.${v}`), (v) => {
+    if (!v || v === d.type) return;
+    model.setType(v);
+    document.dispatchEvent(new CustomEvent('ed:type-changed', { detail: v }));
+  }));
   if (d.type === 'flow') {
     const dir = d.direction ?? 'LR';
     box.append(
@@ -119,7 +124,7 @@ function nodePanel(model: Model, id: string) {
   if (d.type === 'timeline') box.append(textField(t('ed.date'), n.date, (v) => model.updateNode(id, { date: v }), '2026'));
   box.append(textField(t('ed.desc'), n.description, (v) => model.updateNode(id, { description: v })));
 
-  if (d.type !== 'timeline') {
+  if (d.type !== 'timeline' && d.type !== 'sequence') {
     const kinds: [NodeKind, string][] =
       d.type === 'flow'
         ? [['default', 'ed.kind.default'], ['decision', 'ed.add.decision'], ['start', 'ed.add.start'], ['end', 'ed.add.end'], ['data', 'ed.add.data'], ['database', 'ed.add.database'], ['note', 'ed.add.note']]

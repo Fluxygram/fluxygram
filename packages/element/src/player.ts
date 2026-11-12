@@ -327,13 +327,22 @@ export class Player {
       } else if (style === 'packets') {
         packets = [0, 1, 2].map(() => el('rect', { class: 'fx-packet', width: 7, height: 7, rx: 2, x: -3.5, y: -3.5 }, group));
       }
-      const glow = el('circle', { class: 'glow', r: style === 'particle' ? 11 : 0 }, group);
-      const dots = (style === 'particle' ? [0, 1, 2, 3, 4] : []).map((k) =>
-        el('circle', { class: 'core', r: 4.5 * (1 - k * 0.17), opacity: 1 - k * 0.2 }, group),
+      // Tamaño visible constante: si la cámara está alejada, la partícula crece en el mundo para no volverse un punto.
+      const k = Math.min(2.2, 1 / Math.min(1, this.view.s || 1));
+      const glow = el('circle', { class: 'glow', r: style === 'particle' ? 12 * k : 0 }, group);
+      const dots = (style === 'particle' ? [0, 1, 2, 3, 4, 5, 6] : []).map((i) =>
+        el('circle', { class: 'core', r: 5 * k * (1 - i * 0.12), opacity: 1 - i * 0.14 }, group),
       );
+      packets?.forEach((rect) => {
+        rect.setAttribute('width', String(7 * k));
+        rect.setAttribute('height', String(7 * k));
+        rect.setAttribute('x', String(-3.5 * k));
+        rect.setAttribute('y', String(-3.5 * k));
+      });
       // Si la conexión se está dibujando en este paso, el recorrido sale cuando termina de dibujarse.
       const wait = edgeDelay.has(id) ? edgeDelay.get(id)! + (EDGE_DRAW - 120) * this.speed : idleWait;
-      const duration = Math.min(1700, Math.max(800, length * 4.2)) * this.speed * (style === 'packets' ? 1.3 : 1);
+      // Un recorrido que se pueda seguir con la vista: entre 1.3 y 2.6 s según el largo.
+      const duration = Math.min(2600, Math.max(1300, length * 8)) * this.speed * (style === 'packets' ? 1.2 : 1);
       let tag: SVGGElement | undefined;
       if (laid?.edge.carries) {
         const text = laid.edge.carries;
@@ -364,7 +373,7 @@ export class Player {
       }
       return;
     }
-    const period = f.duration + 520 * this.speed;
+    const period = f.duration + 650 * this.speed;
     const local = elapsed % period;
     const cycle = Math.floor(elapsed / period);
     if (local >= f.duration * 0.94 && f.pulsed !== cycle) {
@@ -379,7 +388,7 @@ export class Player {
     // Aparece y se desvanece en los extremos para que no "salte" al reiniciar.
     const fade = Math.min(1, p / 0.08, (1 - p) / 0.1);
     f.group.setAttribute('opacity', String(fade));
-    const head = easeInOut(p);
+    const head = easeTravel(p);
     if (f.line && f.glowLine) {
       // Un tramo de luz que avanza: el guion visible va de (head - seg) a head.
       const seg = Math.min(70, f.length * 0.4);
@@ -397,7 +406,7 @@ export class Player {
       rect.setAttribute('transform', `translate(${pt.x} ${pt.y})`);
     });
     f.dots.forEach((dot, k) => {
-      const t = Math.max(0, head - k * 0.022);
+      const t = Math.max(0, head - k * 0.018);
       const pt = f.path.getPointAtLength(t * f.length);
       dot.setAttribute('cx', String(pt.x));
       dot.setAttribute('cy', String(pt.y));
@@ -416,4 +425,5 @@ export class Player {
 }
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+/** Arranca y frena suave, pero avanza parejo en el medio (un cúbico se ve como un salto en tramos cortos). */
+const easeTravel = (t: number) => -(Math.cos(Math.PI * t) - 1) / 2;

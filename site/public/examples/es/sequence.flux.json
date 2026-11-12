@@ -1,0 +1,129 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "sequence",
+  "title": "Cómo funciona un login con OAuth",
+  "nodes": [
+    {
+      "id": "user",
+      "label": "Usuario",
+      "icon": "user"
+    },
+    {
+      "id": "app",
+      "label": "Tu app",
+      "icon": "browser"
+    },
+    {
+      "id": "google",
+      "label": "Google",
+      "icon": "shield"
+    },
+    {
+      "id": "api",
+      "label": "API",
+      "icon": "server"
+    }
+  ],
+  "edges": [
+    {
+      "id": "m1",
+      "from": "user",
+      "to": "app",
+      "label": "clic en Login"
+    },
+    {
+      "id": "m2",
+      "from": "app",
+      "to": "google",
+      "label": "redirect"
+    },
+    {
+      "id": "m3",
+      "from": "google",
+      "to": "user",
+      "label": "pide permiso"
+    },
+    {
+      "id": "m4",
+      "from": "google",
+      "to": "app",
+      "label": "code",
+      "carries": "code"
+    },
+    {
+      "id": "m5",
+      "from": "app",
+      "to": "api",
+      "label": "pedido + token",
+      "carries": "token"
+    },
+    {
+      "id": "m6",
+      "from": "api",
+      "to": "app",
+      "label": "datos del usuario"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "user",
+        "app",
+        "google",
+        "api"
+      ],
+      "caption": "Participan cuatro partes"
+    },
+    {
+      "show": [
+        "m1"
+      ],
+      "flow": "m1",
+      "caption": "El usuario quiere entrar"
+    },
+    {
+      "show": [
+        "m2"
+      ],
+      "flow": "m2",
+      "caption": "La app lo manda a Google"
+    },
+    {
+      "show": [
+        "m3"
+      ],
+      "flow": "m3",
+      "state": {
+        "google": "pending"
+      },
+      "caption": "Google pide permiso"
+    },
+    {
+      "show": [
+        "m4"
+      ],
+      "flow": "m4",
+      "state": {
+        "google": "success"
+      },
+      "caption": "Google devuelve un código de un solo uso"
+    },
+    {
+      "show": [
+        "m5"
+      ],
+      "flow": "m5",
+      "caption": "La app llama a la API con un token"
+    },
+    {
+      "show": [
+        "m6"
+      ],
+      "flow": "m6",
+      "state": {
+        "app": "success"
+      },
+      "caption": "Y el usuario entra"
+    }
+  ]
+}

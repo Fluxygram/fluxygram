@@ -17,7 +17,11 @@
       "enum": [
         "flow",
         "architecture",
-        "timeline"
+        "timeline",
+        "tree",
+        "cycle",
+        "sequence",
+        "mindmap"
       ]
     },
     "title": {

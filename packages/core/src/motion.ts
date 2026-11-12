@@ -1,4 +1,4 @@
-import { computeRanks, edgeId } from './layout';
+import { computeRanks, edgeId, mindmapRoot, spanningTree } from './layout';
 import type { Diagram, FluxStep, Layout, MotionPlan, NodeState, Rect, StepState } from './types';
 
 const list = (v: string | string[] | undefined): string[] => (v === undefined ? [] : Array.isArray(v) ? v : [v]);
@@ -41,6 +41,41 @@ function defaultSteps(diagram: Diagram): FluxStep[] {
 
   if (diagram.type === 'timeline') {
     return orderedTimeline(diagram).map((n) => ({ show: [n.id] }));
+  }
+
+  // Secuencia: aparecen los participantes y después cada mensaje cruza, en orden.
+  if (diagram.type === 'sequence') {
+    return [{ show: diagram.nodes.map((n) => n.id) }, ...edges.map((e) => ({ show: [edgeId(e)], flow: edgeId(e) }))];
+  }
+
+  // Ciclo: cada etapa aparece con la flecha que llega a ella; al final todo gira a la vez.
+  if (diagram.type === 'cycle') {
+    const steps: FluxStep[] = [];
+    const seen = new Set<string>();
+    for (const n of diagram.nodes) {
+      seen.add(n.id);
+      const into = edges.filter((e) => e.to === n.id && seen.has(e.from)).map(edgeId);
+      const closing = edges.filter((e) => e.from === n.id && seen.has(e.to) && e.to !== n.id).map(edgeId);
+      steps.push({ show: [n.id, ...into, ...closing], flow: into });
+    }
+    if (edges.length) steps.push({ flow: edges.map(edgeId) });
+    return steps;
+  }
+
+  // Mapa mental: la idea central y después una rama a la vez.
+  if (diagram.type === 'mindmap' && diagram.nodes.length) {
+    const root = mindmapRoot(diagram);
+    const { children } = spanningTree(diagram, root);
+    const subtree = (id: string): string[] => [id, ...(children.get(id) ?? []).flatMap(subtree)];
+    const steps: FluxStep[] = [{ show: [root] }];
+    for (const branch of children.get(root) ?? []) {
+      const ids = new Set(subtree(branch));
+      const links = edges.filter((e) => (ids.has(e.from) || ids.has(e.to))).map(edgeId);
+      steps.push({ show: [...ids, ...links], flow: links.filter((l) => { const e = edges.find((x) => edgeId(x) === l)!; return e.from === root || e.to === root; }) });
+    }
+    const loose = diagram.nodes.filter((n) => !steps.some((s) => s.show?.includes(n.id))).map((n) => n.id);
+    if (loose.length) steps.push({ show: loose });
+    return steps;
   }
 
   if (diagram.type === 'architecture' && diagram.groups?.length) {

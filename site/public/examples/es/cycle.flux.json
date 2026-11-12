@@ -1,0 +1,59 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "cycle",
+  "title": "El ciclo del agua",
+  "motion": {
+    "travel": "pulse",
+    "speed": "slow"
+  },
+  "nodes": [
+    {
+      "id": "evap",
+      "label": "Evaporación",
+      "description": "el sol calienta el mar",
+      "icon": "zap"
+    },
+    {
+      "id": "cond",
+      "label": "Condensación",
+      "description": "el vapor forma nubes",
+      "icon": "cloud"
+    },
+    {
+      "id": "prec",
+      "label": "Precipitación",
+      "description": "lluvia y nieve",
+      "icon": "globe"
+    },
+    {
+      "id": "coll",
+      "label": "Recolección",
+      "description": "los ríos vuelven al mar",
+      "icon": "layers"
+    }
+  ],
+  "edges": [
+    {
+      "id": "c1",
+      "from": "evap",
+      "to": "cond",
+      "carries": "vapor"
+    },
+    {
+      "id": "c2",
+      "from": "cond",
+      "to": "prec"
+    },
+    {
+      "id": "c3",
+      "from": "prec",
+      "to": "coll",
+      "carries": "agua"
+    },
+    {
+      "id": "c4",
+      "from": "coll",
+      "to": "evap"
+    }
+  ]
+}

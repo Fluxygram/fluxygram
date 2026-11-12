@@ -186,8 +186,8 @@ ${darkTokens(':host')}
   transition: stroke-dashoffset calc(820ms * var(--fx-speed, 1)) var(--fx-ease-in-out) var(--d, 0ms),
     fill-opacity calc(420ms * var(--fx-speed, 1)) ease-out calc(var(--d, 0ms) + 560ms * var(--fx-speed, 1));
 }
-.fx-node[data-enter='draw'] :is(text, .fx-icon, .fx-stem, .fx-dot) { opacity: 0; transition: opacity 150ms ease-out; }
-.fx-node[data-enter='draw'].is-in :is(text, .fx-icon, .fx-stem, .fx-dot) {
+.fx-node[data-enter='draw'] :is(text, .fx-icon, .fx-stem, .fx-dot, .fx-lifeline) { opacity: 0; transition: opacity 150ms ease-out; }
+.fx-node[data-enter='draw'].is-in :is(text, .fx-icon, .fx-stem, .fx-dot, .fx-lifeline) {
   opacity: 1; transition: opacity calc(360ms * var(--fx-speed, 1)) ease-out calc(var(--d, 0ms) + 520ms * var(--fx-speed, 1));
 }
 .fx-shape {
@@ -205,6 +205,7 @@ ${darkTokens(':host')}
 .fx-date { fill: var(--fx-accent); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
 .fx-icon { fill: none; stroke: var(--fx-muted); stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; transition: stroke 320ms ease; }
 .fx-stem { stroke: var(--fx-border); stroke-width: 1.5; }
+.fx-lifeline { stroke: var(--fx-border); stroke-width: 1.5; stroke-dasharray: 4 6; }
 .fx-dot { fill: var(--fx-surface); stroke: var(--fx-edge); stroke-width: 2; transition: fill 320ms ease, stroke 320ms ease; }
 
 .fx-node.is-accent .fx-shape { fill: var(--fx-accent-soft); stroke: var(--fx-accent); stroke-width: 1.5; }

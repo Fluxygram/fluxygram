@@ -67,6 +67,12 @@ export function buildScene(layout: Layout, uid: string): Scene {
     const enter = n.node.enter ?? layout.motion?.enter ?? 'fade';
     const part = layout.type === 'timeline' ? drawMilestone(n, layout.axis!.y, slot) : drawNode(n, slot);
     part.setAttribute('data-enter', enter);
+    // Secuencia: la línea de vida baja desde el participante, detrás de los mensajes.
+    const life = layout.lifelines?.find((l) => l.id === n.id);
+    if (life) {
+      const line = el('line', { class: 'fx-lifeline', x1: life.x - n.x, x2: life.x - n.x, y1: life.y1 - n.y, y2: life.y2 - n.y });
+      part.prepend(line);
+    }
     // Para "dibujar" el borde, la longitud del trazo se normaliza a 1.
     if (enter === 'draw') part.querySelectorAll('.fx-shape, .fx-rim').forEach((s) => s.setAttribute('pathLength', '1'));
     slots.set(n.id, slot);
