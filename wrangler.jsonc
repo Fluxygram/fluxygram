@@ -1,6 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "fluxygram",
+  // Cuenta personal: un deploy nunca puede ir a otra cuenta por error.
+  "account_id": "78ff399b608458d490dd22bdb61fabc8",
   "compatibility_date": "2025-09-01",
   // Sitio estático (landing, playground, schema, ejemplos).
   // Los links para compartir (Worker + R2) llegan después.

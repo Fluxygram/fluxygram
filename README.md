@@ -56,7 +56,7 @@ pnpm install
 pnpm dev        # site on http://localhost:5173
 pnpm typecheck
 pnpm cf:login   # once: log in with the Cloudflare account that owns Fluxygram
-pnpm deploy     # build + deploy to Cloudflare Workers (uses only that login)
+pnpm run deploy # build + deploy to Cloudflare Workers (uses only that login)
 ```
 
 The site and the component pick English or Spanish from the browser language (`lang` attribute wins when set).
@@ -75,5 +75,5 @@ The site and the component pick English or Spanish from the browser language (`l
 ```bash
 pnpm install
 pnpm dev
-pnpm deploy
+pnpm run deploy
 ```
