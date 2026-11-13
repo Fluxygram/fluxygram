@@ -6,7 +6,8 @@ Fluxygram uses two licenses, depending on the part of the repository.
 | --- | --- | --- |
 | [`packages/core`](packages/core/LICENSE) | MIT | Use it anywhere, for anything. |
 | [`packages/element`](packages/element/LICENSE) | MIT | Embed `<fluxy-gram>` in any site or product, commercial or not. |
-| [`skill`](skill/LICENSE) | MIT | Give the skill to any agent, ship it in any tool. |
+| [`packages/fluxygram`](packages/fluxygram/LICENSE) | MIT | The single-file build of the component. |
+| [`skills/fluxygram`](skills/fluxygram/LICENSE) | MIT | Give the skill to any agent, ship it in any tool. |
 | [`site`](site/LICENSE.md) (landing, editor, presentation mode) | FSL-1.1-ALv2 | Read it, change it, run it for yourself or your company. You can't offer it as a competing commercial service. Each version becomes Apache 2.0 two years after its release. |
 
 The diagram format (`.flux.json`) and its JSON Schema are open: anyone can write, read and render it.

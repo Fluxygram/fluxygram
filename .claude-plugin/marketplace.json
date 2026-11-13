@@ -1,0 +1,16 @@
+{
+  "name": "fluxygram",
+  "description": "Fluxygram for Claude Code: create animated, step-by-step diagrams from JSON.",
+  "owner": {
+    "name": "Fluxygram",
+    "url": "https://github.com/Fluxygram"
+  },
+  "plugins": [
+    {
+      "name": "fluxygram",
+      "source": "./",
+      "description": "Animated, step-by-step diagrams from JSON: flows, architectures, sequences, timelines and more.",
+      "version": "0.1.0"
+    }
+  ]
+}

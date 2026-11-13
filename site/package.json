@@ -4,9 +4,10 @@
   "type": "module",
   "scripts": {
     "element": "vite build -c vite.element.config.ts",
-    "dev": "vite build -c vite.element.config.ts && vite",
-    "build": "vite build -c vite.element.config.ts && vite build",
-    "preview": "vite preview"
+    "dev": "pnpm skill && vite build -c vite.element.config.ts && vite",
+    "build": "pnpm skill && vite build -c vite.element.config.ts && vite build",
+    "preview": "vite preview",
+    "skill": "node -e \"require('fs').copyFileSync('../skills/fluxygram/SKILL.md','public/skill.md')\""
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.4",

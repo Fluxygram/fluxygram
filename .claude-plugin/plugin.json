@@ -1,0 +1,19 @@
+{
+  "name": "fluxygram",
+  "description": "Animated, step-by-step diagrams from JSON. Teaches the agent the Fluxygram format, how to pick the diagram type and how to tell a good story in steps.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Fluxygram",
+    "url": "https://github.com/Fluxygram"
+  },
+  "homepage": "https://fluxygram.salamancacmcol.workers.dev",
+  "repository": "https://github.com/Fluxygram/fluxygram",
+  "license": "MIT",
+  "keywords": [
+    "diagram",
+    "animation",
+    "architecture",
+    "documentation",
+    "presentation"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "fluxygram",
+  "version": "0.1.0",
+  "description": "Diagrams that explain themselves. One file with the <fluxy-gram> component, ready for a <script> tag or a CDN.",
+  "keywords": [
+    "diagram",
+    "animation",
+    "flowchart",
+    "web-component",
+    "cdn",
+    "fluxygram"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://fluxygram.salamancacmcol.workers.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fluxygram/fluxygram.git",
+    "directory": "packages/fluxygram"
+  },
+  "bugs": {
+    "url": "https://github.com/Fluxygram/fluxygram/issues"
+  },
+  "main": "./dist/fluxygram.js",
+  "module": "./dist/fluxygram.js",
+  "exports": {
+    ".": "./dist/fluxygram.js"
+  },
+  "unpkg": "./dist/fluxygram.js",
+  "jsdelivr": "./dist/fluxygram.js",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "pnpm --filter site element && node -e \"require('fs').mkdirSync('dist',{recursive:true});require('fs').copyFileSync('../../site/public/fluxygram.js','dist/fluxygram.js')\""
+  }
+}

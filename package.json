@@ -9,9 +9,12 @@
     "cf": "node scripts/cf.mjs",
     "cf:login": "node scripts/cf.mjs login",
     "preview": "pnpm build && node scripts/cf.mjs dev",
-    "deploy": "pnpm build && node scripts/cf.mjs deploy"
+    "deploy": "pnpm build && node scripts/cf.mjs deploy",
+    "build:packages": "pnpm --filter @fluxygram/core build && pnpm --filter @fluxygram/element build && pnpm --filter fluxygram build",
+    "release": "pnpm build:packages && pnpm -r --filter ./packages/* publish --access public --no-git-checks"
   },
   "devDependencies": {
+    "tsup": "^8.5.1",
     "typescript": "^5.8.3",
     "wrangler": "^4.40.0"
   },

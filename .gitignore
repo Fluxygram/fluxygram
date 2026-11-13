@@ -5,3 +5,5 @@ dist/
 *.log
 .cloudflare/
 site/public/fluxygram.js
+packages/*/dist/
+site/public/skill.md

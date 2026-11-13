@@ -74,18 +74,35 @@
         </div>
       </section>
 
-      <section>
-        <div class="wrap agent">
+      <section id="agents">
+        <div class="wrap">
           <div class="section-head">
             <h2 data-i18n="agents.title">Built for agents.</h2>
             <p data-i18n="agents.lead"></p>
           </div>
-<pre class="code"><span class="c" data-i18n="agents.c1"></span>
-<span class="k">import</span> "@fluxygram/element"
-<span class="k">&lt;fluxy-gram</span> src="order.flux.json"<span class="k">&gt;&lt;/fluxy-gram&gt;</span>
+          <div class="tabs" role="tablist" id="agentTabs"></div>
+          <div class="ag-panel" id="agentPanel"></div>
+        </div>
+      </section>
 
-<span class="c" data-i18n="agents.c2"></span>
-<span data-i18n="agents.ask"></span></pre>
+      <section id="install">
+        <div class="wrap">
+          <div class="section-head">
+            <h2 data-i18n="install.title">Put it on your site.</h2>
+            <p data-i18n="install.lead"></p>
+          </div>
+          <div class="ag-grid">
+            <div class="ag-card">
+              <h3 data-i18n="install.npm"></h3>
+              <div class="ag-copy"><pre class="code">npm install @fluxygram/element</pre></div>
+              <div class="ag-copy"><pre class="code">import '@fluxygram/element';</pre></div>
+            </div>
+            <div class="ag-card">
+              <h3 data-i18n="install.cdn"></h3>
+              <div class="ag-copy"><pre class="code">&lt;script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.1"&gt;&lt;/script&gt;
+&lt;fluxy-gram src="diagram.flux.json"&gt;&lt;/fluxy-gram&gt;</pre></div>
+            </div>
+          </div>
         </div>
       </section>
     </main>

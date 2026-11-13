@@ -1,15 +1,55 @@
 {
   "name": "@fluxygram/element",
-  "version": "0.0.1",
-  "description": "Web component <fluxy-gram> que dibuja y anima diagramas de Fluxygram.",
+  "version": "0.1.0",
+  "description": "<fluxy-gram>: a web component that draws and animates Fluxygram diagrams step by step.",
+  "keywords": [
+    "diagram",
+    "animation",
+    "web-component",
+    "custom-element",
+    "svg",
+    "fluxygram"
+  ],
   "type": "module",
   "license": "MIT",
+  "sideEffects": [
+    "./src/index.ts",
+    "./dist/index.js"
+  ],
+  "homepage": "https://fluxygram.salamancacmcol.workers.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fluxygram/fluxygram.git",
+    "directory": "packages/element"
+  },
+  "bugs": {
+    "url": "https://github.com/Fluxygram/fluxygram/issues"
+  },
   "main": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts"
   },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --target es2022"
+  },
   "dependencies": {
-    "@fluxygram/core": "workspace:*",
+    "@fluxygram/core": "workspace:^",
     "lucide": "^1.72.0"
   }
 }
