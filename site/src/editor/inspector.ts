@@ -1,5 +1,56 @@
 import { ArrowDown, ArrowLeftRight, ArrowUp, PinOff, Trash2 } from 'lucide';
-import { ICON_NAMES, iconElement } from '@fluxygram/element';
+import { ICON_GROUPS, iconElement } from '@fluxygram/element';
+
+/** Categoría de íconos abierta: se recuerda mientras se edita, para no volver a buscarla en cada nodo. */
+let iconCategory = 'all';
+
+/** Selector de íconos: buscador + categorías + grilla. Filtra sin redibujar el panel. */
+function iconPicker(current: string | undefined, onPick: (name: string | undefined) => void) {
+  const search = h('input', { type: 'search', class: 'ed-icon-search', placeholder: t('ed.iconSearch'), 'aria-label': t('ed.iconSearch') });
+  const cats = h('div', { class: 'ed-icon-cats' });
+  const grid = h('div', { class: 'ed-icons' });
+  const empty = h('p', { class: 'ed-icon-empty', hidden: true }, t('ed.iconNone'));
+
+  const button = (name: string, category: string) => {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    for (const [k, v] of Object.entries({ viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round', 'stroke-linejoin': 'round' })) svg.setAttribute(k, v);
+    const g = iconElement(name, 0, 0, 24);
+    if (g) svg.append(g);
+    const b = h('button', { type: 'button', title: name, 'aria-label': name, 'aria-pressed': String(current === name), onclick: () => onPick(name) }, svg);
+    b.dataset.name = name;
+    b.dataset.cat = category;
+    return b;
+  };
+
+  grid.append(h('button', { type: 'button', title: t('ed.noIcon'), 'aria-pressed': String(!current), onclick: () => onPick(undefined) }, '—'));
+  for (const [category, icons] of Object.entries(ICON_GROUPS)) for (const name of Object.keys(icons)) grid.append(button(name, category));
+
+  const apply = () => {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const b of grid.querySelectorAll<HTMLButtonElement>('button[data-name]')) {
+      const label = t(`icons.${b.dataset.cat}`).toLowerCase();
+      const ok = q ? b.dataset.name!.includes(q) || label.includes(q) : iconCategory === 'all' || b.dataset.cat === iconCategory;
+      b.hidden = !ok;
+      if (ok) shown++;
+    }
+    empty.hidden = shown > 0;
+    for (const c of cats.querySelectorAll<HTMLButtonElement>('button')) c.setAttribute('aria-pressed', String(!q && c.dataset.cat === iconCategory));
+  };
+
+  for (const category of ['all', ...Object.keys(ICON_GROUPS)]) {
+    const c = h('button', { type: 'button', onclick: () => {
+      iconCategory = category;
+      search.value = '';
+      apply();
+    } }, t(`icons.${category}`));
+    c.dataset.cat = category;
+    cats.append(c);
+  }
+  search.addEventListener('input', apply);
+  apply();
+  return h('div', { class: 'ed-icon-picker' }, search, cats, grid, empty);
+}
 import { DIAGRAM_TYPES, ENTER_STYLES, TRAVEL_STYLES, type DiagramType, type EnterStyle, type NodeKind, type TravelStyle } from '@fluxygram/core';
 import { t } from '../i18n';
 import { h, icon } from './dom';
@@ -146,21 +197,7 @@ function nodePanel(model: Model, id: string) {
   }
 
   if (d.type !== 'timeline' && n.kind !== 'decision') {
-    const grid = h('div', { class: 'ed-icons' });
-    grid.append(h('button', { type: 'button', title: t('ed.noIcon'), 'aria-pressed': String(!n.icon), onclick: () => model.updateNode(id, { icon: undefined }) }, '—'));
-    for (const name of ICON_NAMES) {
-      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      svg.setAttribute('viewBox', '0 0 24 24');
-      svg.setAttribute('fill', 'none');
-      svg.setAttribute('stroke', 'currentColor');
-      svg.setAttribute('stroke-width', '2');
-      svg.setAttribute('stroke-linecap', 'round');
-      svg.setAttribute('stroke-linejoin', 'round');
-      const g = iconElement(name, 0, 0, 24);
-      if (g) svg.append(g);
-      grid.append(h('button', { type: 'button', title: name, 'aria-label': name, 'aria-pressed': String(n.icon === name), onclick: () => model.updateNode(id, { icon: name }) }, svg));
-    }
-    box.append(h('div', { class: 'ed-field' }, h('span', {}, t('ed.icon')), grid));
+    box.append(h('div', { class: 'ed-field' }, h('span', {}, t('ed.icon')), iconPicker(n.icon, (name) => model.updateNode(id, { icon: name }))));
   }
 
   box.append(selectField<EnterStyle>(t('ed.enterNode'), n.enter, ENTER_STYLES, (v) => t(`enter.${v}`), (v) => model.updateNode(id, { enter: v }), true));

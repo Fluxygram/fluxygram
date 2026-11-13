@@ -90,6 +90,14 @@ export class Model {
     this.emit('load');
   }
 
+  /** Cambios escritos en la pestaña JSON: se aplican sin perder la selección ni reencuadrar la vista. */
+  replaceFromJson(diagram: Diagram) {
+    this.checkpoint();
+    this.diagram = normalize(clone(diagram));
+    this.fixSelection();
+    this.emit('json');
+  }
+
   select(sel: Selection) {
     this.selection = sel;
     this.emit('select');

@@ -12,6 +12,7 @@ import { renderInspector } from './editor/inspector';
 import { copyText, diagramFromHash, download, exportHtml, pickFile, shareUrl, slug } from './editor/io';
 import { emptyDiagram, Model } from './editor/model';
 import { renderSteps } from './editor/steps';
+import { createJsonEditor } from './editor/json';
 import { startTour, tourSeen } from './editor/tour';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -250,45 +251,54 @@ for (const tab of tabs) {
   };
 }
 
-const jsonBox = $<HTMLTextAreaElement>('json');
-const jsonStatus = $('jsonStatus');
-function syncJson(force = false) {
-  if (!force && document.activeElement === jsonBox) return;
-  jsonBox.value = JSON.stringify(clean(model.diagram), null, 2);
-  jsonStatus.textContent = '';
-  jsonStatus.classList.remove('is-error');
-}
+// Editor de JSON: colores, números de línea, plegado y errores marcados en su línea.
+const jsonBadge = $('jsonBadge');
+const jsonIssues = $('jsonIssues');
 let jsonTimer: number | undefined;
-jsonBox.addEventListener('input', () => {
-  clearTimeout(jsonTimer);
-  jsonTimer = window.setTimeout(() => {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(jsonBox.value);
-    } catch {
-      jsonStatus.textContent = t('play.incomplete');
-      jsonStatus.classList.add('is-error');
+const jsonEditor = createJsonEditor($('json'), {
+  locale: lang,
+  onChange: (text) => {
+    clearTimeout(jsonTimer);
+    jsonTimer = window.setTimeout(() => {
+      try {
+        const r = validate(JSON.parse(text), { locale: lang });
+        // Solo un JSON válido reemplaza el diagrama: mientras se escribe, el lienzo no se rompe.
+        if (r.ok) model.replaceFromJson(r.diagram);
+      } catch {
+        /* JSON incompleto mientras se escribe */
+      }
+    }, 600);
+  },
+  onIssues: (issues) => {
+    jsonBadge.classList.toggle('is-error', issues !== null);
+    if (issues === null) {
+      jsonBadge.textContent = t('play.valid');
+      jsonIssues.hidden = true;
       return;
     }
-    const r = validate(parsed, { locale: lang });
-    if (!r.ok) {
-      jsonStatus.classList.add('is-error');
-      jsonStatus.replaceChildren(
-        r.issues.length === 1 ? t('play.errors1') : t('play.errorsN', { n: String(r.issues.length) }),
-        h('ul', {}, ...r.issues.slice(0, 6).map((i) => h('li', {}, `${i.path} ${i.message}`))),
-      );
+    if (issues === 'syntax') {
+      jsonBadge.textContent = t('play.incomplete');
+      jsonIssues.hidden = true;
       return;
     }
-    jsonStatus.classList.remove('is-error');
-    jsonStatus.textContent = t('play.valid');
-    model.load(r.diagram);
-  }, 500);
+    jsonBadge.textContent = issues.length === 1 ? t('play.errors1') : t('play.errorsN', { n: String(issues.length) });
+    jsonIssues.hidden = false;
+    jsonIssues.replaceChildren(
+      ...issues.slice(0, 8).map((issue) =>
+        h('button', { type: 'button', class: 'ed-json-issue', onclick: () => jsonEditor.goTo(issue.path) },
+          h('code', {}, issue.path || '—'), ' ', issue.message),
+      ),
+    );
+  },
 });
-jsonBox.addEventListener('keydown', (e) => {
-  if (e.key !== 'Tab') return;
-  e.preventDefault();
-  jsonBox.setRangeText('  ', jsonBox.selectionStart, jsonBox.selectionEnd, 'end');
-});
+function syncJson(force = false) {
+  if (!force && jsonEditor.hasFocus()) return;
+  jsonEditor.setValue(JSON.stringify(clean(model.diagram), null, 2));
+}
+$('jsonFormat').onclick = () => jsonEditor.format();
+$('jsonCopy').onclick = async () => {
+  if (await copyText(jsonEditor.getValue())) toast(t('ed.copiedJson'));
+};
 
 /* ---------- Vista previa ---------- */
 

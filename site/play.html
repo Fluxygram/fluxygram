@@ -41,7 +41,7 @@
         <button type="button" class="ed-icon" id="download" data-i18n-attr="aria-label:ed.download;title:ed.download"></button>
         <button type="button" class="ed-icon" id="export" data-i18n-attr="aria-label:ed.export;title:ed.export"></button>
         <button type="button" class="ed-btn" id="share"><span data-i18n="ed.share">Share</span></button>
-        <button type="button" class="ed-btn" id="present"><span data-i18n="ed.present">Present</span></button>
+        <button type="button" class="ed-btn" id="present" data-i18n-attr="title:ed.presentTip"><span data-i18n="ed.present">Present</span></button>
         <button type="button" class="ed-btn ed-primary" id="preview"><span data-i18n="ed.preview">Play</span></button>
         <button type="button" class="ed-icon" id="tour" data-i18n-attr="aria-label:tour.help;title:tour.help"></button>
         <button class="lang-switch" type="button" data-lang-switch>Español</button>
@@ -66,8 +66,14 @@
         </div>
         <div class="ed-panel" id="props"></div>
         <div class="ed-panel" id="jsonPanel" hidden>
-          <div class="ed-json-status" id="jsonStatus"></div>
-          <textarea id="json" spellcheck="false" data-i18n-attr="aria-label:play.source"></textarea>
+          <div class="ed-json-bar">
+            <span class="ed-json-badge" id="jsonBadge"></span>
+            <span class="ed-spacer"></span>
+            <button type="button" class="ed-btn ed-btn-sm" id="jsonFormat" data-i18n="ed.format">Format</button>
+            <button type="button" class="ed-btn ed-btn-sm" id="jsonCopy" data-i18n="ed.copy">Copy</button>
+          </div>
+          <div class="ed-json-issues" id="jsonIssues" hidden></div>
+          <div class="ed-json-editor" id="json"></div>
         </div>
       </aside>
 

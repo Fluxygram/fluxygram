@@ -19,6 +19,25 @@
         <span><kbd>→</kbd> <span data-i18n="pr.next"></span></span>
         <span><kbd>N</kbd> <span data-i18n="pr.notes"></span></span>
         <span><kbd>F</kbd> <span data-i18n="pr.full"></span></span>
+        <span><kbd>?</kbd> <span data-i18n="pr.help"></span></span>
+      </div>
+      <div class="pr-help" id="help" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <div class="pr-help-card">
+          <h2 id="helpTitle" data-i18n="pr.helpTitle"></h2>
+          <p class="pr-help-lead" data-i18n="pr.helpLead"></p>
+          <ul class="pr-help-list">
+            <li><kbd>→</kbd> <kbd data-i18n="pr.kSpace">Space</kbd> <kbd data-i18n="pr.kClick">Click</kbd><span data-i18n="pr.helpNext"></span></li>
+            <li><kbd>←</kbd><span data-i18n="pr.helpPrev"></span></li>
+            <li><kbd>N</kbd><span data-i18n="pr.helpNotes"></span></li>
+            <li><kbd>F</kbd><span data-i18n="pr.helpFull"></span></li>
+            <li><kbd>?</kbd><span data-i18n="pr.helpAgain"></span></li>
+          </ul>
+          <p class="pr-help-tip" data-i18n="pr.helpClicker"></p>
+          <div class="pr-help-actions">
+            <button type="button" class="ed-btn" id="helpNotes" data-i18n="pr.openNotes"></button>
+            <button type="button" class="ed-btn ed-primary" id="helpStart" data-i18n="pr.start"></button>
+          </div>
+        </div>
       </div>
     </main>
 

@@ -18,6 +18,7 @@ const STEPS: TourStep[] = [
   { targets: ['.ed-side'], place: 'left', key: 'tour.3' },
   { targets: ['#steps'], place: 'top', key: 'tour.4' },
   { targets: ['#download', '#export', '#share', '#preview'], place: 'bottom', key: 'tour.5' },
+  { targets: ['#present'], place: 'bottom', key: 'tour.present' },
   { targets: ['#tour'], place: 'bottom', key: 'tour.6' },
 ];
 

@@ -66,6 +66,12 @@ channel.onmessage = (e: MessageEvent<Message>) => {
 window.addEventListener(
   'keydown',
   (e) => {
+    if (!helpEl.hidden && ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'].includes(e.key)) {
+      e.preventDefault();
+      e.stopPropagation();
+      showHelp(false);
+      return;
+    }
     const nextKeys = ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'];
     const prevKeys = ['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'];
     let handled = true;
@@ -75,7 +81,13 @@ window.addEventListener(
     else if (e.key === 'End') go(count - 1);
     else if (e.key.toLowerCase() === 'f' && role === 'audience') toggleFullscreen();
     else if (e.key.toLowerCase() === 'n') openPresenter();
+    else if (e.key === '?' && role === 'audience') showHelp(true);
+    else if (e.key === 'Escape' && !helpEl.hidden) showHelp(false);
     else handled = false;
+    // Con la ayuda abierta, las teclas de avance la cierran en lugar de avanzar.
+    if (handled && !helpEl.hidden && role === 'audience' && e.key !== '?' && e.key.toLowerCase() !== 'n') {
+      showHelp(false);
+    }
     if (handled) {
       // El componente también escucha flechas: así no avanza dos veces.
       e.preventDefault();
@@ -95,11 +107,41 @@ function openPresenter() {
   window.open(`/present?role=presenter${location.hash}`, 'fluxygram-presenter', 'width=1100,height=720');
 }
 
+/* ---------- Ayuda: aparece la primera vez; "?" la abre de nuevo ---------- */
+
+const helpEl = $('help');
+const HELP_KEY = 'fluxygram:present-help';
+function showHelp(open: boolean) {
+  helpEl.hidden = !open;
+  if (open) $('helpStart').focus();
+  else {
+    try {
+      localStorage.setItem(HELP_KEY, 'done');
+    } catch {
+      /* almacenamiento no disponible */
+    }
+    main.focus();
+  }
+}
+$('helpStart').onclick = () => showHelp(false);
+$('helpNotes').onclick = () => {
+  openPresenter();
+  showHelp(false);
+};
+helpEl.addEventListener('click', (e) => e.stopPropagation());
+
 /* ---------- Público ---------- */
 
 if (role === 'audience') {
   $('audience').hidden = false;
   main.focus();
+  let seen = false;
+  try {
+    seen = localStorage.getItem(HELP_KEY) === 'done';
+  } catch {
+    seen = false;
+  }
+  if (!seen) showHelp(true);
 
   // El diagrama ocupa todo lo que puede sin salirse de la pantalla (ancho según su proporción).
   const fit = () => {

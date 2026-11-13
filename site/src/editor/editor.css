@@ -239,3 +239,38 @@
 @media (hover: hover) and (pointer: fine) { .ed-type:hover { border-color: var(--accent); background: var(--code-bg); } }
 .ed-toast button { margin-left: 12px; padding: 0; border: 0; background: none; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; }
 .ed-toast.is-on { pointer-events: auto; }
+
+/* ---------- Selector de íconos ---------- */
+.ed-icon-picker { display: grid; gap: 8px; }
+.ed-icon-search {
+  height: 34px; padding: 0 10px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg);
+  color: var(--text); font: inherit; font-size: 13.5px; outline: none;
+}
+.ed-icon-search:focus { border-color: var(--accent); }
+.ed-icon-cats { display: flex; flex-wrap: wrap; gap: 4px; }
+.ed-icon-cats button {
+  height: 26px; padding: 0 9px; border: 1px solid var(--border); border-radius: 999px; background: transparent;
+  color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; transition: color 160ms ease, border-color 160ms ease;
+}
+.ed-icon-cats button[aria-pressed='true'] { color: var(--accent); border-color: var(--accent); }
+.ed-icons { max-height: 220px; overflow-y: auto; padding-right: 2px; }
+.ed-icons button[hidden] { display: none; }
+.ed-icon-empty { margin: 0; font-size: 13px; color: var(--muted); }
+
+/* ---------- Editor de JSON ---------- */
+.ed-json-bar { display: flex; align-items: center; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.ed-json-badge { font-size: 12.5px; font-weight: 500; color: var(--accent); }
+.ed-json-badge::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: currentColor; vertical-align: 1px; }
+.ed-json-badge.is-error { color: #ff6b6b; }
+.ed-btn-sm { height: 28px; padding: 0 10px; font-size: 12.5px; }
+.ed-json-issues { display: grid; gap: 2px; padding: 8px; border-bottom: 1px solid var(--border); max-height: 160px; overflow-y: auto; }
+.ed-json-issue {
+  display: block; width: 100%; padding: 6px 8px; border: 0; border-radius: 7px; background: transparent; text-align: left;
+  color: var(--text); font: inherit; font-size: 12.5px; line-height: 1.45; cursor: pointer;
+}
+.ed-json-issue code { color: #ff8f8f; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11.5px; }
+@media (hover: hover) and (pointer: fine) { .ed-json-issue:hover { background: var(--code-bg); } }
+.ed-json-editor { flex: 1; min-height: 0; overflow: hidden; }
+.ed-json-editor .cm-editor { height: 100%; }
+.ed-json-editor .cm-editor.cm-focused { outline: none; }
+.ed-json-issues[hidden] { display: none; }

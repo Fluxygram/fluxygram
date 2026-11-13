@@ -84,7 +84,19 @@ Type-specific notes:
 | `accent` | no | `true` on the one node that matters most (the outcome, the key service). Use it at most once or twice. |
 | `state` | no | State from the start (`success`, `error`, `warning`, `pending`); steps can change it. Edges accept `state` too. |
 
-Icons: `alert api book bot browser building cart chart check clock cloud code cpu card database disk file flag git globe heart idea image key layers lock mail message mobile monitor network notification package rocket search server settings shield store truck user users workflow zap`.
+Icons, by category (use the exact name):
+
+- **general**: `check` `alert` `info` `help` `flag` `star` `heart` `bookmark` `tag` `pin` `home` `search` `settings` `filter` `clock` `calendar` `idea` `target` `trophy` `rocket` `zap` `layers` `workflow` `puzzle` `box`
+- **people**: `user` `users` `verified` `signup` `admin` `bot` `contact` `deal` `building` `school` `hospital` `student` `work` `brain`
+- **devices**: `browser` `mobile` `tablet` `monitor` `laptop` `watch` `printer` `camera` `mic` `speaker` `keyboard` `gamepad` `tv` `router` `wifi` `bluetooth` `cpu` `disk` `usb`
+- **infrastructure**: `server` `cloud` `database` `network` `globe` `cdn` `container` `api` `plug` `cable` `gauge` `activity` `queue` `balancer` `function` `storage` `backup` `sync` `upload` `download` `logs` `dashboard`
+- **code**: `code` `terminal` `braces` `bug` `git` `merge` `pullrequest` `package` `tool` `build` `design` `pen`
+- **data**: `file` `files` `folder` `image` `video` `music` `table` `sheet` `chart` `bars` `pie` `book` `notebook` `clipboard` `inbox`
+- **commerce**: `cart` `card` `wallet` `money` `coins` `receipt` `store` `truck` `gift` `percent` `bank` `barcode` `scan` `scale`
+- **communication**: `mail` `message` `chat` `phone` `notification` `send` `share` `megaphone` `rss` `at` `link`
+- **security**: `shield` `lock` `unlock` `key` `fingerprint` `eye` `hidden` `secure` `threat` `id`
+- **world**: `sun` `moon` `leaf` `tree` `water` `fire` `mountain` `map` `plane` `car` `train` `ship` `factory` `warehouse` `health` `pill` `fitness` `food` `coffee`
+- **status**: `play` `pause` `timer` `hourglass` `loading` `error` `add` `remove` `next` `join` `repeat` `random` `up` `down`
 
 ### Edges
 
@@ -150,6 +162,37 @@ These make the difference between a diagram that moves and one that explains.
 8. **Architecture**: build it bottom-up (data → services → edge → clients), then trace one request with `flow` + `highlight`.
 9. **Timeline**: no steps needed unless you want captions; keep 4 to 10 milestones.
 10. **5 to 8 steps** is the sweet spot. Under 3 feels static; over 10 feels slow.
+
+## Diagramming a codebase
+
+When asked to explain a repository (a monorepo, a set of microservices, an app and its backend), do the reading first and draw second. One diagram that shows everything explains nothing: produce a small set.
+
+### 1. Read the system, not the files
+
+Look for the places where the architecture is declared, in this order:
+
+1. **Deployment**: `docker-compose*.yml`, `k8s/` or `helm/` manifests, `serverless.yml`, `wrangler.*`, Terraform, `Procfile`. Every service, database, queue and cache usually appears here with its name and ports.
+2. **Workspaces**: `package.json` workspaces, `pnpm-workspace.yaml`, `go.work`, `Cargo.toml` members, `settings.gradle`, top-level `apps/` and `services/` folders. One package or app is usually one block.
+3. **Entry points and routes**: `main.*`, `server.*`, `index.*`, router files, controllers, OpenAPI/GraphQL schemas, `.proto` files. They tell you what each service exposes.
+4. **Who calls whom**: HTTP clients and base URLs (env vars like `ORDERS_URL`), gRPC stubs, queue producers/consumers (topic names), database clients and connection strings, SDKs of third parties (Stripe, Auth0, S3).
+5. **The README and docs**, last, to confirm names and intent.
+
+Write down, before drawing: services (name, one-line job), data stores, queues/topics, external services, and the calls between them with what they carry.
+
+### 2. Draw a set, from overview to detail
+
+1. **Overview** (`architecture`): layers top to bottom, for example `Clients` → `Edge` (gateway, CDN) → `Services` → `Data` → `External`. One block per deployable service or data store, at most ~12–15 blocks. Group minor services ("Workers", "Cron jobs") into one block if needed. Use `database` kind for stores and `queue`, `api`, `server`, `cloud`, `function` icons.
+2. **Two to four key flows** (`sequence`): the requests that matter most to the business (sign-up, checkout, the main job). Participants are the services involved; messages in order, labelled with the endpoint or event (`POST /orders`, `order.created`). Mark failures with `state: "error"` when the flow has an important failure path.
+3. **Optional**: a `flow` for a business process that spans services, or a `tree` of the repo's packages if the question is about code organization.
+
+Name each file after what it explains: `overview.flux.json`, `checkout.flux.json`.
+
+### 3. Rules for codebase diagrams
+
+- Use the names the team uses in code (service names, topic names), with a plain `description` of the job ("charges cards", "sends emails").
+- Show the main path with `flow` + `carries` (`"carries": "order.created"`), not every call. Background jobs and health checks rarely belong in the story.
+- If something is unclear from the code (a call you could not confirm), leave it out rather than guessing, and say so to the user.
+- Write `notes` on each step when the diagrams are for onboarding or a design review: what a new engineer should know about that hop (retries, idempotency, which repo folder holds it).
 
 ## Before you hand it over
 
