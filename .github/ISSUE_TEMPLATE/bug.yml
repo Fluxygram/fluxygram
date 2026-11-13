@@ -1,0 +1,49 @@
+name: Bug report
+description: Something doesn't work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. A diagram that shows the problem helps the most.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce it
+      description: Steps, or a share link from the editor (Share → copy link).
+      placeholder: |
+        1. Open https://fluxygram.app/play
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: diagram
+    attributes:
+      label: Diagram JSON
+      description: The smallest .flux.json that shows the problem, if you have one.
+      render: json
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      multiple: true
+      options:
+        - Editor (/play)
+        - Presentation mode
+        - "<fluxy-gram> component"
+        - npm package
+        - Agent skill
+        - Landing page
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Browser and device
+      placeholder: Chrome 131 on macOS, Safari on iPhone…

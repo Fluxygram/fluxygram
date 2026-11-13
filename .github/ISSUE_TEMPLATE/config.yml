@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or help
+    url: https://github.com/Fluxygram/fluxygram/discussions/categories/q-a
+    about: Ask how to do something in Discussions.
+  - name: Show your diagram
+    url: https://github.com/Fluxygram/fluxygram/discussions/categories/show-and-tell
+    about: Share what you made.
+  - name: Security problem
+    url: https://github.com/Fluxygram/fluxygram/security/advisories/new
+    about: Report it privately, never in a public issue.
