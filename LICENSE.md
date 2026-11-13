@@ -14,4 +14,6 @@ The diagram format (`.flux.json`) and its JSON Schema are open: anyone can write
 
 If a file sits inside one of those folders, that folder's license applies. Anything else in the repository (build configuration, scripts, docs) is MIT.
 
+Contributions are accepted under the [Contributor License Agreement](CLA.md); see [CONTRIBUTING.md](CONTRIBUTING.md).
+
 "Fluxygram" and its logo are trademarks of the project; the licenses above don't grant rights to them.

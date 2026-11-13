@@ -11,3 +11,4 @@
 - [ ] `pnpm typecheck` and `pnpm build` pass
 - [ ] New user-facing texts are in `site/public/i18n.js` in English and Spanish
 - [ ] Format changes also update the schema, `SKILL.md` and an example
+- [ ] I've read the [CLA](https://github.com/Fluxygram/fluxygram/blob/main/CLA.md) (the bot will ask you to sign it on your first PR)

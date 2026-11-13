@@ -53,7 +53,9 @@ pnpm dev        # site, editor and presentation mode at http://localhost:5173
 
 ## Licensing of contributions
 
-By contributing, you agree that your contribution is licensed under the license of the folder it lands in: MIT for `packages/*` and `skills/*`, FSL-1.1-ALv2 for `site`. See [LICENSE.md](LICENSE.md).
+Your contribution is published under the license of the folder it lands in: MIT for `packages/*` and `skills/*`, FSL-1.1-ALv2 for `site`. See [LICENSE.md](LICENSE.md).
+
+Before your first pull request can be merged, you sign the [Contributor License Agreement](CLA.md) once: a bot comments on the PR, and you reply with the sentence it gives you. You keep ownership of your work. The CLA lets the project use contributions in any product, open source or commercial, and change licenses in the future without having to find every past contributor.
 
 ## Conduct
 
