@@ -121,6 +121,10 @@ details.json pre { margin: 0; padding: 0 16px 16px; max-height: 420px; overflow:
 .code .c { color: var(--muted); }
 .code .k { color: var(--accent); }
 
+/* Marca gigante (TechText): el canvas ocupa todo el bloque */
+.wordmark { height: clamp(160px, 26vw, 360px); margin: 24px auto 0; max-width: 1200px; color: var(--text); }
+.wordmark-404 { height: clamp(160px, 30vw, 300px); margin: 0 auto 8px; max-width: 640px; }
+
 footer { padding: 40px 0 56px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
 footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .footer-gh { display: inline-grid; place-items: center; color: var(--muted); transition: color 160ms ease; }

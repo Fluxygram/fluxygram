@@ -2,6 +2,7 @@ import '@fluxygram/element';
 import type { FluxyGram } from '@fluxygram/element';
 import { exampleUrl } from './i18n';
 import './agents';
+import { mountTechText } from './vendor/tech-text';
 
 const hero = document.querySelector<FluxyGram>('#hero')!;
 hero.setAttribute('src', exampleUrl(hero.dataset.example!));
@@ -25,3 +26,15 @@ for (const tab of tabs) {
 }
 
 void show('order');
+
+// La marca gigante al final: las letras se seleccionan como bloques del editor.
+mountTechText(document.querySelector<HTMLElement>('#wordmark')!, {
+  text: 'fluxygram',
+  fontWeight: 600,
+  fontSize: 260,
+  letterSpacing: -0.055,
+  accentColor: '#2bff88',
+  intro: 'metrics',
+  introDuration: 2.2,
+  speed: 0.6,
+});
