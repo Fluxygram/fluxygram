@@ -12,7 +12,7 @@ Fluxygram uses two licenses, depending on the part of the repository.
 
 The diagram format (`.flux.json`) and its JSON Schema are open: anyone can write, read and render it.
 
-If a file sits inside one of those folders, that folder's license applies. The exception is third-party code in [`site/src/vendor`](site/src/vendor): each file there keeps its own license, written at the top of the file (for example, `tech-text.ts` and `rubber-segment.ts` come from React Bits under MIT + Commons Clause). Anything else in the repository (build configuration, scripts, docs) is MIT.
+If a file sits inside one of those folders, that folder's license applies. The exception is third-party code in [`site/src/vendor`](site/src/vendor): each file there keeps its own license, written at the top of the file (for example, `tech-text.ts`, `rubber-segment.ts` and `specular-button.ts` come from React Bits under MIT + Commons Clause). Anything else in the repository (build configuration, scripts, docs) is MIT.
 
 Contributions are accepted under the [Contributor License Agreement](CLA.md); see [CONTRIBUTING.md](CONTRIBUTING.md).
 

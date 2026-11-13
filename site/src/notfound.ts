@@ -1,4 +1,6 @@
 import { mountTechText } from './vendor/tech-text';
+import { applySpecular } from './vendor/specular-button';
+import { SPECULAR } from './specular';
 
 mountTechText(document.querySelector<HTMLElement>('#wordmark404')!, {
   text: '404',
@@ -10,3 +12,6 @@ mountTechText(document.querySelector<HTMLElement>('#wordmark404')!, {
   introDuration: 1.6,
   speed: 0.6,
 });
+
+const back = document.querySelector<HTMLElement>('.cta a.btn');
+if (back) applySpecular(back, SPECULAR);

@@ -3,6 +3,8 @@ import type { FluxyGram } from '@fluxygram/element';
 import { exampleUrl } from './i18n';
 import './agents';
 import './lang';
+import { applySpecular } from './vendor/specular-button';
+import { SPECULAR } from './specular';
 import { mountTechText } from './vendor/tech-text';
 
 const hero = document.querySelector<FluxyGram>('#hero')!;
@@ -39,3 +41,7 @@ mountTechText(document.querySelector<HTMLElement>('#wordmark')!, {
   introDuration: 2.2,
   speed: 0.6,
 });
+
+// "Ver en GitHub": botón de cristal cuyo borde se enciende hacia el cursor. El verde sigue siendo la acción principal.
+const github = document.querySelector<HTMLElement>('.hero .cta a.btn:not(.btn-primary)');
+if (github) applySpecular(github, SPECULAR);
