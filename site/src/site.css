@@ -31,7 +31,7 @@ code, pre { font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monos
 /* ---------- Nav ---------- */
 .nav-links { align-items: center; gap: 8px; }
 .nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.02em; text-decoration: none; }
+.brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 20px; letter-spacing: -0.02em; text-decoration: none; }
 .brand svg { width: 26px; height: 26px; }
 .nav-links { display: flex; gap: 4px; }
 .nav-links a {

@@ -6,7 +6,7 @@
   display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
   padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--surface);
 }
-.ed-top .brand { font-size: 15px; margin-right: 4px; }
+.ed-top .brand { font-size: 17px; margin-right: 4px; }
 .ed-spacer { flex: 1; }
 .ed-tools { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .ed-sep { width: 1px; height: 20px; margin: 0 6px; background: var(--border); }
