@@ -22,6 +22,7 @@
         <span><kbd>?</kbd> <span data-i18n="pr.help"></span></span>
       </div>
       <div class="pr-help" id="help" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <div class="pr-rings" id="helpRings" aria-hidden="true"></div>
         <div class="pr-help-card">
           <h2 id="helpTitle" data-i18n="pr.helpTitle"></h2>
           <p class="pr-help-lead" data-i18n="pr.helpLead"></p>
@@ -39,6 +40,15 @@
           </div>
         </div>
       </div>
+      <!-- Pantalla final: aparece al avanzar después del último paso -->
+      <section class="pr-end" id="end" hidden aria-labelledby="endTitle">
+        <div class="pr-rings" id="endRings" aria-hidden="true"></div>
+        <div class="pr-end-text">
+          <h1 id="endTitle" data-i18n="pr.thanks"></h1>
+          <p class="pr-end-sub" id="endSub"></p>
+          <p class="pr-end-back"><kbd>←</kbd> <span data-i18n="pr.endBack"></span></p>
+        </div>
+      </section>
     </main>
 
     <!-- Vista del presentador -->

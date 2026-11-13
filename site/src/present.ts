@@ -3,6 +3,7 @@ import type { FluxyGram } from '@fluxygram/element';
 import { validate, type Diagram } from '@fluxygram/core';
 import { lang, t } from './i18n';
 import { diagramFromHash } from './editor/io';
+import { mountMagicRings, type MagicRingsOptions } from './vendor/magic-rings';
 
 /**
  * Presentación en dos ventanas sincronizadas:
@@ -31,11 +32,54 @@ const code = new URLSearchParams(location.hash.slice(1)).get('d') ?? '';
 let hash = 0;
 for (let i = 0; i < code.length; i++) hash = (hash * 31 + code.charCodeAt(i)) | 0;
 const channel = new BroadcastChannel(`fluxygram-present-${hash}`);
-type Message = { type: 'go'; index: number } | { type: 'hello' } | { type: 'state'; index: number };
+type Message =
+  | { type: 'go'; index: number }
+  | { type: 'hello' }
+  | { type: 'state'; index: number; ended: boolean }
+  | { type: 'end'; on: boolean };
 
 let index = 0;
 let count = 1;
 let applying = false;
+let ended = false;
+
+/* ---------- Anillos (verde neón, respirando lento) ---------- */
+
+const RINGS: MagicRingsOptions = {
+  color: '#2bff88',
+  colorTwo: '#0f8a52',
+  motion: 'breathe',
+  ringCount: 6,
+  baseRadius: 0.5,
+  radiusStep: 0.09,
+  speed: 0.6,
+  lineThickness: 1.6,
+  glow: 0.8,
+  hoverScale: 1.08,
+  parallax: 0.03,
+  clickBurst: true,
+};
+const rings = new Map<string, () => void>();
+function setRings(id: string, on: boolean, opacity: number) {
+  if (on && !rings.has(id)) rings.set(id, mountMagicRings($(id), { ...RINGS, opacity }));
+  if (!on) {
+    rings.get(id)?.();
+    rings.delete(id);
+  }
+}
+
+/** Pantalla final del público: aparece al avanzar después del último paso. */
+function setEnd(on: boolean, broadcast = true) {
+  if (on === ended) return;
+  ended = on;
+  if (broadcast) channel.postMessage({ type: 'end', on } satisfies Message);
+  if (role === 'audience') {
+    $('end').hidden = !on;
+    setRings('endRings', on, 0.9);
+    if (!on) main.focus();
+  }
+  render();
+}
 
 const main = $<FluxyGram>(role === 'audience' ? 'diagram' : 'mini');
 main.diagram = diagram;
@@ -53,7 +97,9 @@ function go(i: number) {
 
 channel.onmessage = (e: MessageEvent<Message>) => {
   const msg = e.data;
-  if (msg.type === 'hello') channel.postMessage({ type: 'state', index } satisfies Message);
+  if (msg.type === 'hello') channel.postMessage({ type: 'state', index, ended } satisfies Message);
+  if (msg.type === 'end') setEnd(msg.on, false);
+  if (msg.type === 'state') setEnd(msg.ended, false);
   if ((msg.type === 'go' || msg.type === 'state') && msg.index !== index) {
     applying = true;
     main.goTo(msg.index);
@@ -75,10 +121,19 @@ window.addEventListener(
     const nextKeys = ['ArrowRight', 'ArrowDown', 'PageDown', ' ', 'Enter'];
     const prevKeys = ['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'];
     let handled = true;
-    if (nextKeys.includes(e.key)) go(index + 1);
-    else if (prevKeys.includes(e.key)) go(index - 1);
-    else if (e.key === 'Home') go(0);
-    else if (e.key === 'End') go(count - 1);
+    if (nextKeys.includes(e.key)) {
+      if (index >= count - 1) setEnd(true);
+      else go(index + 1);
+    } else if (prevKeys.includes(e.key)) {
+      if (ended) setEnd(false);
+      else go(index - 1);
+    } else if (e.key === 'Home') {
+      setEnd(false);
+      go(0);
+    } else if (e.key === 'End') {
+      setEnd(false);
+      go(count - 1);
+    }
     else if (e.key.toLowerCase() === 'f' && role === 'audience') toggleFullscreen();
     else if (e.key.toLowerCase() === 'n') openPresenter();
     else if (e.key === '?' && role === 'audience') showHelp(true);
@@ -113,6 +168,7 @@ const helpEl = $('help');
 const HELP_KEY = 'fluxygram:present-help';
 function showHelp(open: boolean) {
   helpEl.hidden = !open;
+  setRings('helpRings', open, 0.6);
   if (open) $('helpStart').focus();
   else {
     try {
@@ -134,6 +190,7 @@ helpEl.addEventListener('click', (e) => e.stopPropagation());
 
 if (role === 'audience') {
   $('audience').hidden = false;
+  $('endSub').textContent = diagram.title ?? '';
   main.focus();
   let seen = false;
   try {
@@ -177,23 +234,26 @@ function render() {
   if (role !== 'presenter') return;
   const steps = diagram.steps ?? [];
   const isFinale = index >= steps.length && index === count - 1 && count > steps.length;
-  $('count').textContent = `${index + 1} / ${count}`;
+  $('count').textContent = ended ? t('pr.endNow') : `${index + 1} / ${count}`;
   const step = steps[index];
-  const notes = step?.notes?.trim();
-  notesEl.textContent = notes || (isFinale ? t('pr.finaleNotes') : t('pr.noNotes'));
+  const notes = ended ? undefined : step?.notes?.trim();
+  notesEl.textContent = ended ? t('pr.endNotes') : notes || (isFinale ? t('pr.finaleNotes') : t('pr.noNotes'));
   notesEl.classList.toggle('is-empty', !notes);
-  $('nowCaption').textContent = step?.caption ?? (isFinale ? t('pr.finale') : '—');
+  $('nowCaption').textContent = ended ? t('pr.endNow') : step?.caption ?? (isFinale ? t('pr.finale') : '—');
   const next = steps[index + 1];
-  $('nextCaption').textContent =
-    index >= count - 1 ? t('pr.end') : next?.caption ?? (index + 1 === count - 1 && count > steps.length ? t('pr.finale') : '—');
-  $<HTMLButtonElement>('prev').disabled = index <= 0;
-  $<HTMLButtonElement>('next').disabled = index >= count - 1;
+  $('nextCaption').textContent = ended
+    ? '—'
+    : index >= count - 1
+      ? t('pr.end')
+      : next?.caption ?? (index + 1 === count - 1 && count > steps.length ? t('pr.finale') : '—');
+  $<HTMLButtonElement>('prev').disabled = index <= 0 && !ended;
+  $<HTMLButtonElement>('next').disabled = ended;
 }
 
 if (role === 'presenter') {
   $('presenter').hidden = false;
-  $('prev').onclick = () => go(index - 1);
-  $('next').onclick = () => go(index + 1);
+  $('prev').onclick = () => (ended ? setEnd(false) : go(index - 1));
+  $('next').onclick = () => (index >= count - 1 ? setEnd(true) : go(index + 1));
   $('timerReset').onclick = () => (timerStart = Date.now());
   setInterval(() => {
     const s = Math.floor((Date.now() - timerStart) / 1000);
