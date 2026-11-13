@@ -42,3 +42,4 @@ Your Contributions are provided "as is", without warranties or conditions of any
 ## 7. Your rights
 
 You keep all rights to your Contributions. Nothing in this agreement stops you from using them in any way you like. The project's open source licenses still apply to everyone, you included: see [LICENSE.md](LICENSE.md).
+
