@@ -1,5 +1,5 @@
 import type { Diagram } from '@fluxygram/core';
-import { CloudUpload, FolderOpen, Link2, LogOut } from 'lucide';
+import { CloudUpload, FolderOpen, Link2, LogOut, X } from 'lucide';
 import { h, icon } from './editor/dom';
 import type { Model } from './editor/model';
 import { copyText } from './editor/io';
@@ -261,6 +261,7 @@ async function showList(o: { model: Model; toast: (t: string) => void; onOpen: (
 
   const modal: HTMLDivElement = h('div', { class: 'ed-modal' },
     h('div', { class: 'ed-picker ed-cloud-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('cloud.mine') },
+      h('button', { type: 'button', class: 'ed-icon ed-modal-close', title: t('ed.close'), 'aria-label': t('ed.close'), onclick: () => close() }, icon(X)),
       h('h2', { class: 'ed-picker-title' }, t('cloud.mine')),
       list,
     ),
