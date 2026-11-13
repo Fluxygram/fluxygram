@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://fluxygram.dev/schema/v1.json",
+  "$id": "https://fluxygram.app/schema/v1.json",
   "title": "Fluxygram diagram",
   "description": "An animated diagram that explains something step by step.",
   "type": "object",

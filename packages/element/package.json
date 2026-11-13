@@ -1,6 +1,6 @@
 {
   "name": "@fluxygram/element",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "<fluxy-gram>: a web component that draws and animates Fluxygram diagrams step by step.",
   "keywords": [
     "diagram",
@@ -16,7 +16,7 @@
     "./src/index.ts",
     "./dist/index.js"
   ],
-  "homepage": "https://fluxygram.salamancacmcol.workers.dev",
+  "homepage": "https://fluxygram.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Fluxygram/fluxygram.git",

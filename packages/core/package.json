@@ -1,6 +1,6 @@
 {
   "name": "@fluxygram/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fluxygram's diagram format: validation, automatic layout and motion grammar. No framework, no DOM.",
   "keywords": [
     "diagram",
@@ -13,7 +13,7 @@
   "type": "module",
   "license": "MIT",
   "sideEffects": false,
-  "homepage": "https://fluxygram.salamancacmcol.workers.dev",
+  "homepage": "https://fluxygram.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Fluxygram/fluxygram.git",

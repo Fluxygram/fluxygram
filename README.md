@@ -80,7 +80,7 @@ The skill in [`skills/fluxygram`](skills/fluxygram) teaches an agent the format,
 **Cursor, Windsurf, Codex, Copilot and other coding agents**: save the skill in your project and point the agent at it.
 
 ```bash
-curl -o FLUXYGRAM.md https://fluxygram.salamancacmcol.workers.dev/skill.md
+curl -o FLUXYGRAM.md https://fluxygram.app/skill.md
 ```
 
 **ChatGPT, Gemini, Claude.ai**: the site has a "Copy prompt" button for each one that pastes the whole skill and asks for the JSON; paste the answer in the editor.

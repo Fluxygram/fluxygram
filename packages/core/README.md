@@ -17,6 +17,6 @@ else {
 }
 ```
 
-To draw diagrams, use [`@fluxygram/element`](https://www.npmjs.com/package/@fluxygram/element). Format reference: [SKILL.md](https://github.com/Fluxygram/fluxygram/blob/main/skills/fluxygram/SKILL.md) and the [JSON Schema](https://fluxygram.salamancacmcol.workers.dev/schema/v1.json).
+To draw diagrams, use [`@fluxygram/element`](https://www.npmjs.com/package/@fluxygram/element). Format reference: [SKILL.md](https://github.com/Fluxygram/fluxygram/blob/main/skills/fluxygram/SKILL.md) and the [JSON Schema](https://fluxygram.app/schema/v1.json).
 
 MIT license.
