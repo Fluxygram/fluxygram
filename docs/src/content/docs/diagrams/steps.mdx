@@ -1,0 +1,64 @@
+---
+title: Steps
+description: Turn a diagram into a story, one idea at a time.
+sidebar:
+  order: 2
+---
+
+import Diagram from '../../../components/Diagram.astro';
+
+Without steps, a diagram plays its type's default motion. With `steps`, **you** decide what the viewer sees and in what order. That's what turns a picture into an explanation.
+
+Steps are **cumulative**: whatever appears stays visible until a later step hides it.
+
+```json
+"steps": [
+  { "show": ["shop"], "caption": "The customer pays at checkout" },
+  { "show": ["e1"], "flow": "e1", "caption": "The card never touches your server" },
+  { "show": ["e2"], "flow": "e2", "state": { "bank": "pending" }, "caption": "The gateway asks the bank" },
+  { "show": ["yes"], "flow": "yes", "state": { "bank": "success" }, "highlight": ["done"], "caption": "Approved: the order is confirmed" }
+]
+```
+
+## What a step can do
+
+| Field | Effect |
+| --- | --- |
+| `show` | Elements that appear. Showing a connection also shows its two blocks. |
+| `flow` | A connection id (or a list): something travels along it while the step is active. Also shows it. |
+| `highlight` | Blocks that stand out; everything else dims. Good for following one path through a busy diagram. |
+| `focus` | The camera moves in on one block or group. Good for a detail, usually near the end. |
+| `state` | States from this step on, for blocks **and** connections: `{ "bank": "pending", "declined": "error" }`. See [States](/diagrams/motion/#states). |
+| `hide` | Elements that disappear. Rarely needed. |
+| `caption` | The sentence shown under the diagram. |
+| `duration` | Seconds this step stays on screen in autoplay. |
+| `notes` | Speaker notes, only visible in the presenter view. See [Present it live](/guides/present/). |
+
+Connections are referenced by their `id`. If a connection has no `id`, its id is `"from->to"`, for example `"shop->gateway"`.
+
+## A complete example
+
+This diagram uses `flow`, `state` on blocks and connections, `highlight`, `focus` and captions:
+
+<Diagram src="architecture" />
+
+## Writing good steps
+
+1. **One idea per step.** If a caption needs "and", it's probably two steps.
+2. **At most ~5 new elements per step.** A step that shows everything at once explains nothing.
+3. **Captions under 12 words**, saying what *happens* ("The gateway asks the bank"), not what the box is ("Payment gateway").
+4. **Follow the reading order.** Show a block before the connection that leaves it.
+5. **Use `flow` for something real moving**: a request, money, data, a message. Name it with `carries` on the connection.
+6. **Use `state` for outcomes.** Show approved or declined on the block instead of describing it. Not everything is green: mark a failing path `error`.
+7. **End on the outcome**: highlight or focus the result.
+8. **5 to 8 steps** is the sweet spot. Under 3 feels static; over 10 feels slow.
+
+After the last step, Fluxygram adds a [finale](/diagrams/motion/#the-finale): the camera pulls back to show everything at once.
+
+## Timing
+
+In autoplay, each step waits long enough to read it: Fluxygram measures how much enters and how long the caption is. Change it for the whole diagram with [`motion.hold`](/diagrams/motion/), or for one step with `duration`:
+
+```json
+{ "show": ["done"], "caption": "The key outcome, with a longer explanation", "duration": 6 }
+```

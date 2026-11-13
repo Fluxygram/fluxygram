@@ -1,0 +1,107 @@
+---
+title: Quickstart
+description: Make your first animated diagram in two minutes.
+sidebar:
+  order: 1
+---
+
+import { Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+import Diagram from '../../../components/Diagram.astro';
+
+A Fluxygram diagram is a JSON file. You describe **what** is in it and **in what order** to tell it; Fluxygram computes the layout and the motion.
+
+## Your first diagram
+
+<Steps>
+
+1. Open the [editor](https://fluxygram.app/play) and go to the **JSON** tab on the right.
+
+2. Replace the content with this:
+
+   ```json
+   {
+     "type": "flow",
+     "title": "How an order gets processed",
+     "nodes": [
+       { "id": "start", "label": "Order received", "kind": "start", "icon": "cart" },
+       { "id": "stock", "label": "In stock?", "kind": "decision" },
+       { "id": "pay", "label": "Charge", "icon": "card" },
+       { "id": "done", "label": "Delivered", "kind": "end", "accent": true }
+     ],
+     "edges": [
+       { "from": "start", "to": "stock" },
+       { "from": "stock", "to": "pay", "label": "yes" },
+       { "from": "pay", "to": "done" }
+     ]
+   }
+   ```
+
+3. Press **Play**. That's it:
+
+</Steps>
+
+<Diagram
+  diagram={{
+    type: 'flow',
+    title: 'How an order gets processed',
+    nodes: [
+      { id: 'start', label: 'Order received', kind: 'start', icon: 'cart' },
+      { id: 'stock', label: 'In stock?', kind: 'decision' },
+      { id: 'pay', label: 'Charge', icon: 'card' },
+      { id: 'done', label: 'Delivered', kind: 'end', accent: true },
+    ],
+    edges: [
+      { from: 'start', to: 'stock' },
+      { from: 'stock', to: 'pay', label: 'yes' },
+      { from: 'pay', to: 'done' },
+    ],
+  }}
+/>
+
+Without steps, each diagram type uses its own default motion. A flow builds column by column and a particle runs along each new connection.
+
+## Add a story
+
+Steps decide what the viewer sees, one idea at a time. Add this to the same JSON:
+
+```json
+"steps": [
+  { "show": ["start"], "caption": "An order arrives" },
+  { "show": ["start->stock"], "flow": "start->stock", "caption": "First, check the stock" },
+  { "show": ["stock->pay"], "flow": "stock->pay", "caption": "In stock: charge the card" },
+  { "show": ["pay->done"], "flow": "pay->done", "highlight": ["done"], "caption": "And it's on its way" }
+]
+```
+
+Connections without an `id` are named `from->to`. Give them an `id` when you reference them often. Read more in [Steps](/diagrams/steps/).
+
+## Put it on your site
+
+Save the file as `order.flux.json` and add two lines to any page:
+
+<Tabs>
+  <TabItem label="CDN">
+    ```html
+    <script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.1"></script>
+    <fluxy-gram src="order.flux.json"></fluxy-gram>
+    ```
+  </TabItem>
+  <TabItem label="npm">
+    ```bash
+    npm install @fluxygram/element
+    ```
+    ```js
+    import '@fluxygram/element';
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Prefer not to write JSON? Ask your AI agent: install the [Fluxygram skill](/guides/agents/) and say "make an animated diagram of how our checkout works".
+</Aside>
+
+## Next
+
+- [Diagram types](/diagrams/types/): which one fits what you want to explain.
+- [The editor](/start/editor/): build diagrams visually, share them, export them.
+- [Motion](/diagrams/motion/): entrances, what travels along connections, states, speed.

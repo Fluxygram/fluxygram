@@ -30,6 +30,7 @@ pnpm dev        # site, editor and presentation mode at http://localhost:5173
 | `pnpm typecheck` | Type-checks the whole monorepo |
 | `pnpm build` | Builds the site (also runs in CI) |
 | `pnpm build:packages` | Builds the npm packages into `packages/*/dist` |
+| `pnpm docs` | Runs the documentation site at http://localhost:4321 |
 
 ## Where the code lives
 
@@ -40,20 +41,21 @@ pnpm dev        # site, editor and presentation mode at http://localhost:5173
 | `packages/fluxygram` | Single-file build for CDNs (generated, nothing to edit by hand). |
 | `site` | Landing, editor (`/play`), viewer and presentation mode. Texts in `site/public/i18n.js`. |
 | `skills/fluxygram` | The agent skill (`SKILL.md`) and its example diagrams. |
+| `docs` | The documentation (Astro Starlight). Pages in `docs/src/content/docs`, Spanish in `es/`. |
 | `site/public/schema/v1.json` | JSON Schema of the format. |
 
 ## Pull requests
 
 - Keep each PR about one thing. Small PRs get reviewed faster.
 - Run `pnpm typecheck` and `pnpm build` before opening it.
-- If you change the format (a new field, a new diagram type), update all of these together: `packages/core` (types, validation, layout or motion), `site/public/schema/v1.json`, `skills/fluxygram/SKILL.md`, and an example in `site/public/examples` and `skills/fluxygram/examples`.
+- If you change the format (a new field, a new diagram type), update all of these together: `packages/core` (types, validation, layout or motion), `site/public/schema/v1.json`, `skills/fluxygram/SKILL.md`, an example in `site/public/examples` and `skills/fluxygram/examples`, and the docs page that explains it (in English and Spanish).
 - Every user-facing text goes in `site/public/i18n.js` in **both English and Spanish**. Validation messages in `packages/core` are bilingual too.
 - For visual or motion changes, add a short video or GIF to the PR.
 - Motion should help people understand, never decorate. Animations are interruptible, fast (most under 300 ms), and respect `prefers-reduced-motion`.
 
 ## Licensing of contributions
 
-Your contribution is published under the license of the folder it lands in: MIT for `packages/*` and `skills/*`, FSL-1.1-ALv2 for `site`. See [LICENSE.md](LICENSE.md).
+Your contribution is published under the license of the folder it lands in: MIT for `packages/*`, `skills/*` and `docs`, FSL-1.1-ALv2 for `site`. See [LICENSE.md](LICENSE.md).
 
 Before your first pull request can be merged, you sign the [Contributor License Agreement](CLA.md) once: a bot comments on the PR, and you reply with the sentence it gives you. You keep ownership of your work. The CLA lets the project use contributions in any product, open source or commercial, and change licenses in the future without having to find every past contributor.
 

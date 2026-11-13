@@ -1,0 +1,55 @@
+---
+title: Referencia del formato
+description: Todos los campos de un archivo .flux.json, generados desde el JSON Schema.
+sidebar:
+  order: 1
+---
+
+import SchemaTable from '../../../../components/SchemaTable.astro';
+
+Un archivo `.flux.json` se valida con el [JSON Schema](https://fluxygram.app/schema/v1.json). Agrégalo al inicio de tu archivo para tener autocompletado y errores en tu editor de código:
+
+```json
+{ "$schema": "https://fluxygram.app/schema/v1.json", "type": "flow", "nodes": [] }
+```
+
+Las tablas de abajo se generan desde ese schema, así que siempre coinciden con lo que Fluxygram acepta. Las descripciones vienen del schema y están en inglés.
+
+## Diagrama
+
+<SchemaTable of="diagram" />
+
+## Nodos (bloques)
+
+<SchemaTable of="node" />
+
+El `id` es único entre nodos, conexiones y grupos: letras, números, `-` y `_`. Mira todos los íconos en la [lista de íconos](/es/reference/icons/).
+
+## Edges (conexiones)
+
+<SchemaTable of="edge" />
+
+Una conexión sin `id` recibe `"desde->hasta"` como id.
+
+## Grupos
+
+<SchemaTable of="group" />
+
+## Pasos
+
+<SchemaTable of="step" />
+
+## Movimiento
+
+<SchemaTable of="motion" />
+
+## Errores
+
+Fluxygram valida cada archivo y explica los problemas en lenguaje simple, en español o inglés, con la ruta al campo:
+
+```
+edges[2].to: "to" apunta a "x", que no es un nodo.
+steps[1].flow: "e9" no es el id de ningún nodo, conexión o grupo.
+```
+
+La misma validación está disponible en código con [`@fluxygram/core`](/es/start/install/#paquetes).

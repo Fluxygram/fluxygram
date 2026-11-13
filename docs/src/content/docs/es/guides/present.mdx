@@ -1,0 +1,51 @@
+---
+title: Preséntalo en vivo
+description: Explica un diagrama a un público, paso a paso, con tus notas en otra ventana.
+sidebar:
+  order: 1
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+El modo presentación convierte cualquier diagrama en una charla en vivo: el público ve el diagrama a pantalla completa y tú lo avanzas paso a paso mientras hablas.
+
+<Steps>
+
+1. Escribe **notas de presentador** para cada paso: en el editor, selecciona un paso y completa *Notas del presentador*, o agrega `"notes"` al paso en el JSON. Nunca aparecen en el diagrama.
+
+   ```json
+   { "show": ["e2"], "flow": "e2", "caption": "La pasarela le pregunta al banco", "notes": "Comentar que esta llamada suele tardar menos de 300 ms." }
+   ```
+
+2. Presiona **Presentar** en el editor (o en el visor de un diagrama compartido). Se abre una ventana para el público.
+
+3. Presiona <kbd>N</kbd> para abrir **tus notas** en una segunda ventana y arrástrala a la pantalla de tu laptop. Presiona <kbd>F</kbd> para la pantalla completa en el proyector.
+
+</Steps>
+
+## Controles
+
+| Tecla | Acción |
+| --- | --- |
+| <kbd>→</kbd> <kbd>Espacio</kbd> clic | Paso siguiente |
+| <kbd>←</kbd> | Paso anterior |
+| <kbd>Inicio</kbd> / <kbd>Fin</kbd> | Primer / último paso |
+| <kbd>N</kbd> | Abrir tus notas |
+| <kbd>F</kbd> | Pantalla completa |
+| <kbd>?</kbd> | Ver la ayuda otra vez |
+
+Los punteros inalámbricos (clickers) también funcionan: envían Avance de página y Retroceso de página.
+
+## Tu ventana de notas
+
+La ventana del presentador muestra en letra grande las **notas** del paso actual, lo que el público está leyendo **ahora**, lo que viene **después**, una vista previa del diagrama y un **cronómetro**. Tiene sus propios botones Anterior y Siguiente.
+
+Las dos ventanas están sincronizadas: puedes avanzar desde cualquiera.
+
+## La pantalla final
+
+Después del último paso, si avanzas una vez más, el público ve una pantalla de cierre con "Gracias" y el título del diagrama. Presiona <kbd>←</kbd> para volver al diagrama.
+
+<Aside type="tip">
+  Para presentar, `"motion": { "camera": "fixed" }` mantiene todo el diagrama a la vista y `"speed": "slow"` le da tiempo al público para seguirlo.
+</Aside>

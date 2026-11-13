@@ -1,0 +1,67 @@
+---
+title: El componente <fluxy-gram>
+description: Atributos, propiedades, métodos, eventos y gestos del componente web.
+sidebar:
+  order: 2
+---
+
+`<fluxy-gram>` dibuja un diagrama y lo cuenta paso a paso. Es un custom element estándar con su propio Shadow DOM: los estilos de tu página no se cuelan adentro.
+
+```html
+<fluxy-gram src="/diagramas/checkout.flux.json" autoplay="false"></fluxy-gram>
+```
+
+## Atributos
+
+| Atributo | Valores | Por defecto |
+| --- | --- | --- |
+| `src` | URL de un archivo `.flux.json` | — |
+| `autoplay` | `"false"` para empezar en pausa | se reproduce al entrar en pantalla |
+| `controls` | `"false"` para ocultar la barra de pasos | visible |
+| `theme` | `dark` o `light` | `dark` |
+| `lang` | `en` o `es` | el idioma de la página o del navegador |
+| `gestures` | `"full"` cuando el diagrama es el contenido principal de la página | — |
+| `present` | Estilo del modo presentación (lo usa la página de presentación) | — |
+
+## Propiedad
+
+| Propiedad | Tipo |
+| --- | --- |
+| `diagram` | Objeto del diagrama o texto JSON. Asignarlo reemplaza el diagrama actual. |
+
+## Métodos
+
+| Método | Hace |
+| --- | --- |
+| `next()` | Paso siguiente |
+| `prev()` | Paso anterior |
+| `goTo(i)` | Va al paso `i` (empieza en 0) |
+| `play()` | Inicia la reproducción automática |
+| `pause()` | Pausa la reproducción automática |
+| `replay()` | Vuelve a empezar desde el primer paso |
+
+## Evento
+
+`fluxy-step` se dispara cada vez que cambia el paso:
+
+```js
+el.addEventListener('fluxy-step', (e) => {
+  const { index, count } = e.detail;
+  console.log(`Paso ${index + 1} de ${count}`);
+});
+```
+
+## Interacción
+
+- **Arrastra** para mover la vista; **haz clic en un bloque** para acercarte; **pasa el mouse** para resaltar sus conexiones. El botón *volver a la vista del paso* (o <kbd>Esc</kbd>) restablece la cámara.
+- **Zoom**: en una página, <kbd>Ctrl</kbd> + rueda (<kbd>⌘</kbd> + rueda en Mac) o pellizcando el trackpad, así la página sigue haciendo scroll normal. Con `gestures="full"`, la rueda hace zoom directo y en pantallas táctiles se mueve y se pellizca.
+- **Teclado**: <kbd>←</kbd> y <kbd>→</kbd> cambian de paso cuando el diagrama tiene el foco.
+- Cualquier interacción pausa la reproducción automática.
+
+## Tamaño y estilos
+
+El componente ocupa el ancho de su contenedor y mantiene las proporciones del diagrama. Dale un ancho al contenedor:
+
+```css
+fluxy-gram { max-width: 900px; margin-inline: auto; }
+```

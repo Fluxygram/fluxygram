@@ -1,0 +1,33 @@
+---
+title: Diagram a codebase
+description: Explain a repository with a small set of diagrams, from overview to key flows.
+sidebar:
+  order: 3
+---
+
+One diagram that shows everything explains nothing. To explain a repository (a monorepo, a set of microservices, an app and its backend), read first and draw a **small set**: one overview and a few key flows. This is the recipe the [agent skill](/guides/agents/) follows; you can give it to any agent with "diagram this repo".
+
+## 1. Read the system, not the files
+
+Look where the architecture is declared, in this order:
+
+1. **Deployment**: `docker-compose*.yml`, Kubernetes or Helm manifests, `serverless.yml`, `wrangler.*`, Terraform, `Procfile`. Every service, database, queue and cache usually appears here.
+2. **Workspaces**: `package.json` workspaces, `pnpm-workspace.yaml`, `go.work`, `Cargo.toml`, top-level `apps/` and `services/`. One package or app is usually one block.
+3. **Entry points and routes**: `main.*`, `server.*`, routers, controllers, OpenAPI, GraphQL or `.proto` files.
+4. **Who calls whom**: HTTP clients and base URLs (`ORDERS_URL`), gRPC stubs, queue producers and consumers, database clients, third-party SDKs.
+5. **The README**, last, to confirm names and intent.
+
+## 2. Draw a set
+
+1. **Overview** (`architecture`): layers top to bottom, for example Clients → Edge → Services → Data → External. One block per deployable service or data store, 15 at most.
+2. **Two to four key flows** (`sequence`): the requests that matter most (sign-up, checkout, the main job). Messages in order, labelled with the endpoint or event (`POST /orders`, `order.created`).
+3. **Optional**: a `flow` for a business process, or a `tree` of the packages if the question is about code organization.
+
+Name each file after what it explains: `overview.flux.json`, `checkout.flux.json`.
+
+## 3. Rules
+
+- Use the names the team uses in code, with a plain `description` of the job ("charges cards").
+- Show the main path with `flow` and `carries` (`"carries": "order.created"`), not every call.
+- Leave out what you can't confirm from the code instead of guessing.
+- For onboarding, write `notes` on each step: retries, idempotency, which folder holds it. Then [present it](/guides/present/).

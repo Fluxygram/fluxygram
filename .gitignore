@@ -7,3 +7,5 @@ dist/
 site/public/fluxygram.js
 packages/*/dist/
 site/public/skill.md
+docs/public/examples/
+docs/.astro/

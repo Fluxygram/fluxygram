@@ -1,0 +1,66 @@
+---
+title: Movimiento y estados
+description: Entradas, lo que viaja por las conexiones, velocidad, cámara, estados y el final.
+sidebar:
+  order: 3
+---
+
+import Diagram from '../../../../components/Diagram.astro';
+
+El movimiento por defecto funciona bien. Cámbialo según el tono de lo que explicas: tranquilo para una clase, rápido para una landing, estilo pizarra para un recorrido.
+
+```json
+"motion": { "enter": "draw", "travel": "pulse", "speed": "slow", "camera": "follow" }
+```
+
+| Campo | Valores | Úsalo cuando |
+| --- | --- | --- |
+| `enter` | `fade` (por defecto), `scale`, `draw`, `slide` | `draw` para explicaciones estilo pizarra, `scale` para contenido de producto o más juguetón, `slide` para pipelines que van en una dirección |
+| `travel` | `particle` (por defecto), `pulse`, `dash`, `packets` | `pulse` para señales o energía, `dash` para flujos continuos (logs, eventos), `packets` para datos en lotes |
+| `speed` | `slow`, `normal` (por defecto), `fast` | `slow` para enseñar o diagramas densos, `fast` para animaciones cortas |
+| `camera` | `follow` (por defecto), `fixed` | `fixed` cuando todo el diagrama debe quedar a la vista |
+| `hold` | segundos, de 0.5 a 60 | Cuánto queda cada paso en pantalla. Si no lo pones, cada paso se cronometra según su contenido. |
+| `finale` | `true` (por defecto), `false` | Ver [el final](#el-final). |
+
+`speed` cambia qué tan rápido se mueven las cosas. `hold` y el `duration` de un paso cambian cuánto espera cada paso.
+
+## Excepciones por elemento
+
+Un bloque puede tener su propio `enter` y una conexión su propio `travel`. Úsalo para que una cosa se distinga, no en todos los elementos:
+
+```json
+{ "id": "done", "label": "Entregado", "enter": "scale" }
+{ "id": "logs", "from": "api", "to": "logs", "travel": "dash" }
+```
+
+## Lo que viaja: `carries`
+
+`carries` nombra lo que se mueve por una conexión, y aparece viajando junto a la partícula: `"token"`, `"$"`, `"pedido"`, `"evento"`. Úsalo en el camino principal para que se vea *qué* se mueve, no solo que algo se mueve.
+
+```json
+{ "id": "e2", "from": "gateway", "to": "bank", "carries": "token" }
+```
+
+## Estados
+
+Los estados muestran los resultados en el propio diagrama. Se ponen en bloques o conexiones, desde el inicio (`"state"` en el elemento) o desde un paso (`"state"` en el paso).
+
+| Estado | Se ve así |
+| --- | --- |
+| `success` | Verde, con un check |
+| `error` | Rojo; el bloque tiembla una vez |
+| `warning` | Ámbar; la insignia parpadea |
+| `pending` | En progreso: el borde punteado gira |
+| `default` | Vuelve a lo normal |
+
+En una conexión, el estado colorea la línea, su partícula y su nombre, así un camino que falla se lee en rojo de un vistazo. Un patrón típico: `pending` mientras algo se procesa, y `success` o `error` en el paso siguiente.
+
+<Diagram src="order" />
+
+## El final
+
+Después del último paso, Fluxygram agrega un final: la cámara se aleja hasta mostrar todo el diagrama y las partículas recorren todas las conexiones visibles. Desactívalo con `"motion": { "finale": false }` cuando el último paso debe quedarse enfocado en un detalle.
+
+## Movimiento reducido
+
+Si la persona tiene activada la opción de reducir movimiento en su sistema, los diagramas siguen contando la historia paso a paso, sin el viaje de las partículas ni el movimiento de la cámara.

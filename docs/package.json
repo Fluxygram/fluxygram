@@ -1,0 +1,19 @@
+{
+  "name": "docs",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "assets": "node -e \"const fs=require('fs');fs.cpSync('../site/public/examples','public/examples',{recursive:true})\"",
+    "dev": "pnpm assets && astro dev",
+    "build": "pnpm assets && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.40.0",
+    "@fluxygram/element": "workspace:*",
+    "astro": "^6.4.8",
+    "sharp": "^0.35.5",
+    "starlight-llms-txt": "^0.10.0"
+  }
+}

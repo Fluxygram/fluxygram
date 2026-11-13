@@ -1,0 +1,51 @@
+---
+title: Present it live
+description: Explain a diagram to an audience, step by step, with your notes in a second window.
+sidebar:
+  order: 1
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+Presentation mode turns any diagram into a live talk: the audience sees the diagram full screen and you advance it one step at a time while you speak.
+
+<Steps>
+
+1. Write **speaker notes** for each step: in the editor, select a step and fill in *Speaker notes*, or add `"notes"` to the step in the JSON. They're never shown in the diagram.
+
+   ```json
+   { "show": ["e2"], "flow": "e2", "caption": "The gateway asks the bank", "notes": "Mention that this call usually takes under 300 ms." }
+   ```
+
+2. Press **Present** in the editor (or in a shared diagram's viewer). A window opens for the audience.
+
+3. Press <kbd>N</kbd> to open **your notes** in a second window, and drag it to your laptop screen. Press <kbd>F</kbd> for full screen on the projector.
+
+</Steps>
+
+## Controls
+
+| Key | Action |
+| --- | --- |
+| <kbd>→</kbd> <kbd>Space</kbd> click | Next step |
+| <kbd>←</kbd> | Previous step |
+| <kbd>Home</kbd> / <kbd>End</kbd> | First / last step |
+| <kbd>N</kbd> | Open your notes |
+| <kbd>F</kbd> | Full screen |
+| <kbd>?</kbd> | Show the help again |
+
+Wireless presenters (clickers) work too: they send Page Down and Page Up.
+
+## Your notes window
+
+The presenter window shows the **notes** for the current step in large type, what the audience is reading **now**, what comes **next**, a small preview of the diagram and a **timer**. It has its own Previous and Next buttons.
+
+The two windows stay in sync: you can advance from either one.
+
+## The closing screen
+
+After the last step, advancing once more shows the audience a closing screen with "Thank you" and the diagram's title. Press <kbd>←</kbd> to go back to the diagram.
+
+<Aside type="tip">
+  For presentations, `"motion": { "camera": "fixed" }` keeps the whole picture in view, and `"speed": "slow"` gives the room time to follow.
+</Aside>

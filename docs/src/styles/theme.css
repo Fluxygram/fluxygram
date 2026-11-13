@@ -1,0 +1,50 @@
+/* Fluxygram's palette: near-black surfaces, neon green accent, Inter. */
+:root,
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #0c3320;
+  --sl-color-accent: #2bff88;
+  --sl-color-accent-high: #a6ffcc;
+  --sl-color-white: #f3f3f6;
+  --sl-color-gray-1: #e6e6ec;
+  --sl-color-gray-2: #c9c9d3;
+  --sl-color-gray-3: #9b9ba8;
+  --sl-color-gray-4: #5d5d6a;
+  --sl-color-gray-5: #25252d;
+  --sl-color-gray-6: #131318;
+  --sl-color-black: #09090c;
+  --sl-color-text-accent: #2bff88;
+  --sl-font: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sl-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+/* Buttons and badges on the neon accent use dark ink. */
+.sl-link-button.primary,
+.action.primary {
+  color: #06120b !important;
+}
+
+.site-title img {
+  height: 2rem;
+  width: auto;
+}
+
+/* Live diagrams inside the docs */
+.fx-demo {
+  margin-block: 1.5rem;
+}
+.fx-demo fluxy-gram {
+  display: block;
+}
+.sl-markdown-content .fx-demo + p {
+  margin-top: 0.5rem;
+}
+
+/* Same wordmark as fluxygram.app: white, lowercase, tight. */
+.site-title {
+  color: var(--sl-color-white);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.site-title span {
+  text-transform: lowercase;
+}

@@ -1,0 +1,59 @@
+---
+title: El editor
+description: Arma, revisa, comparte y exporta diagramas de forma visual.
+sidebar:
+  order: 2
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+El [editor](https://fluxygram.app/play) funciona completo en tu navegador. No se sube nada: tu diagrama se guarda en tu equipo y los links compartidos llevan el diagrama entero dentro de la URL.
+
+## Arma un diagrama
+
+<Steps>
+
+1. **Elige el tipo** en el selector de arriba (Flujo, Arquitectura, Línea de tiempo…). Puedes cambiarlo cuando quieras sin perder bloques ni conexiones.
+
+2. **Agrega bloques** arrastrándolos desde la paleta al lienzo. La paleta muestra los bloques que tienen sentido para el tipo actual: decisiones y bases de datos en un flujo, capas en una arquitectura, participantes en una secuencia.
+
+3. **Conéctalos**: arrastra desde el punto de un bloque hasta otro bloque.
+
+4. **Edita** lo que quieras en el panel **Propiedades** de la derecha: nombre, descripción, ícono, forma, estado. Selecciona una conexión para ponerle un nombre o decir qué lleva (`carries`).
+
+</Steps>
+
+Arrastrar un bloque lo fija en ese lugar (`x` e `y` en el JSON). Todo lo demás mantiene su posición automática. **Reorganizar** quita esas fijaciones.
+
+## Escribe la historia
+
+La barra **Pasos**, abajo, guarda la historia. Agrega un paso con **+** y haz clic en bloques y conexiones del lienzo. Lo que hace cada clic depende del modo que elijas para ese paso:
+
+| Modo | Un clic en el lienzo… |
+| --- | --- |
+| Aparece | hace aparecer el elemento en este paso |
+| Partícula | envía una partícula por la conexión |
+| Resalta | destaca el bloque y atenúa el resto |
+| Cámara | acerca la cámara al bloque |
+| Estado | marca éxito, error, advertencia o en progreso |
+
+Selecciona un paso para escribir su **texto** (lo que lee el público), su **duración** y tus **notas de presentador** en el panel Propiedades.
+
+## La pestaña JSON
+
+La pestaña **JSON** muestra el mismo diagrama como código, con colores, números de línea y los errores marcados en su línea. Los cambios se aplican mientras escribes, cuando el JSON es válido. **Formatear** lo ordena y **Copiar** lo copia.
+
+## Compartir y exportar
+
+| Botón | Qué obtienes |
+| --- | --- |
+| **Compartir** | Un link que abre el diagrama en un visor. El diagrama viaja comprimido dentro de la URL: sin cuenta y sin servidor. |
+| **Descargar JSON** | El archivo `.flux.json`. |
+| **Exportar HTML** | Un único archivo HTML que reproduce el diagrama sin conexión. |
+| **Presentar** | El [modo presentación](/es/guides/present/): pantalla completa y tus notas. |
+
+También puedes **abrir** un `.flux.json` o **soltarlo** sobre el lienzo para editarlo.
+
+<Aside type="tip">
+  Todo se puede deshacer con <kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>⌘</kbd>+<kbd>Z</kbd> en Mac), incluso cargar otro diagrama encima. El botón **?** repite el recorrido guiado.
+</Aside>

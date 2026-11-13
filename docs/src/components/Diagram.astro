@@ -1,0 +1,36 @@
+---
+/**
+ * A live Fluxygram diagram inside the docs.
+ *   <Diagram src="order" />            → one of the site's examples, in the page language
+ *   <Diagram diagram={{ ... }} />      → an inline diagram
+ */
+interface Props {
+  /** Name of an example in /examples/{lang}/ (without .flux.json), or a full URL. */
+  src?: string;
+  /** Inline diagram object. */
+  diagram?: Record<string, unknown>;
+  /** Start paused (useful for long diagrams lower on the page). */
+  paused?: boolean;
+}
+
+const { src, diagram, paused = false } = Astro.props;
+const lang = Astro.currentLocale === 'es' ? 'es' : 'en';
+const url = src && !src.includes('/') ? `/examples/${lang}/${src}.flux.json` : src;
+const json = diagram ? JSON.stringify(diagram) : undefined;
+---
+
+<div class="fx-demo not-content">
+  {
+    url ? (
+      <fluxy-gram src={url} lang={lang} autoplay={paused ? 'false' : undefined} />
+    ) : (
+      <fluxy-gram lang={lang} autoplay={paused ? 'false' : undefined}>
+        <script is:inline type="application/json" set:html={json} />
+      </fluxy-gram>
+    )
+  }
+</div>
+
+<script>
+  import '@fluxygram/element';
+</script>

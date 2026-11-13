@@ -1,0 +1,53 @@
+---
+title: Fluxygram
+description: Describe cualquier cosa en un JSON y obtén un diagrama animado que la explica paso a paso.
+template: splash
+hero:
+  tagline: Describe cualquier cosa en un JSON. Fluxygram la dibuja y la cuenta paso a paso, con movimiento que ayuda a entender.
+  actions:
+    - text: Haz tu primer diagrama
+      link: /es/start/quickstart/
+      icon: right-arrow
+      variant: primary
+    - text: Abrir el editor
+      link: https://fluxygram.app/play
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import Diagram from '../../../components/Diagram.astro';
+
+<Diagram src="how-it-works" />
+
+## Qué puedes hacer
+
+<CardGrid>
+  <Card title="Escríbelo o dibújalo" icon="pencil">
+    Escribe un `.flux.json` a mano, pídeselo a un agente de IA o constrúyelo visualmente en el [editor](https://fluxygram.app/play). La posición de los bloques es automática.
+  </Card>
+  <Card title="Siete tipos de diagrama" icon="seti:pipeline">
+    Flujos, arquitecturas, líneas de tiempo, árboles, ciclos, secuencias y mapas mentales. Cada uno se mueve de la forma que mejor lo explica.
+  </Card>
+  <Card title="Cuenta una historia" icon="list-format">
+    Los pasos revelan el diagrama de a una idea: qué aparece, qué viaja, qué sale bien y qué falla.
+  </Card>
+  <Card title="Ponlo donde quieras" icon="puzzle">
+    Un solo componente web, `<fluxy-gram>`, en cualquier sitio, documentación o app. Sin framework.
+  </Card>
+  <Card title="Preséntalo en vivo" icon="rocket">
+    Pantalla completa para el público, y tus notas y un cronómetro en otra ventana.
+  </Card>
+  <Card title="Que lo haga tu agente" icon="star">
+    Un skill le enseña a Claude, ChatGPT, Gemini, Cursor y otros agentes a escribir buenos diagramas.
+  </Card>
+</CardGrid>
+
+## Empieza aquí
+
+<CardGrid>
+  <LinkCard title="Inicio rápido" description="Tu primer diagrama animado en dos minutos." href="/es/start/quickstart/" />
+  <LinkCard title="Tipos de diagrama" description="Cuál usar y cómo se mueve cada uno." href="/es/diagrams/types/" />
+  <LinkCard title="Pasos" description="Convierte un diagrama en una historia." href="/es/diagrams/steps/" />
+  <LinkCard title="Para agentes" description="Dale el skill a tu agente de IA." href="/es/guides/agents/" />
+</CardGrid>

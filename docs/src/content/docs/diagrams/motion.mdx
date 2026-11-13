@@ -1,0 +1,66 @@
+---
+title: Motion and states
+description: Entrances, what travels along connections, speed, camera, states and the finale.
+sidebar:
+  order: 3
+---
+
+import Diagram from '../../../components/Diagram.astro';
+
+The default motion works well. Change it to match the tone of what you are explaining: calm for a class, quick for a landing page, whiteboard-style for a walkthrough.
+
+```json
+"motion": { "enter": "draw", "travel": "pulse", "speed": "slow", "camera": "follow" }
+```
+
+| Field | Values | Use it when |
+| --- | --- | --- |
+| `enter` | `fade` (default), `scale`, `draw`, `slide` | `draw` for whiteboard-style explanations, `scale` for playful or product content, `slide` for pipelines that move one way |
+| `travel` | `particle` (default), `pulse`, `dash`, `packets` | `pulse` for signals or energy, `dash` for continuous streams (logs, events), `packets` for data in batches |
+| `speed` | `slow`, `normal` (default), `fast` | `slow` for teaching or dense diagrams, `fast` for short loops |
+| `camera` | `follow` (default), `fixed` | `fixed` when the whole picture should stay in view |
+| `hold` | seconds, 0.5 to 60 | How long each step stays on screen. Leave it out and each step is timed by its content. |
+| `finale` | `true` (default), `false` | See [the finale](#the-finale). |
+
+`speed` changes how fast things move. `hold` and a step's `duration` change how long each step waits.
+
+## Overrides
+
+A block can set its own `enter` and a connection its own `travel`. Use it to make one thing stand apart, not on every element:
+
+```json
+{ "id": "done", "label": "Delivered", "enter": "scale" }
+{ "id": "logs", "from": "api", "to": "logs", "travel": "dash" }
+```
+
+## What travels: `carries`
+
+`carries` names what moves along a connection, shown riding with the particle: `"token"`, `"$"`, `"order"`, `"event"`. Use it on the main path so viewers see *what* moves, not just that something moves.
+
+```json
+{ "id": "e2", "from": "gateway", "to": "bank", "carries": "token" }
+```
+
+## States
+
+States show outcomes on the diagram itself. Set them on blocks or connections, from the start (`"state"` on the element) or from a step on (`"state"` in the step).
+
+| State | Looks like |
+| --- | --- |
+| `success` | Green, with a check |
+| `error` | Red; the block shakes once |
+| `warning` | Amber; the badge blinks |
+| `pending` | In progress: the dashed border spins |
+| `default` | Back to normal |
+
+On a connection, the state colors the line, its particle and its label, so a failing path reads red at a glance. A typical pattern: `pending` while something is processed, then `success` or `error` in the next step.
+
+<Diagram src="order" />
+
+## The finale
+
+After the last step, Fluxygram adds a finale: the camera zooms out to the whole diagram and particles run along every visible connection. Turn it off with `"motion": { "finale": false }` when the last step must stay framed on a detail.
+
+## Reduced motion
+
+When someone has "reduce motion" turned on in their system, diagrams still tell the story step by step, without the travel and camera movement.

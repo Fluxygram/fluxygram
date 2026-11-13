@@ -1,0 +1,55 @@
+---
+title: Format reference
+description: Every field of a .flux.json file, generated from the JSON Schema.
+sidebar:
+  order: 1
+---
+
+import SchemaTable from '../../../components/SchemaTable.astro';
+
+A `.flux.json` file is validated against the [JSON Schema](https://fluxygram.app/schema/v1.json). Add it at the top of your file to get autocomplete and inline errors in your editor:
+
+```json
+{ "$schema": "https://fluxygram.app/schema/v1.json", "type": "flow", "nodes": [] }
+```
+
+The tables below are generated from that schema, so they always match what Fluxygram accepts.
+
+## Diagram
+
+<SchemaTable of="diagram" />
+
+## Nodes (blocks)
+
+<SchemaTable of="node" />
+
+`id` is unique across nodes, connections and groups: letters, digits, `-` and `_`. See every icon in the [icon list](/reference/icons/).
+
+## Edges (connections)
+
+<SchemaTable of="edge" />
+
+A connection without `id` gets `"from->to"` as its id.
+
+## Groups
+
+<SchemaTable of="group" />
+
+## Steps
+
+<SchemaTable of="step" />
+
+## Motion
+
+<SchemaTable of="motion" />
+
+## Errors
+
+Fluxygram validates every file and explains problems in plain language, in English or Spanish, with the path to the field:
+
+```
+edges[2].to: "to" points to "x", which is not a node.
+steps[1].flow: "e9" is not the id of any node, edge or group.
+```
+
+The same validation is available in code through [`@fluxygram/core`](/start/install/#packages).

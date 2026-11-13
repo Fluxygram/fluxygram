@@ -1,0 +1,33 @@
+---
+title: Diagramar un repositorio
+description: Explica un repositorio con un conjunto pequeño de diagramas, de la vista general a los flujos clave.
+sidebar:
+  order: 3
+---
+
+Un diagrama que muestra todo no explica nada. Para explicar un repositorio (un monorepo, un conjunto de microservicios, una app y su backend), primero lee y después dibuja un **conjunto pequeño**: una vista general y algunos flujos clave. Esta es la receta que sigue el [skill para agentes](/es/guides/agents/); se la puedes dar a cualquier agente con "diagrama este repo".
+
+## 1. Lee el sistema, no los archivos
+
+Busca dónde está declarada la arquitectura, en este orden:
+
+1. **Despliegue**: `docker-compose*.yml`, manifiestos de Kubernetes o Helm, `serverless.yml`, `wrangler.*`, Terraform, `Procfile`. Casi siempre aparecen ahí todos los servicios, bases de datos, colas y cachés.
+2. **Workspaces**: workspaces de `package.json`, `pnpm-workspace.yaml`, `go.work`, `Cargo.toml`, las carpetas `apps/` y `services/`. Un paquete o app suele ser un bloque.
+3. **Puntos de entrada y rutas**: `main.*`, `server.*`, routers, controladores, archivos OpenAPI, GraphQL o `.proto`.
+4. **Quién llama a quién**: clientes HTTP y URLs base (`ORDERS_URL`), stubs de gRPC, productores y consumidores de colas, clientes de bases de datos, SDKs de terceros.
+5. **El README**, al final, para confirmar nombres e intención.
+
+## 2. Dibuja un conjunto
+
+1. **Vista general** (`architecture`): capas de arriba hacia abajo, por ejemplo Clientes → Borde → Servicios → Datos → Externos. Un bloque por servicio desplegable o almacén de datos, 15 como máximo.
+2. **De dos a cuatro flujos clave** (`sequence`): las peticiones que más importan (registro, checkout, la tarea principal). Mensajes en orden, con el endpoint o el evento como nombre (`POST /orders`, `order.created`).
+3. **Opcional**: un `flow` para un proceso de negocio, o un `tree` de los paquetes si la pregunta es sobre cómo está organizado el código.
+
+Nombra cada archivo según lo que explica: `vista-general.flux.json`, `checkout.flux.json`.
+
+## 3. Reglas
+
+- Usa los nombres que el equipo usa en el código, con una `description` simple de su tarea ("cobra tarjetas").
+- Muestra el camino principal con `flow` y `carries` (`"carries": "order.created"`), no todas las llamadas.
+- Deja fuera lo que no puedas confirmar en el código en lugar de adivinar.
+- Para onboarding, escribe `notes` en cada paso: reintentos, idempotencia, en qué carpeta está. Después [preséntalo](/es/guides/present/).

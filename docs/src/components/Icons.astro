@@ -1,0 +1,38 @@
+---
+/** Every built-in icon, by category, with the exact name to use in a diagram. */
+import { ICON_GROUPS } from '../../../packages/element/src/icons';
+
+type Node = [string, Record<string, string | number>][];
+const svg = (node: Node) =>
+  `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${node
+    .map(([tag, attrs]) => `<${tag} ${Object.entries(attrs).map(([k, v]) => `${k}="${v}"`).join(' ')}/>`)
+    .join('')}</svg>`;
+const groups = Object.entries(ICON_GROUPS as unknown as Record<string, Record<string, Node>>);
+---
+
+<div class="icons not-content">
+  {
+    groups.map(([group, icons]) => (
+      <section>
+        <h3>{group}</h3>
+        <ul>
+          {Object.entries(icons).map(([name, node]) => (
+            <li>
+              <span set:html={svg(node)} />
+              <code>{name}</code>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .icons section { margin-block: 1.5rem; }
+  .icons h3 { font-size: var(--sl-text-sm); text-transform: uppercase; letter-spacing: 0.06em; color: var(--sl-color-gray-3); margin-bottom: 0.75rem; }
+  .icons ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; }
+  .icons li { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--sl-color-gray-5); border-radius: 10px; color: var(--sl-color-gray-1); }
+  .icons li code { font-size: 12.5px; background: none; padding: 0; color: var(--sl-color-gray-2); }
+  .icons li span { display: inline-grid; color: var(--sl-color-accent); }
+</style>

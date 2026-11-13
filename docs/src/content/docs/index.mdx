@@ -1,0 +1,53 @@
+---
+title: Fluxygram
+description: Describe anything in JSON and get an animated diagram that explains it step by step.
+template: splash
+hero:
+  tagline: Describe anything in JSON. Fluxygram draws it and tells it step by step, with motion that helps people understand.
+  actions:
+    - text: Make your first diagram
+      link: /start/quickstart/
+      icon: right-arrow
+      variant: primary
+    - text: Open the editor
+      link: https://fluxygram.app/play
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import Diagram from '../../components/Diagram.astro';
+
+<Diagram src="how-it-works" />
+
+## What you can do
+
+<CardGrid>
+  <Card title="Write it or draw it" icon="pencil">
+    Write a `.flux.json` by hand, ask an AI agent to write it, or build it visually in the [editor](https://fluxygram.app/play). The layout is automatic.
+  </Card>
+  <Card title="Seven diagram types" icon="seti:pipeline">
+    Flows, architectures, timelines, trees, cycles, sequences and mind maps. Each one moves in the way that explains it best.
+  </Card>
+  <Card title="Tell a story" icon="list-format">
+    Steps reveal the diagram one idea at a time: what appears, what travels, what succeeds and what fails.
+  </Card>
+  <Card title="Embed it anywhere" icon="puzzle">
+    One web component, `<fluxy-gram>`, in any site, docs or app. No framework needed.
+  </Card>
+  <Card title="Present it live" icon="rocket">
+    Full screen for the audience, your notes and a timer in a second window.
+  </Card>
+  <Card title="Let your agent do it" icon="star">
+    A skill teaches Claude, ChatGPT, Gemini, Cursor and other agents to write great diagrams.
+  </Card>
+</CardGrid>
+
+## Start here
+
+<CardGrid>
+  <LinkCard title="Quickstart" description="Your first animated diagram in two minutes." href="/start/quickstart/" />
+  <LinkCard title="Diagram types" description="Which type to use, and how each one moves." href="/diagrams/types/" />
+  <LinkCard title="Steps" description="Turn a diagram into a story." href="/diagrams/steps/" />
+  <LinkCard title="For agents" description="Give the skill to your AI agent." href="/guides/agents/" />
+</CardGrid>

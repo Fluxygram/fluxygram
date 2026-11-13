@@ -1,0 +1,67 @@
+---
+title: The <fluxy-gram> component
+description: Attributes, properties, methods, events and gestures of the web component.
+sidebar:
+  order: 2
+---
+
+`<fluxy-gram>` draws a diagram and tells it step by step. It's a standard custom element with its own Shadow DOM: your page styles don't leak into it.
+
+```html
+<fluxy-gram src="/diagrams/checkout.flux.json" autoplay="false"></fluxy-gram>
+```
+
+## Attributes
+
+| Attribute | Values | Default |
+| --- | --- | --- |
+| `src` | URL of a `.flux.json` file | — |
+| `autoplay` | `"false"` to start paused | plays when it scrolls into view |
+| `controls` | `"false"` to hide the step bar | shown |
+| `theme` | `dark` or `light` | `dark` |
+| `lang` | `en` or `es` | the page's or the browser's language |
+| `gestures` | `"full"` when the diagram is the main content of the page | — |
+| `present` | Presentation mode styling (used by the presentation page) | — |
+
+## Property
+
+| Property | Type |
+| --- | --- |
+| `diagram` | Diagram object or JSON string. Setting it replaces the current diagram. |
+
+## Methods
+
+| Method | Does |
+| --- | --- |
+| `next()` | Next step |
+| `prev()` | Previous step |
+| `goTo(i)` | Jump to step `i` (zero-based) |
+| `play()` | Start autoplay |
+| `pause()` | Pause autoplay |
+| `replay()` | Start over from the first step |
+
+## Event
+
+`fluxy-step` fires every time the step changes:
+
+```js
+el.addEventListener('fluxy-step', (e) => {
+  const { index, count } = e.detail;
+  console.log(`Step ${index + 1} of ${count}`);
+});
+```
+
+## Interaction
+
+- **Drag** to pan; **click a block** to zoom in on it; **hover** to highlight its connections. The *back to the step view* button (or <kbd>Esc</kbd>) resets the camera.
+- **Zoom**: on a page, <kbd>Ctrl</kbd> + scroll (<kbd>⌘</kbd> + scroll on Mac) or a trackpad pinch, so the page keeps scrolling normally. With `gestures="full"`, the scroll wheel zooms directly and touch pans and pinches.
+- **Keyboard**: <kbd>←</kbd> and <kbd>→</kbd> change steps when the diagram has focus.
+- Any interaction pauses autoplay.
+
+## Sizing and styling
+
+The component is as wide as its container and keeps the diagram's proportions. Give the container a width:
+
+```css
+fluxy-gram { max-width: 900px; margin-inline: auto; }
+```

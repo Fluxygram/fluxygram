@@ -1,0 +1,93 @@
+---
+title: Instalar
+description: Agrega el componente <fluxy-gram> a un sitio, documentación o app.
+sidebar:
+  order: 3
+---
+
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+`<fluxy-gram>` es un componente web estándar. Funciona en HTML simple y en cualquier framework (React, Vue, Svelte, Astro, Angular…), sin adaptadores.
+
+<Tabs>
+  <TabItem label="CDN">
+    Sin instalar nada y sin bundler:
+
+    ```html
+    <script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.1"></script>
+
+    <fluxy-gram src="/diagramas/checkout.flux.json"></fluxy-gram>
+    ```
+  </TabItem>
+  <TabItem label="npm">
+    ```bash
+    npm install @fluxygram/element
+    ```
+
+    ```js
+    // Registra <fluxy-gram> una vez, en cualquier parte de tu app.
+    import '@fluxygram/element';
+    ```
+  </TabItem>
+</Tabs>
+
+## Cargar un diagrama
+
+Apunta `src` a un archivo `.flux.json`:
+
+```html
+<fluxy-gram src="/diagramas/checkout.flux.json"></fluxy-gram>
+```
+
+O escríbelo adentro:
+
+```html
+<fluxy-gram>
+  <script type="application/json">
+    { "type": "flow", "nodes": [{ "id": "a", "label": "Inicio" }, { "id": "b", "label": "Listo" }], "edges": [{ "from": "a", "to": "b" }] }
+  </script>
+</fluxy-gram>
+```
+
+O pásalo desde JavaScript:
+
+```js
+document.querySelector('fluxy-gram').diagram = { type: 'flow', nodes: [/* … */], edges: [/* … */] };
+```
+
+## En un framework
+
+```jsx
+// React
+import '@fluxygram/element';
+
+export function Checkout() {
+  return <fluxy-gram src="/diagramas/checkout.flux.json" />;
+}
+```
+
+```vue
+<!-- Vue: indícale al compilador que es un custom element (compilerOptions.isCustomElement) -->
+<template>
+  <fluxy-gram src="/diagramas/checkout.flux.json" />
+</template>
+```
+
+<Aside>
+  Todos los atributos, métodos y eventos están en la [referencia del componente](/es/reference/element/).
+</Aside>
+
+## Paquetes
+
+| Paquete | Qué es |
+| --- | --- |
+| [`@fluxygram/element`](https://www.npmjs.com/package/@fluxygram/element) | El componente `<fluxy-gram>`. Para usar con un bundler. |
+| [`fluxygram`](https://www.npmjs.com/package/fluxygram) | El mismo componente en un solo archivo, para etiquetas `<script>` y CDNs. |
+| [`@fluxygram/core`](https://www.npmjs.com/package/@fluxygram/core) | El formato sin interfaz: validación, posiciones y plan de movimiento. Para herramientas, servidores y Workers. |
+
+```js
+import { validate } from '@fluxygram/core';
+
+const result = validate(json, { locale: 'es' });
+if (!result.ok) console.log(result.issues); // [{ path: 'edges[0].to', message: '…' }]
+```

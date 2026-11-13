@@ -1,0 +1,64 @@
+---
+title: Pasos
+description: Convierte un diagrama en una historia, una idea a la vez.
+sidebar:
+  order: 2
+---
+
+import Diagram from '../../../../components/Diagram.astro';
+
+Sin pasos, un diagrama reproduce el movimiento de su tipo. Con `steps`, **tú** decides qué se ve y en qué orden. Eso es lo que convierte un dibujo en una explicación.
+
+Los pasos son **acumulativos**: lo que aparece se queda visible hasta que un paso posterior lo oculta.
+
+```json
+"steps": [
+  { "show": ["shop"], "caption": "El cliente paga en el checkout" },
+  { "show": ["e1"], "flow": "e1", "caption": "La tarjeta nunca toca tu servidor" },
+  { "show": ["e2"], "flow": "e2", "state": { "bank": "pending" }, "caption": "La pasarela le pregunta al banco" },
+  { "show": ["yes"], "flow": "yes", "state": { "bank": "success" }, "highlight": ["done"], "caption": "Aprobado: el pedido se confirma" }
+]
+```
+
+## Qué puede hacer un paso
+
+| Campo | Efecto |
+| --- | --- |
+| `show` | Elementos que aparecen. Mostrar una conexión muestra también sus dos bloques. |
+| `flow` | Una conexión (o una lista): algo viaja por ella mientras el paso está activo. También la muestra. |
+| `highlight` | Bloques que se destacan; el resto se atenúa. Sirve para seguir un camino en un diagrama cargado. |
+| `focus` | La cámara se acerca a un bloque o grupo. Sirve para un detalle, normalmente cerca del final. |
+| `state` | Estados desde este paso, en bloques **y** conexiones: `{ "bank": "pending", "declined": "error" }`. Ver [Estados](/es/diagrams/motion/#estados). |
+| `hide` | Elementos que desaparecen. Casi nunca hace falta. |
+| `caption` | La frase que aparece debajo del diagrama. |
+| `duration` | Segundos que este paso queda en pantalla en reproducción automática. |
+| `notes` | Notas del presentador, visibles solo en su ventana. Ver [Preséntalo en vivo](/es/guides/present/). |
+
+Las conexiones se nombran por su `id`. Si una conexión no tiene `id`, su id es `"desde->hasta"`, por ejemplo `"shop->gateway"`.
+
+## Un ejemplo completo
+
+Este diagrama usa `flow`, `state` en bloques y conexiones, `highlight`, `focus` y textos:
+
+<Diagram src="architecture" />
+
+## Cómo escribir buenos pasos
+
+1. **Una idea por paso.** Si el texto necesita una "y", probablemente son dos pasos.
+2. **Como mucho ~5 elementos nuevos por paso.** Un paso que muestra todo de golpe no explica nada.
+3. **Textos de menos de 12 palabras** que digan qué *pasa* ("La pasarela le pregunta al banco"), no qué es la caja ("Pasarela de pago").
+4. **Sigue el orden de lectura.** Muestra un bloque antes que la conexión que sale de él.
+5. **Usa `flow` para algo real que se mueve**: una petición, dinero, datos, un mensaje. Nómbralo con `carries` en la conexión.
+6. **Usa `state` para los resultados.** Muestra aprobado o rechazado en el bloque en lugar de describirlo. No todo es verde: marca un camino que falla como `error`.
+7. **Termina en el resultado**: destácalo o acerca la cámara.
+8. **De 5 a 8 pasos** es lo ideal. Menos de 3 se siente estático; más de 10, lento.
+
+Después del último paso, Fluxygram agrega un [final](/es/diagrams/motion/#el-final): la cámara se aleja para mostrar todo a la vez.
+
+## Tiempos
+
+En reproducción automática, cada paso espera lo necesario para leerlo: Fluxygram mide cuánto aparece y qué tan largo es el texto. Cámbialo para todo el diagrama con [`motion.hold`](/es/diagrams/motion/), o para un paso con `duration`:
+
+```json
+{ "show": ["done"], "caption": "El resultado clave, con una explicación más larga", "duration": 6 }
+```

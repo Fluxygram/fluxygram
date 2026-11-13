@@ -1,0 +1,56 @@
+---
+title: Para agentes de IA
+description: Dale el skill de Fluxygram a Claude, ChatGPT, Gemini, Cursor y otros agentes.
+sidebar:
+  order: 2
+---
+
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+El **skill** de Fluxygram le enseña a un agente de IA el formato, cómo elegir el tipo de diagrama y cómo escribir pasos que expliquen. Con él puedes decir "haz un diagrama animado de cómo funciona OAuth" y recibir un `.flux.json` válido.
+
+<Tabs>
+  <TabItem label="Claude Code">
+    El repositorio es un marketplace de plugins:
+
+    ```
+    /plugin marketplace add Fluxygram/fluxygram
+    /plugin install fluxygram@fluxygram
+    ```
+
+    Después solo pídelo: *"Haz un diagrama animado de cómo funciona nuestro checkout."*
+  </TabItem>
+  <TabItem label="Cursor · Codex · Copilot">
+    Guarda el skill en tu proyecto y dile al agente que lo use (o agrégalo a tus reglas):
+
+    ```bash
+    curl -o FLUXYGRAM.md https://fluxygram.app/skill.md
+    ```
+
+    Después pide: *"Siguiendo FLUXYGRAM.md, diagrama cómo pasa una petición por nuestra API."*
+  </TabItem>
+  <TabItem label="ChatGPT · Gemini · Claude.ai">
+    En el [sitio de Fluxygram](https://fluxygram.app/#agents), elige tu asistente, escribe lo que quieres explicar y presiona **Copiar prompt**. El prompt incluye el skill completo. Pégalo en el chat y luego pega el JSON de la respuesta en el [editor](https://fluxygram.app/play).
+  </TabItem>
+</Tabs>
+
+## Qué aprende el agente
+
+- Cuál de los siete [tipos](/es/diagrams/types/) encaja con la pregunta.
+- El formato: bloques, conexiones, grupos, íconos y estados.
+- Las reglas para contar bien: una idea por paso, textos cortos, `flow` para movimiento real, `state` para resultados.
+- Una receta para [diagramar un repositorio entero](/es/guides/codebase/).
+
+El skill completo está en [`skills/fluxygram/SKILL.md`](https://github.com/Fluxygram/fluxygram/blob/main/skills/fluxygram/SKILL.md) y también en [fluxygram.app/skill.md](https://fluxygram.app/skill.md).
+
+## Esta documentación, para agentes
+
+Esta documentación también se publica como texto plano para modelos de lenguaje (en inglés):
+
+- [`/llms.txt`](/llms.txt): un resumen con enlaces a las dos versiones de abajo.
+- [`/llms-full.txt`](/llms-full.txt): toda la documentación en un archivo.
+- [`/llms-small.txt`](/llms-small.txt): una versión más corta, para contextos chicos.
+
+<Aside type="tip">
+  Si el JSON del agente tiene un error, el editor muestra exactamente qué está mal (`edges[2].to apunta a "x", que no es un nodo`). Pégale ese mensaje al agente y lo corregirá.
+</Aside>

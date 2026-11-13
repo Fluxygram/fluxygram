@@ -1,0 +1,59 @@
+---
+title: The editor
+description: Build, preview, share and export diagrams visually.
+sidebar:
+  order: 2
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+The [editor](https://fluxygram.app/play) runs entirely in your browser. Nothing is uploaded: your diagram is saved locally and shared links carry the whole diagram inside the URL.
+
+## Build a diagram
+
+<Steps>
+
+1. **Pick a type** in the chip at the top (Flow, Architecture, Timeline…). You can change it at any time without losing your blocks and connections.
+
+2. **Add blocks** by dragging them from the palette onto the canvas. The palette shows the blocks that make sense for the current type: decisions and databases in a flow, layers in an architecture, participants in a sequence.
+
+3. **Connect them**: drag from a block's dot to another block.
+
+4. **Edit** anything in the **Properties** panel on the right: label, description, icon, shape, state. Select a connection to give it a label or say what it `carries`.
+
+</Steps>
+
+Dragging a block pins it to that position (`x` and `y` in the JSON). Everything else keeps its automatic layout. **Auto layout** removes the pins.
+
+## Write the story
+
+The **Steps** bar at the bottom holds the story. Add a step with **+**, then click blocks and connections on the canvas. What a click does depends on the mode you pick for that step:
+
+| Mode | A click on the canvas… |
+| --- | --- |
+| Appears | makes the element appear in this step |
+| Particle | sends a particle along the connection |
+| Stands out | highlights the block and dims the rest |
+| Camera | moves the camera in on the block |
+| State | sets success, error, warning or in progress |
+
+Select a step to write its **caption** (what the audience reads), its **duration** and your **speaker notes** in the Properties panel.
+
+## The JSON tab
+
+The **JSON** tab shows the same diagram as code, with colors, line numbers and errors marked on their line. Changes apply as you type when the JSON is valid. **Format** tidies it and **Copy** puts it on your clipboard.
+
+## Share and export
+
+| Button | What you get |
+| --- | --- |
+| **Share** | A link that opens the diagram in a viewer. The diagram travels compressed inside the URL: no account, no server. |
+| **Download JSON** | The `.flux.json` file. |
+| **Export HTML** | A single self-contained HTML file that plays the diagram offline. |
+| **Present** | [Presentation mode](/guides/present/): full screen plus your notes. |
+
+You can also **open** or **drop** a `.flux.json` on the canvas to edit it.
+
+<Aside type="tip">
+  Everything can be undone: <kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>⌘</kbd>+<kbd>Z</kbd> on Mac), even loading another diagram on top. The **?** button replays the guided tour.
+</Aside>

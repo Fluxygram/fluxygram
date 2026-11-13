@@ -1,0 +1,56 @@
+---
+title: For AI agents
+description: Give the Fluxygram skill to Claude, ChatGPT, Gemini, Cursor and other agents.
+sidebar:
+  order: 2
+---
+
+import { Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+The Fluxygram **skill** teaches an AI agent the format, how to choose the diagram type and how to write steps that explain. With it, you can say "make an animated diagram of how OAuth works" and get a valid `.flux.json`.
+
+<Tabs>
+  <TabItem label="Claude Code">
+    The repository is a plugin marketplace:
+
+    ```
+    /plugin marketplace add Fluxygram/fluxygram
+    /plugin install fluxygram@fluxygram
+    ```
+
+    Then just ask: *"Make an animated diagram of how our checkout works."*
+  </TabItem>
+  <TabItem label="Cursor · Codex · Copilot">
+    Save the skill in your project and point the agent at it (or add it to your rules):
+
+    ```bash
+    curl -o FLUXYGRAM.md https://fluxygram.app/skill.md
+    ```
+
+    Then ask: *"Following FLUXYGRAM.md, diagram how a request goes through our API."*
+  </TabItem>
+  <TabItem label="ChatGPT · Gemini · Claude.ai">
+    On the [Fluxygram site](https://fluxygram.app/#agents), pick your assistant, type what you want to explain and press **Copy prompt**. The prompt includes the whole skill. Paste it in the chat, then paste the JSON answer into the [editor](https://fluxygram.app/play).
+  </TabItem>
+</Tabs>
+
+## What the agent learns
+
+- Which of the seven [types](/diagrams/types/) fits the question.
+- The format: blocks, connections, groups, icons, states.
+- The storytelling rules: one idea per step, short captions, `flow` for real movement, `state` for outcomes.
+- A recipe to [diagram a whole codebase](/guides/codebase/).
+
+The full skill is at [`skills/fluxygram/SKILL.md`](https://github.com/Fluxygram/fluxygram/blob/main/skills/fluxygram/SKILL.md), and also served at [fluxygram.app/skill.md](https://fluxygram.app/skill.md).
+
+## These docs, for agents
+
+These docs are also published as plain text for language models:
+
+- [`/llms.txt`](/llms.txt): a short overview that links to the two versions below.
+- [`/llms-full.txt`](/llms-full.txt): all the documentation in one file.
+- [`/llms-small.txt`](/llms-small.txt): a shorter version, for small context windows.
+
+<Aside type="tip">
+  If the agent's JSON has a mistake, the editor shows exactly what's wrong (`edges[2].to points to "x", which is not a node`). Paste that message back to the agent and it will fix it.
+</Aside>

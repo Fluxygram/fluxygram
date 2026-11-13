@@ -1,0 +1,81 @@
+---
+title: Tipos de diagrama
+description: Los siete tipos de diagrama, qué explica cada uno y cómo se mueve.
+sidebar:
+  order: 1
+---
+
+import Diagram from '../../../../components/Diagram.astro';
+
+El tipo se elige con `"type"`. Cada tipo tiene su propia forma de ordenar los bloques y su propio movimiento, que se usa cuando el diagrama no tiene pasos.
+
+| Quieres explicar… | Tipo | Movimiento por defecto |
+| --- | --- | --- |
+| Pasos, un proceso, decisiones, un pipeline | `flow` | El camino se arma columna por columna; una partícula recorre cada conexión nueva |
+| Un sistema: servicios, capas, quién llama a quién | `architecture` | Las capas aparecen de abajo hacia arriba y luego las peticiones recorren cada conexión |
+| Historia, un roadmap, versiones | `timeline` | La cámara va de hito en hito |
+| Quién le habla a quién, en orden | `sequence` | Aparecen los participantes y luego cada mensaje cruza entre sus líneas de vida |
+| Un proceso que se repite | `cycle` | Cada etapa aparece alrededor del anillo; al final todo gira |
+| Una jerarquía | `tree` | Crece desde la raíz, nivel por nivel |
+| Ideas alrededor de un tema | `mindmap` | Primero la idea central, luego una rama a la vez |
+
+Si dos tipos sirven, elige el que se mueve como la pregunta: "¿cómo pasa X?" → `flow`; "¿cómo está hecho X?" → `architecture`; "¿cómo cambió X?" → `timeline`; "¿quién le envía qué a quién?" → `sequence`; "¿qué se repite?" → `cycle`; "¿cómo se organiza X?" → `tree`; "¿qué incluye X?" → `mindmap`.
+
+## flow
+
+Procesos y decisiones. Los bloques pueden tener forma con `kind`: `decision` (rombo, escríbelo como pregunta), `start` y `end` (píldoras), `data` (paralelogramo), `database` (cilindro) y `note`. Agrega `"direction": "TB"` para ordenarlo de arriba hacia abajo.
+
+<Diagram src="order" />
+
+## architecture
+
+Sistemas por capas. Escribe los `groups` **de arriba hacia abajo** (lo que la persona toca primero va arriba y el almacenamiento abajo) y dale un `group` a cada nodo.
+
+```json
+"groups": [
+  { "id": "clients", "label": "Clientes" },
+  { "id": "services", "label": "Servicios" },
+  { "id": "data", "label": "Datos" }
+],
+"nodes": [
+  { "id": "web", "label": "App web", "group": "clients", "icon": "browser" },
+  { "id": "api", "label": "API", "group": "services", "icon": "api" },
+  { "id": "db", "label": "Postgres", "group": "data", "kind": "database" }
+]
+```
+
+<Diagram src="architecture" paused />
+
+## timeline
+
+Hitos en orden. Dale a cada nodo una `date` (`"1995"`, `"2026-03"`, `"Q3 2026"`); si todos la tienen, se ordenan por ella. No hacen falta conexiones.
+
+<Diagram src="web-history" paused />
+
+## sequence
+
+Quién le habla a quién, en orden. Los nodos son los participantes, de izquierda a derecha. **Las conexiones son los mensajes, en el orden en que ocurren**: la lista de conexiones es la línea de tiempo. Dale a cada mensaje un `label` corto.
+
+<Diagram src="sequence" paused />
+
+## cycle
+
+Un proceso que se repite. Escribe los nodos en el orden del ciclo, conecta cada uno con el siguiente y el último con el primero.
+
+<Diagram src="cycle" paused />
+
+## tree
+
+Una jerarquía. Conecta cada padre con sus hijos; la raíz es el nodo al que nadie apunta.
+
+<Diagram src="tree" paused />
+
+## mindmap
+
+Ideas alrededor de un tema. El primer nodo es la idea central; conéctalo con las ramas y cada rama con sus sub-ideas.
+
+<Diagram src="mindmap" paused />
+
+:::tip[Cambiar de tipo]
+En el editor, cambiar el tipo conserva tus bloques y conexiones. Los campos que solo sirven para un tipo (como `group` o `date`) los demás simplemente los ignoran.
+:::

@@ -1,0 +1,69 @@
+---
+/**
+ * Field table generated from the JSON Schema, so the reference never drifts from the format.
+ *   <SchemaTable of="diagram" />  · node · edge · group · step · motion
+ */
+import schema from '../../../site/public/schema/v1.json';
+
+type Prop = {
+  type?: string | string[];
+  enum?: unknown[];
+  $ref?: string;
+  oneOf?: Prop[];
+  anyOf?: Prop[];
+  items?: Prop;
+  description?: string;
+  minimum?: number;
+  maximum?: number;
+  properties?: Record<string, Prop>;
+  required?: string[];
+};
+type Def = { properties?: Record<string, Prop>; required?: string[] };
+
+interface Props {
+  of: 'diagram' | 'node' | 'edge' | 'group' | 'step' | 'motion';
+}
+const { of } = Astro.props;
+const s = schema as unknown as Def & { $defs: Record<string, Def>; properties: Record<string, Prop> };
+const def: Def = of === 'diagram' ? s : of === 'motion' ? (s.properties.motion as Def) : s.$defs[of]!;
+const lang = Astro.currentLocale === 'es' ? 'es' : 'en';
+const L = lang === 'es' ? { field: 'Campo', type: 'Tipo o valores', notes: 'Descripción', req: 'obligatorio' } : { field: 'Field', type: 'Type or values', notes: 'Description', req: 'required' };
+
+const refName = (ref: string) => ref.split('/').pop() ?? ref;
+function typeOf(p: Prop): string {
+  if (p.enum) return p.enum.length > 12 ? `${p.enum.length} names` : p.enum.map((v) => `\`${v}\``).join(' · ');
+  if (p.$ref) {
+    const name = refName(p.$ref);
+    return name === 'id' || name === 'ref' ? 'id' : name;
+  }
+  const alts = p.oneOf ?? p.anyOf;
+  if (alts) return alts.map(typeOf).join(' or ');
+  if (p.type === 'array' && p.items) return `${typeOf(p.items)}[]`;
+  const range = p.minimum !== undefined || p.maximum !== undefined ? ` (${p.minimum ?? ''}–${p.maximum ?? ''})` : '';
+  return `${Array.isArray(p.type) ? p.type.join(' | ') : p.type ?? 'any'}${range}`;
+}
+const code = (text: string) => text.replace(/`([^`]+)`/g, '<code>$1</code>');
+const rows = Object.entries(def.properties ?? {})
+  .filter(([key]) => key !== '$schema')
+  .map(([key, p]) => ({ key, required: def.required?.includes(key) ?? false, type: code(typeOf(p)), notes: p.description ?? '' }));
+---
+
+<table>
+  <thead>
+    <tr><th>{L.field}</th><th>{L.type}</th><th>{L.notes}</th></tr>
+  </thead>
+  <tbody>
+    {
+      rows.map((r) => (
+        <tr>
+          <td>
+            <code>{r.key}</code>
+            {r.required && <small> {L.req}</small>}
+          </td>
+          <td set:html={r.type} />
+          <td>{r.notes}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>

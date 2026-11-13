@@ -1,0 +1,81 @@
+---
+title: Diagram types
+description: The seven diagram types, what each one explains and how it moves.
+sidebar:
+  order: 1
+---
+
+import Diagram from '../../../components/Diagram.astro';
+
+Set the type with `"type"`. Each type has its own layout and its own default motion, used whenever the diagram has no steps.
+
+| You want to explain… | Type | Default motion |
+| --- | --- | --- |
+| Steps, a process, decisions, a pipeline | `flow` | The path builds column by column; a particle runs along each new connection |
+| A system: services, layers, who calls whom | `architecture` | Layers appear bottom-up, then requests flow through every connection |
+| History, a roadmap, releases | `timeline` | The camera moves from milestone to milestone |
+| Who talks to whom, in order | `sequence` | Participants appear, then each message crosses between lifelines |
+| A process that repeats | `cycle` | Each stage appears around the ring; at the end everything loops |
+| A hierarchy | `tree` | Grows from the root, level by level |
+| Ideas around one topic | `mindmap` | The central idea first, then one branch at a time |
+
+When two types fit, pick the one whose motion matches the question: "how does X happen" → `flow`; "how is X built" → `architecture`; "how did X change" → `timeline`; "who sends what to whom" → `sequence`; "what keeps repeating" → `cycle`; "how is X organized" → `tree`; "what does X involve" → `mindmap`.
+
+## flow
+
+Processes and decisions. Blocks can take shapes with `kind`: `decision` (diamond, phrase it as a question), `start` and `end` (pills), `data` (parallelogram), `database` (cylinder) and `note`. Add `"direction": "TB"` to lay it out top to bottom.
+
+<Diagram src="order" />
+
+## architecture
+
+Systems in layers. List the `groups` **top to bottom** (what the user touches first goes on top, storage at the bottom) and give every node a `group`.
+
+```json
+"groups": [
+  { "id": "clients", "label": "Clients" },
+  { "id": "services", "label": "Services" },
+  { "id": "data", "label": "Data" }
+],
+"nodes": [
+  { "id": "web", "label": "Web app", "group": "clients", "icon": "browser" },
+  { "id": "api", "label": "API", "group": "services", "icon": "api" },
+  { "id": "db", "label": "Postgres", "group": "data", "kind": "database" }
+]
+```
+
+<Diagram src="architecture" paused />
+
+## timeline
+
+Milestones in order. Give each node a `date` (`"1995"`, `"2026-03"`, `"Q3 2026"`); when every node has one, they are sorted by it. No connections needed.
+
+<Diagram src="web-history" paused />
+
+## sequence
+
+Who talks to whom, in order. Nodes are the participants, left to right. **Connections are the messages, in the order they happen**: the list of edges is the timeline. Give each message a short `label`.
+
+<Diagram src="sequence" paused />
+
+## cycle
+
+A process that repeats. List the nodes in the order of the cycle, connect each one to the next, and the last one back to the first.
+
+<Diagram src="cycle" paused />
+
+## tree
+
+A hierarchy. Connect each parent to its children; the root is the node nothing points to.
+
+<Diagram src="tree" paused />
+
+## mindmap
+
+Ideas around one topic. The first node is the central idea; connect it to the branches, and each branch to its sub-ideas.
+
+<Diagram src="mindmap" paused />
+
+:::tip[Switching types]
+In the editor, changing the type keeps your blocks and connections. Fields that only make sense for one type (like `group` or `date`) are simply ignored by the others.
+:::

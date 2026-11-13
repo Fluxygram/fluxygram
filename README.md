@@ -15,6 +15,7 @@
 <p align="center">
   <a href="https://fluxygram.app">Website</a> ·
   <a href="https://fluxygram.app/play">Editor</a> ·
+  <a href="https://docs.fluxygram.app">Docs</a> ·
   <a href="#for-agents">For agents</a> ·
   <a href="https://github.com/Fluxygram/fluxygram/discussions">Discussions</a> ·
   <a href="#español">Español</a>
@@ -85,7 +86,7 @@ Each step says what changes:
 
 `motion` sets the style for the whole diagram, or per block and connection: how things enter (`fade`, `scale`, `draw`, `slide`), how they travel (`particle`, `pulse`, `dash`, `packets`), the speed, and whether the camera follows the action. At the end, the camera pulls back to show the whole picture.
 
-Full reference: [`SKILL.md`](skills/fluxygram/SKILL.md) (format and storytelling rules) and the [JSON Schema](https://fluxygram.app/schema/v1.json).
+Full documentation at **[docs.fluxygram.app](https://docs.fluxygram.app)**: every field, every type with live examples, the component API and guides. Also: [`SKILL.md`](skills/fluxygram/SKILL.md) (format and storytelling rules) and the [JSON Schema](https://fluxygram.app/schema/v1.json).
 
 ## Editor and presentation mode
 
@@ -151,11 +152,12 @@ pnpm typecheck
 | `packages/element` | `<fluxy-gram>` web component (SVG, CSS transitions, Web Animations) |
 | `packages/fluxygram` | Single-file build for CDNs |
 | `site` | Landing, editor, viewer and presentation mode (Vite), deployed on Cloudflare Workers |
+| `docs` | Documentation at docs.fluxygram.app (Astro Starlight), in English and Spanish |
 | `skills/fluxygram` | Agent skill and examples, also a Claude Code plugin (`.claude-plugin/`) |
 
 ## License
 
-- `packages/*` and `skills/fluxygram`: **MIT**. Use, embed and ship them anywhere.
+- `packages/*`, `skills/fluxygram` and `docs`: **MIT**. Use, embed and ship them anywhere.
 - `site` (landing, editor, presentation mode): **FSL-1.1-ALv2**. Free to read, modify and self-host for your own use; not to offer as a competing commercial service. Every release becomes Apache 2.0 after two years.
 
 Details in [LICENSE.md](LICENSE.md).
@@ -171,6 +173,7 @@ Details in [LICENSE.md](LICENSE.md).
 - **Editor visual** en [fluxygram.app/play](https://fluxygram.app/play): arrastras bloques, los conectas, armas la historia paso a paso y compartes un link, descargas el JSON o exportas un HTML. Todo pasa en tu navegador.
 - **Modo presentación:** el diagrama a pantalla completa para tu público y, con la tecla <kbd>N</kbd>, una segunda ventana con tus notas, el siguiente paso y un cronómetro.
 - **Para agentes:** la carpeta [`skills/fluxygram`](skills/fluxygram) le enseña a cualquier agente a escribir diagramas. En Claude Code se instala con `/plugin marketplace add Fluxygram/fluxygram` y `/plugin install fluxygram@fluxygram`; para ChatGPT, Gemini o Claude.ai, el sitio tiene un botón "Copiar prompt".
+- **Documentación** completa en [docs.fluxygram.app/es](https://docs.fluxygram.app/es/), con ejemplos en vivo de cada tipo.
 - **Paquetes en npm:** `@fluxygram/element` (el componente), `@fluxygram/core` (el formato) y `fluxygram` (un solo archivo para usar desde un CDN).
 - El sitio y el componente se muestran en inglés o español según el idioma del navegador.
 
@@ -180,7 +183,7 @@ Las preguntas e ideas van en [Discussions](https://github.com/Fluxygram/fluxygra
 
 ### Licencia
 
-- `packages/*` y `skills/fluxygram`: **MIT**. Se pueden usar, incrustar y distribuir en cualquier parte.
+- `packages/*`, `skills/fluxygram` y `docs`: **MIT**. Se pueden usar, incrustar y distribuir en cualquier parte.
 - `site` (landing, editor, modo presentación): **FSL-1.1-ALv2**. Libre para leer, modificar e instalar para uso propio; no para ofrecerlo como un servicio comercial que compita. Cada versión pasa a Apache 2.0 a los dos años.
 
 Detalles en [LICENSE.md](LICENSE.md).
