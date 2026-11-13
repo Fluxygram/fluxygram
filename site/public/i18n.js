@@ -3,6 +3,16 @@
 (function () {
   var STRINGS = {
     en: {
+      "ed.makeSteps": "Turn into editable steps",
+      "ed.makeStepsHint": "This diagram moves on its own. Turn the automatic motion into steps to write a text and speaker notes for each one.",
+      "ed.pickStepHint": "Select a step to write what the audience reads and your speaker notes (they appear on the right).",
+      "ed.captionLabel": "Text on screen",
+      "ed.captionHint": "Your audience reads it under the diagram. Under 12 words works best.",
+      "ed.notesPh2": "What you will say during this step: key points, a question for the audience, a number to remember…",
+      "ed.notesHint": "Only you see them: in presentation mode, press N to open your notes in a second window.",
+      "ed.stepSeconds": "Seconds on screen (autoplay)",
+      "ed.stepPanelTip": "To choose what appears, where the particle runs or a node’s state, use the modes in the bottom bar and click on the canvas.",
+      "pr.noNotes": "No notes for this step. Write them in the editor: select the step at the bottom and fill in \"Speaker notes\" on the right.",
       "pr.kSpace": "Space",
       "pr.kClick": "Click",
       "ed.format": "Format",
@@ -261,6 +271,16 @@
       'lang.switch': 'Español',
     },
     es: {
+      "ed.makeSteps": "Convertir en pasos editables",
+      "ed.makeStepsHint": "Este diagrama se mueve solo. Convierte el movimiento automático en pasos para escribirle a cada uno un texto y notas de presentador.",
+      "ed.pickStepHint": "Selecciona un paso para escribir lo que lee el público y tus notas de presentador (aparecen a la derecha).",
+      "ed.captionLabel": "Texto en pantalla",
+      "ed.captionHint": "Tu público lo lee debajo del diagrama. Mejor si tiene menos de 12 palabras.",
+      "ed.notesPh2": "Lo que vas a decir en este paso: ideas clave, una pregunta para el público, un dato para recordar…",
+      "ed.notesHint": "Solo las ves tú: en el modo presentación, presiona N para abrir tus notas en una segunda ventana.",
+      "ed.stepSeconds": "Segundos en pantalla (reproducción automática)",
+      "ed.stepPanelTip": "Para elegir qué aparece, por dónde corre la partícula o el estado de un nodo, usa los modos de la barra de abajo y haz clic en el lienzo.",
+      "pr.noNotes": "Este paso no tiene notas. Escríbelas en el editor: selecciona el paso abajo y completa \"Notas del presentador\" a la derecha.",
       "pr.kSpace": "Espacio",
       "pr.kClick": "Clic",
       "ed.format": "Formatear",

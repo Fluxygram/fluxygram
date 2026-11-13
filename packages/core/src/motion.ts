@@ -36,7 +36,8 @@ function finale(layout: Layout, last: StepState): StepState {
   };
 }
 
-function defaultSteps(diagram: Diagram): FluxStep[] {
+/** Pasos que usa cada tipo cuando el diagrama no trae los suyos (el editor los puede volver editables). */
+export function defaultSteps(diagram: Diagram): FluxStep[] {
   const edges = diagram.edges ?? [];
 
   if (diagram.type === 'timeline') {

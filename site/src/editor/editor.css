@@ -274,3 +274,23 @@
 .ed-json-editor .cm-editor { height: 100%; }
 .ed-json-editor .cm-editor.cm-focused { outline: none; }
 .ed-json-issues[hidden] { display: none; }
+
+/* ---------- Panel del paso ---------- */
+.ed-field textarea {
+  width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: 9px; resize: vertical;
+  background: var(--bg); color: var(--text); font: inherit; font-size: 14px; line-height: 1.5; outline: none;
+  transition: border-color 160ms ease;
+}
+.ed-field textarea:focus { border-color: var(--accent); }
+.ed-field textarea.ed-notes-area { min-height: 130px; font-size: 14.5px; }
+.ed-field-hint { font-size: 12px; line-height: 1.45; color: var(--muted); }
+.ed-field-inline { grid-template-columns: 1fr auto; align-items: center; }
+.ed-field-inline input[type='number'] {
+  width: 72px; height: 34px; padding: 0 8px; border: 1px solid var(--border); border-radius: 9px; background: var(--bg);
+  color: var(--text); font: inherit; font-size: 14px; outline: none; font-variant-numeric: tabular-nums;
+}
+/* Un punto en los pasos que ya tienen notas del presentador. */
+.ed-step { position: relative; }
+.ed-step.has-notes::after {
+  content: ''; position: absolute; top: 4px; right: 4px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
+}

@@ -409,6 +409,10 @@ function renderAll(reason: string) {
   $<HTMLButtonElement>('redo').disabled = !model.canRedo;
   $<HTMLButtonElement>('auto').disabled = d.type === 'timeline' || d.type === 'sequence' || !d.nodes.some((n) => typeof n.x === 'number');
   $('empty').hidden = d.nodes.length > 0;
+  // Al elegir un paso se edita en el panel de Propiedades (texto, notas, duración).
+  if (reason === 'step' && model.step !== null && $('props').hidden) {
+    tabs.find((x) => x.dataset.tab === 'props')?.click();
+  }
   if (reason !== 'move') {
     renderInspector($('props'), model);
     renderSteps($('steps'), model);

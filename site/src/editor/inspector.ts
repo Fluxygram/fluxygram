@@ -59,11 +59,53 @@ import type { Model } from './model';
 /** Panel de propiedades: el diagrama, o el nodo / conexión / capa seleccionados. */
 export function renderInspector(root: HTMLElement, model: Model) {
   // No redibujar mientras se escribe en un campo del panel: se perdería el foco.
-  if (root.contains(document.activeElement) && (document.activeElement as HTMLElement).tagName === 'INPUT') return;
+  if (root.contains(document.activeElement) && ['INPUT', 'TEXTAREA'].includes((document.activeElement as HTMLElement).tagName)) return;
   const sel = model.selection;
   root.replaceChildren(
-    sel?.kind === 'node' ? nodePanel(model, sel.id) : sel?.kind === 'edge' ? edgePanel(model, sel.id) : sel?.kind === 'group' ? groupPanel(model, sel.id) : diagramPanel(model),
+    model.step !== null && model.diagram.steps?.[model.step] ? stepPanel(model, model.step) : sel?.kind === 'node' ? nodePanel(model, sel.id) : sel?.kind === 'edge' ? edgePanel(model, sel.id) : sel?.kind === 'group' ? groupPanel(model, sel.id) : diagramPanel(model),
   );
+}
+
+/** Un área de texto que guarda al terminar de escribir. */
+function areaField(label: string, value: string | undefined, onCommit: (v: string) => void, opts: { placeholder?: string; hint?: string; rows?: number; cls?: string } = {}) {
+  let timer: number | undefined;
+  const area = h('textarea', { rows: opts.rows ?? 3, placeholder: opts.placeholder, class: opts.cls });
+  area.value = value ?? '';
+  const commit = () => {
+    clearTimeout(timer);
+    if (area.value.trim() !== (value ?? '')) {
+      value = area.value.trim();
+      onCommit(area.value.trim());
+    }
+  };
+  area.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = window.setTimeout(commit, 700);
+  });
+  area.addEventListener('blur', commit);
+  return h('label', { class: 'ed-field' }, h('span', {}, label), area, opts.hint ? h('small', { class: 'ed-field-hint' }, opts.hint) : false);
+}
+
+/** El paso seleccionado: lo que ve el público, las notas del presentador y cuánto dura. */
+function stepPanel(model: Model, i: number) {
+  const step = model.diagram.steps![i]!;
+  const box = h('div', {});
+  box.append(h('h3', { class: 'ed-h' }, t('ed.step', { n: String(i + 1) })));
+  box.append(areaField(t('ed.captionLabel'), step.caption, (v) => model.setCaption(v), { placeholder: t('ed.caption'), hint: t('ed.captionHint'), rows: 2 }));
+  box.append(areaField(t('ed.notes'), step.notes, (v) => model.setNotes(v), { placeholder: t('ed.notesPh2'), hint: t('ed.notesHint'), rows: 6, cls: 'ed-notes-area' }));
+
+  const fallback = model.diagram.motion?.hold;
+  const seconds = h('input', {
+    type: 'number', min: 0.5, max: 60, step: 0.5, value: step.duration ?? '',
+    placeholder: fallback ? String(fallback) : t('ed.auto.short'),
+  });
+  seconds.addEventListener('change', () => {
+    const v = Number(seconds.value);
+    model.setStepDuration(v >= 0.5 && v <= 60 ? v : undefined);
+  });
+  box.append(h('label', { class: 'ed-field ed-field-inline' }, h('span', {}, t('ed.stepSeconds')), h('span', { class: 'ed-seconds-wrap' }, seconds, h('span', {}, 's'))));
+  box.append(h('p', { class: 'ed-tip' }, t('ed.stepPanelTip')));
+  return box;
 }
 
 /** Un campo de texto que guarda al terminar de escribir (un solo punto de deshacer por edición). */

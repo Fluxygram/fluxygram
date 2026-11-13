@@ -1,4 +1,4 @@
-import type { Diagram, DiagramType, FluxEdge, FluxGroup, FluxNode, FluxStep, Motion, NodeState } from '@fluxygram/core';
+import { defaultSteps, type Diagram, type DiagramType, type FluxEdge, type FluxGroup, type FluxNode, type FluxStep, type Motion, type NodeState } from '@fluxygram/core';
 
 export type Selection =
   | { kind: 'node'; id: string }
@@ -292,6 +292,18 @@ export class Model {
   }
 
   /* ---------- Pasos ---------- */
+
+  /** Convierte el movimiento automático en pasos explícitos, para poder escribirles texto y notas. */
+  materializeSteps() {
+    if (!this.diagram.nodes.length) return;
+    this.change((d) => {
+      d.steps = clone(defaultSteps(d));
+    }, 'steps');
+    this.step = 0;
+    this.stepMode = 'show';
+    this.selection = null;
+    this.emit('step');
+  }
 
   addStep() {
     this.change((d) => {
