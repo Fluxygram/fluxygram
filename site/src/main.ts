@@ -2,6 +2,7 @@ import '@fluxygram/element';
 import type { FluxyGram } from '@fluxygram/element';
 import { exampleUrl } from './i18n';
 import './agents';
+import './lang';
 import { mountTechText } from './vendor/tech-text';
 
 const hero = document.querySelector<FluxyGram>('#hero')!;

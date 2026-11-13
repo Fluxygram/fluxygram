@@ -84,11 +84,11 @@
 /* ---------- Panel lateral ---------- */
 .ed-side { grid-area: side; display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--border); background: var(--surface); }
 .ed-tabs { display: flex; gap: 2px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
-.ed-tabs button {
+.ed-tabs > button {
   height: 30px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--muted);
   font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
 }
-.ed-tabs button[aria-selected='true'] { background: var(--code-bg); color: var(--text); }
+.ed-tabs > button[aria-selected="true"] { background: var(--code-bg); color: var(--text); }
 .ed-panel { flex: 1; min-height: 0; overflow-y: auto; padding: 16px; }
 .ed-panel[hidden] { display: none; }
 #jsonPanel { display: flex; flex-direction: column; gap: 8px; padding: 0; }
@@ -301,6 +301,8 @@
 .ed-side { overflow: hidden; min-width: 0; }
 .ed-main.is-side-hidden .ed-side { border-left-color: transparent; visibility: hidden; transition: visibility 0s linear 260ms; }
 .ed-tabs { align-items: center; }
+/* Controles segmentados (RubberSegment): borde fino como el resto del editor */
+.ed-rs { box-shadow: inset 0 0 0 1px var(--border); }
 .ed-side-close { order: 9; margin-left: auto; width: 28px; height: 28px; }
 #sideToggle[aria-pressed='false'] { color: var(--accent); }
 @media (prefers-reduced-motion: reduce) { .ed-main { transition: none; } }

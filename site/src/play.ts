@@ -14,6 +14,9 @@ import { emptyDiagram, Model } from './editor/model';
 import { renderSteps } from './editor/steps';
 import { createJsonEditor } from './editor/json';
 import { startTour, tourSeen } from './editor/tour';
+import { SEGMENT_THEME } from './editor/segment';
+import { createRubberSegment } from './vendor/rubber-segment';
+import './lang';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const DRAFT_KEY = 'fluxygram:editor';
@@ -273,15 +276,28 @@ function startPaletteDrag(e: PointerEvent, item: PaletteItem) {
 
 /* ---------- Panel lateral ---------- */
 
-const tabs = [...document.querySelectorAll<HTMLButtonElement>('.ed-tabs button[data-tab]')];
-for (const tab of tabs) {
-  tab.onclick = () => {
-    for (const x of tabs) x.setAttribute('aria-selected', String(x === tab));
-    $('props').hidden = tab.dataset.tab !== 'props';
-    $('jsonPanel').hidden = tab.dataset.tab !== 'json';
-    if (tab.dataset.tab === 'json') syncJson(true);
-  };
+function showTab(tab: string) {
+  $('props').hidden = tab !== 'props';
+  $('jsonPanel').hidden = tab !== 'json';
+  if (tab === 'json') syncJson(true);
 }
+// Propiedades | JSON: control segmentado con elemento deslizante (reemplaza las pestañas del HTML).
+const sideTabs = createRubberSegment({
+  ...SEGMENT_THEME,
+  items: [
+    { value: 'props', label: t('ed.tab.props') },
+    { value: 'json', label: t('ed.tab.json') },
+  ],
+  value: 'props',
+  size: 'sm',
+  radius: 9,
+  inset: 3,
+  ariaLabel: t('ed.tab.label'),
+  className: 'ed-rs',
+  onChange: showTab,
+});
+document.querySelectorAll('.ed-tabs button[data-tab]').forEach((b) => b.remove());
+document.querySelector('.ed-tabs')!.append(sideTabs.el);
 
 // Editor de JSON: colores, números de línea, plegado y errores marcados en su línea.
 const jsonBadge = $('jsonBadge');
@@ -446,7 +462,8 @@ function renderAll(reason: string) {
   $('empty').hidden = d.nodes.length > 0;
   // Al elegir un paso se edita en el panel de Propiedades (texto, notas, duración).
   if (reason === 'step' && model.step !== null && $('props').hidden) {
-    tabs.find((x) => x.dataset.tab === 'props')?.click();
+    sideTabs.set('props');
+    showTab('props');
   }
   if (reason !== 'move') {
     renderInspector($('props'), model);

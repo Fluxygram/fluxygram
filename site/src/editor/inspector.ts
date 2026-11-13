@@ -55,6 +55,7 @@ import { DIAGRAM_TYPES, ENTER_STYLES, TRAVEL_STYLES, type DiagramType, type Ente
 import { t } from '../i18n';
 import { h, icon } from './dom';
 import type { Model } from './model';
+import { segment } from './segment';
 
 /** Panel de propiedades: el diagrama, o el nodo / conexión / capa seleccionados. */
 export function renderInspector(root: HTMLElement, model: Model) {
@@ -145,14 +146,12 @@ function diagramPanel(model: Model) {
     box.append(
       h('div', { class: 'ed-field' },
         h('span', {}, t('ed.direction')),
-        h('div', { class: 'ed-seg' },
-          ...(['LR', 'TB'] as const).map((v) =>
-            h('button', {
-              type: 'button',
-              'aria-pressed': String(dir === v),
-              onclick: () => model.change((x) => (v === 'LR' ? delete x.direction : (x.direction = v))),
-            }, t(v === 'LR' ? 'ed.lr' : 'ed.tb')),
-          ),
+        segment(
+          'direction',
+          (['LR', 'TB'] as const).map((v) => ({ value: v, label: t(v === 'LR' ? 'ed.lr' : 'ed.tb') })),
+          dir,
+          (v) => model.change((x) => (v === 'LR' ? delete x.direction : (x.direction = v as 'TB'))),
+          t('ed.direction'),
         ),
       ),
     );
@@ -174,9 +173,7 @@ function selectField<T extends string>(label: string, value: T | undefined, opti
 function segField<T extends string>(label: string, value: T, options: readonly T[], labelOf: (v: T) => string, onChange: (v: T) => void) {
   return h('div', { class: 'ed-field' },
     h('span', {}, label),
-    h('div', { class: 'ed-seg' },
-      ...options.map((o) => h('button', { type: 'button', 'aria-pressed': String(value === o), onclick: () => onChange(o) }, labelOf(o))),
-    ),
+    segment(`field:${label}`, options.map((o) => ({ value: o, label: labelOf(o) })), value, (v) => onChange(v as T), label),
   );
 }
 

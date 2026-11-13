@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, Plus, Trash2 } from 'lucide';
 import { t } from '../i18n';
 import { h, icon } from './dom';
 import type { Model, StepMode } from './model';
+import { segment } from './segment';
 
 
 const MODES: StepMode[] = ['show', 'flow', 'highlight', 'focus', 'state'];
@@ -48,11 +49,7 @@ export function renderSteps(root: HTMLElement, model: Model) {
 
   root.append(h('span', { class: 'ed-sep' }));
   root.append(
-    h('div', { class: 'ed-seg', role: 'radiogroup' },
-      ...MODES.map((m) =>
-        h('button', { type: 'button', role: 'radio', 'aria-checked': String(model.stepMode === m), onclick: () => model.setStepMode(m) }, t(`ed.mode.${m}`)),
-      ),
-    ),
+    segment('stepMode', MODES.map((m) => ({ value: m, label: t(`ed.mode.${m}`) })), model.stepMode, (m) => model.setStepMode(m as (typeof MODES)[number]), t('ed.mode.label')),
   );
   root.append(
     h('span', { class: 'ed-spacer' }),
