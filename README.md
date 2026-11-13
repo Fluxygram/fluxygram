@@ -67,6 +67,13 @@ pnpm run deploy # build + deploy to Cloudflare Workers (uses only that login)
 
 The site and the component pick English or Spanish from the browser language (`lang` attribute wins when set).
 
+## License
+
+- `packages/core`, `packages/element` and `skill`: **MIT**. Use, embed and ship them anywhere.
+- `site` (landing, editor, presentation mode): **FSL-1.1-ALv2**. Free to read, modify and self-host for your own use; not to offer as a competing commercial service. Every release becomes Apache 2.0 after two years.
+
+Details in [LICENSE.md](LICENSE.md).
+
 ---
 
 ## Español
@@ -83,3 +90,10 @@ pnpm install
 pnpm dev
 pnpm run deploy
 ```
+
+### Licencia
+
+- `packages/core`, `packages/element` y `skill`: **MIT**. Se pueden usar, incrustar y distribuir en cualquier parte.
+- `site` (landing, editor, modo presentación): **FSL-1.1-ALv2**. Libre para leer, modificar e instalar para uso propio; no para ofrecerlo como un servicio comercial que compita. Cada versión pasa a Apache 2.0 a los dos años.
+
+Detalles en [LICENSE.md](LICENSE.md).
