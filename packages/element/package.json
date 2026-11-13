@@ -1,6 +1,6 @@
 {
   "name": "@fluxygram/element",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "<fluxy-gram>: a web component that draws and animates Fluxygram diagrams step by step.",
   "keywords": [
     "diagram",

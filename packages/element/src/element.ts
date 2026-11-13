@@ -20,11 +20,13 @@ const STRINGS = {
     play: 'Play', pause: 'Pause', replay: 'Replay', prev: 'Previous step', next: 'Next step',
     goTo: 'Go to step {n}', errors: 'This diagram has errors', parse: 'The JSON could not be read: {e}',
     load: 'The diagram could not be loaded: {e}', recenter: 'Back to the step view',
+    zoomHint: '{key} + scroll to zoom',
   },
   es: {
     play: 'Reproducir', pause: 'Pausar', replay: 'Repetir', prev: 'Paso anterior', next: 'Paso siguiente',
     goTo: 'Ir al paso {n}', errors: 'Este diagrama tiene errores', parse: 'El JSON no se pudo leer: {e}',
     load: 'No se pudo cargar el diagrama: {e}', recenter: 'Volver a la vista del paso',
+    zoomHint: '{key} + rueda para hacer zoom',
   },
 } satisfies Record<Locale, Record<string, string>>;
 
@@ -247,6 +249,8 @@ export class FluxyGram extends HTMLElement {
         if (active) this.timer?.pause();
         else if (this.playing && this.seen && !document.hidden) this.timer?.play();
       },
+      wheelZooms: () => this.getAttribute('gestures') === 'full' || this.hasAttribute('present'),
+      onWheelPassThrough: () => this.showZoomHint(),
     });
     if (this.getAttribute('controls') !== 'false' && motion.steps.length > 1) this.buildControls(motion.steps.length);
 
@@ -254,6 +258,24 @@ export class FluxyGram extends HTMLElement {
     this.playing = this.getAttribute('autoplay') !== 'false';
     this.updateButtons();
     if (this.seen) this.start();
+  }
+
+  private hintTimer = 0;
+
+  /** Aviso breve: "Ctrl + rueda para hacer zoom" (⌘ en Mac), como en los mapas incrustados. */
+  private showZoomHint() {
+    let hint = this.root.querySelector<HTMLElement>('.fx-zoom-hint');
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.className = 'fx-zoom-hint';
+      hint.setAttribute('aria-hidden', 'true');
+      this.root.append(hint);
+    }
+    const key = /Mac|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl';
+    hint.textContent = this.t('zoomHint', { key });
+    hint.classList.add('is-on');
+    clearTimeout(this.hintTimer);
+    this.hintTimer = window.setTimeout(() => hint!.classList.remove('is-on'), 1100);
   }
 
   private start() {

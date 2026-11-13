@@ -85,6 +85,17 @@ ${darkTokens(':host')}
 .fx-recenter.is-on { opacity: 1; transform: none; pointer-events: auto; color: var(--fx-accent); }
 .fx-recenter.is-on:active { transform: scale(0.94); }
 
+/* Aviso de zoom con Ctrl/⌘ sobre diagramas incrustados */
+.fx-zoom-hint {
+  position: absolute; left: 50%; top: 50%; z-index: 3;
+  padding: 8px 14px; border-radius: 999px;
+  background: rgb(0 0 0 / 0.72); color: #fff; font-size: 13px; white-space: nowrap;
+  pointer-events: none; opacity: 0; transform: translate(-50%, -50%) scale(0.96);
+  transition: opacity 180ms ease-out, transform 180ms var(--fx-ease, ease-out);
+}
+.fx-zoom-hint.is-on { opacity: 1; transform: translate(-50%, -50%); }
+@media (prefers-reduced-motion: reduce) { .fx-zoom-hint { transition: opacity 120ms linear; transform: translate(-50%, -50%); } }
+
 /* ---------- Cámara ---------- */
 .fx-camera {
   transform-box: view-box;

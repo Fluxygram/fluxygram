@@ -7,6 +7,10 @@ interface Hooks {
   onBackgroundClick(): void;
   /** El mouse entra o sale de un nodo: el reloj del autoplay espera mientras tanto. */
   onHover(active: boolean): void;
+  /** ¿La rueda sola hace zoom? Solo cuando el diagrama es el contenido principal. */
+  wheelZooms(): boolean;
+  /** Rueda sin Ctrl/⌘ sobre un diagrama incrustado: la página se desplaza y se avisa cómo hacer zoom. */
+  onWheelPassThrough(): void;
 }
 
 const DRAG_THRESHOLD = 4; // px de pantalla antes de considerar que es un arrastre
@@ -138,9 +142,15 @@ export function attachInteractions(svg: SVGSVGElement, player: Player, hooks: Ho
     }
   };
 
-  // Rueda (y pellizco del trackpad): zoom alrededor del cursor. Si el zoom ya llegó a su límite,
-  // el evento sigue de largo y la página se desplaza: el diagrama nunca atrapa el scroll.
+  // Rueda (y pellizco del trackpad): zoom alrededor del cursor. En un diagrama incrustado en una
+  // página, la rueda sola desplaza la página y el zoom pide Ctrl/⌘ (el pellizco del trackpad llega
+  // con ctrlKey, así que sigue funcionando). Si el zoom ya llegó a su límite, el evento sigue de
+  // largo: el diagrama nunca atrapa el scroll.
   const onWheel = (e: WheelEvent) => {
+    if (!e.ctrlKey && !e.metaKey && !hooks.wheelZooms()) {
+      hooks.onWheelPassThrough();
+      return;
+    }
     const scale = e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 400 : 1;
     const k = e.ctrlKey || e.metaKey ? 0.01 : 0.0022;
     const p = toStage(e.clientX, e.clientY);
