@@ -43,6 +43,7 @@
         <button type="button" class="ed-btn" id="share"><span data-i18n="ed.share">Share</span></button>
         <button type="button" class="ed-btn" id="present" data-i18n-attr="title:ed.presentTip"><span data-i18n="ed.present">Present</span></button>
         <button type="button" class="ed-btn ed-primary" id="preview"><span data-i18n="ed.preview">Play</span></button>
+        <button type="button" class="ed-icon" id="sideToggle" aria-controls="side" data-i18n-attr="aria-label:ed.sideToggle;title:ed.sideToggle"></button>
         <button type="button" class="ed-icon" id="tour" data-i18n-attr="aria-label:tour.help;title:tour.help"></button>
         <button class="lang-switch" type="button" data-lang-switch>Español</button>
       </div>
@@ -59,8 +60,9 @@
         </div>
       </div>
 
-      <aside class="ed-side">
+      <aside class="ed-side" id="side">
         <div class="ed-tabs" role="tablist">
+          <button type="button" class="ed-icon ed-side-close" id="sideClose" data-i18n-attr="aria-label:ed.sideHide;title:ed.sideHide"></button>
           <button type="button" role="tab" aria-selected="true" data-tab="props" data-i18n="ed.tab.props">Properties</button>
           <button type="button" role="tab" aria-selected="false" data-tab="json" data-i18n="ed.tab.json">JSON</button>
         </div>

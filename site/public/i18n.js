@@ -3,6 +3,9 @@
 (function () {
   var STRINGS = {
     en: {
+      "ed.sideToggle": "Show or hide the panel (Ctrl + .)",
+      "ed.sideHide": "Hide the panel (Ctrl + .)",
+      "ed.sideShow": "Show the panel (Ctrl + .)",
       "ed.makeSteps": "Turn into editable steps",
       "ed.makeStepsHint": "This diagram moves on its own. Turn the automatic motion into steps to write a text and speaker notes for each one.",
       "ed.pickStepHint": "Select a step to write what the audience reads and your speaker notes (they appear on the right).",
@@ -271,6 +274,9 @@
       'lang.switch': 'Español',
     },
     es: {
+      "ed.sideToggle": "Mostrar u ocultar el panel (Ctrl + .)",
+      "ed.sideHide": "Ocultar el panel (Ctrl + .)",
+      "ed.sideShow": "Mostrar el panel (Ctrl + .)",
       "ed.makeSteps": "Convertir en pasos editables",
       "ed.makeStepsHint": "Este diagrama se mueve solo. Convierte el movimiento automático en pasos para escribirle a cada uno un texto y notas de presentador.",
       "ed.pickStepHint": "Selecciona un paso para escribir lo que lee el público y tus notas de presentador (aparecen a la derecha).",

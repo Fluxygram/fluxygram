@@ -3,7 +3,7 @@ import type { FluxyGram } from '@fluxygram/element';
 import { DIAGRAM_TYPES, validate, type Diagram, type DiagramType, type FluxNode } from '@fluxygram/core';
 import {
   Circle, CircleDot, Database, Diamond, Download, FileCode, FilePlus, FolderOpen, LayoutGrid, Maximize, Milestone, Minus, Plus,
-  ArrowLeftRight, BrainCircuit, CircleHelp, Layers, Lightbulb, Network, RectangleHorizontal, RefreshCw, Redo2, Square, StickyNote, Undo2, User, Workflow, X, type IconNode,
+  ArrowLeftRight, BrainCircuit, CircleHelp, PanelRightClose, PanelRightOpen, Layers, Lightbulb, Network, RectangleHorizontal, RefreshCw, Redo2, Square, StickyNote, Undo2, User, Workflow, X, type IconNode,
 } from 'lucide';
 import { exampleUrl, lang, t } from './i18n';
 import { Canvas } from './editor/canvas';
@@ -70,7 +70,39 @@ $('fit').onclick = () => canvas.fit();
 $('zoomIn').onclick = () => canvas.zoomBy(1.2);
 $('zoomOut').onclick = () => canvas.zoomBy(1 / 1.2);
 $('new').onclick = () => openPicker();
-$('tour').onclick = () => startTour();
+$('tour').onclick = () => {
+  setSide(true); // la intro recorre el panel: tiene que estar a la vista
+  startTour();
+};
+
+/* ---------- Panel lateral: se puede ocultar para tener todo el lienzo ---------- */
+
+const SIDE_KEY = 'fluxygram:side';
+const mainEl = document.querySelector<HTMLElement>('.ed-main')!;
+function setSide(open: boolean) {
+  mainEl.classList.toggle('is-side-hidden', !open);
+  const toggle = $('sideToggle');
+  toggle.replaceChildren(icon(open ? PanelRightClose : PanelRightOpen));
+  toggle.setAttribute('aria-pressed', String(open));
+  toggle.setAttribute('aria-expanded', String(open));
+  toggle.title = t(open ? 'ed.sideHide' : 'ed.sideShow');
+  try {
+    localStorage.setItem(SIDE_KEY, open ? 'open' : 'hidden');
+  } catch {
+    /* almacenamiento no disponible */
+  }
+}
+const sideOpen = () => !mainEl.classList.contains('is-side-hidden');
+$('sideToggle').onclick = () => setSide(!sideOpen());
+setIcon('sideClose', PanelRightClose);
+$('sideClose').onclick = () => setSide(false);
+let savedSide: string | null = null;
+try {
+  savedSide = localStorage.getItem(SIDE_KEY);
+} catch {
+  /* almacenamiento no disponible */
+}
+setSide(savedSide !== 'hidden');
 
 /* ---------- Tipo de diagrama: se elige al crear; cambiarlo después no borra nada ---------- */
 
@@ -241,7 +273,7 @@ function startPaletteDrag(e: PointerEvent, item: PaletteItem) {
 
 /* ---------- Panel lateral ---------- */
 
-const tabs = [...document.querySelectorAll<HTMLButtonElement>('.ed-tabs button')];
+const tabs = [...document.querySelectorAll<HTMLButtonElement>('.ed-tabs button[data-tab]')];
 for (const tab of tabs) {
   tab.onclick = () => {
     for (const x of tabs) x.setAttribute('aria-selected', String(x === tab));
@@ -360,7 +392,10 @@ window.addEventListener('keydown', (e) => {
     return;
   }
   const mod = e.ctrlKey || e.metaKey;
-  if (mod && e.key.toLowerCase() === 'z' && !typing) {
+  if (mod && e.key === '.') {
+    e.preventDefault();
+    setSide(!sideOpen());
+  } else if (mod && e.key.toLowerCase() === 'z' && !typing) {
     e.preventDefault();
     if (e.shiftKey) model.redo();
     else model.undo();
