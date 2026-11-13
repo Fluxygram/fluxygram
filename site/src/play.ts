@@ -122,6 +122,41 @@ $('typeGrid').replaceChildren(
     } }, icon(TYPE_ICONS[type], 22), h('strong', {}, t(`type.${type}`)), h('span', {}, t(`type.${type}.desc`))),
   ),
 );
+// Ejemplos: ahora viven en la ventana de "Nuevo diagrama".
+const EXAMPLES: [string, string, DiagramType][] = [
+  ['how-it-works', 'play.p.how', 'flow'],
+  ['order', 'play.p.order', 'flow'],
+  ['architecture', 'play.p.arch', 'architecture'],
+  ['web-history', 'play.p.web', 'timeline'],
+  ['sequence', 'play.p.sequence', 'sequence'],
+  ['cycle', 'play.p.cycle', 'cycle'],
+  ['tree', 'play.p.tree', 'tree'],
+  ['mindmap', 'play.p.mindmap', 'mindmap'],
+];
+$('exampleGrid').replaceChildren(
+  ...EXAMPLES.map(([name, key, type]) =>
+    h('button', { type: 'button', class: 'ed-example', onclick: async () => {
+      picker.hidden = true;
+      const res = await fetch(exampleUrl(name));
+      model.load((await res.json()) as Diagram);
+    } }, icon(TYPE_ICONS[type], 16), h('span', {}, t(key))),
+  ),
+);
+
+// Selector de tipo en la barra superior. Cambiarlo no borra nada (y se puede deshacer).
+const typeSelect = $<HTMLSelectElement>('typeSelect');
+typeSelect.replaceChildren(...DIAGRAM_TYPES.map((type) => h('option', { value: type }, t(`type.${type}`))));
+typeSelect.onchange = () => {
+  const type = typeSelect.value as DiagramType;
+  if (type === model.diagram.type) return;
+  model.setType(type);
+  document.dispatchEvent(new CustomEvent('ed:type-changed', { detail: type }));
+};
+function syncType(type: DiagramType) {
+  typeSelect.value = type;
+  $('typeIcon').replaceChildren(icon(TYPE_ICONS[type], 15));
+}
+
 function openPicker() {
   picker.hidden = false;
   picker.querySelector<HTMLButtonElement>('.ed-type')?.focus();
@@ -133,14 +168,6 @@ document.addEventListener('ed:type-changed', (e) => {
   const type = (e as CustomEvent<DiagramType>).detail;
   toast(t('ed.typeChanged', { t: t(`type.${type}`) }), 6000, { label: t('ed.undo'), run: () => model.undo() });
 });
-
-$<HTMLSelectElement>('examples').onchange = async (e) => {
-  const select = e.target as HTMLSelectElement;
-  if (!select.value) return;
-  const res = await fetch(exampleUrl(select.value));
-  model.load((await res.json()) as Diagram);
-  select.value = '';
-};
 
 $('open').onclick = async () => {
   const file = await pickFile();
@@ -454,7 +481,7 @@ function clean(d: Diagram): Diagram {
 let saveTimer: number | undefined;
 function renderAll(reason: string) {
   const d = model.diagram;
-  $('typeChip').textContent = t(`type.${d.type}`);
+  syncType(d.type);
   if (reason === 'load' || reason === 'type' || reason === 'init' || reason === 'history') renderPalette();
   $<HTMLButtonElement>('undo').disabled = !model.canUndo;
   $<HTMLButtonElement>('redo').disabled = !model.canRedo;

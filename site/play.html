@@ -15,7 +15,11 @@
     <header class="ed-top">
       <a class="brand" href="/"><img src="/mark.svg" alt="" width="28" height="28" />fluxygram</a>
 
-      <span class="ed-type-chip" id="typeChip"></span>
+      <!-- Tipo de diagrama: cambiarlo conserva bloques y conexiones -->
+      <div class="ed-type-select">
+        <span class="ed-type-icon" id="typeIcon" aria-hidden="true"></span>
+        <select id="typeSelect" data-i18n-attr="aria-label:ed.type;title:ed.typeTip"></select>
+      </div>
 
       <div class="ed-spacer"></div>
 
@@ -25,17 +29,6 @@
         <button type="button" class="ed-icon" id="auto" data-i18n-attr="aria-label:ed.auto;title:ed.auto"></button>
         <button type="button" class="ed-icon" id="fit" data-i18n-attr="aria-label:ed.fit;title:ed.fit"></button>
         <span class="ed-sep"></span>
-        <select id="examples" data-i18n-attr="aria-label:ed.examples">
-          <option value="" data-i18n="ed.examples">Examples</option>
-          <option value="how-it-works" data-i18n="play.p.how">How Fluxygram works</option>
-          <option value="order" data-i18n="play.p.order">Flow: an order</option>
-          <option value="architecture" data-i18n="play.p.arch">Architecture: an app</option>
-          <option value="web-history" data-i18n="play.p.web">Timeline: the web</option>
-          <option value="tree" data-i18n="play.p.tree">Tree: a team</option>
-          <option value="cycle" data-i18n="play.p.cycle">Cycle: the water cycle</option>
-          <option value="sequence" data-i18n="play.p.sequence">Sequence: OAuth login</option>
-          <option value="mindmap" data-i18n="play.p.mindmap">Mind map: a launch</option>
-        </select>
         <button type="button" class="ed-icon" id="new" data-i18n-attr="aria-label:ed.new;title:ed.new"></button>
         <button type="button" class="ed-icon" id="open" data-i18n-attr="aria-label:ed.open;title:ed.open"></button>
         <button type="button" class="ed-icon" id="download" data-i18n-attr="aria-label:ed.download;title:ed.download"></button>
@@ -94,6 +87,8 @@
         <h2 class="ed-picker-title" id="pickerTitle" data-i18n="ed.pickType"></h2>
         <p class="ed-picker-sub" data-i18n="ed.pickTypeSub"></p>
         <div class="ed-types" id="typeGrid"></div>
+        <h3 class="ed-picker-sec" data-i18n="ed.orExample">Or start from an example</h3>
+        <div class="ed-examples" id="exampleGrid"></div>
       </div>
     </div>
     <div class="ed-toast" id="toast" role="status" aria-live="polite"></div>
