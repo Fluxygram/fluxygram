@@ -373,11 +373,56 @@ async function showList(o: ListOptions) {
     for (const [unit, size] of units) if (Math.abs(diff) >= size) return rel.format(Math.round(diff / size), unit);
     return rel.format(0, 'minute');
   };
-  const thumbs = new Map<string, SVGSVGElement | null>();
+  // Miniaturas: cada diagrama se pide una sola vez, y solo cuando su tarjeta entra en pantalla.
+  const thumbs = new Map<string, Promise<SVGSVGElement | null>>();
+  const thumbFor = (id: string) => {
+    let p = thumbs.get(id);
+    if (!p) {
+      p = api(`/diagrams/${id}`)
+        .then(async (r) => (r.ok ? thumbnail(((await r.json()) as { diagram: Diagram }).diagram) : null))
+        .catch(() => null);
+      thumbs.set(id, p);
+    }
+    return p;
+  };
+  const watcher = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const el = entry.target as HTMLElement;
+      watcher.unobserve(el);
+      void thumbFor(el.dataset.id!).then((svg) => svg && !el.firstChild && el.append(svg.cloneNode(true)));
+    }
+  }, { rootMargin: '200px' });
+
+  // Búsqueda, orden y "mostrar más": todo en el navegador, sobre la lista completa.
+  const PAGE = 24;
+  let query = '';
+  let sort: 'recent' | 'name' = 'recent';
+  let shown = PAGE;
+  const norm = (text: string) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const search = h('input', {
+    type: 'search', class: 'ed-cloud-search', placeholder: t('cloud.search'), 'aria-label': t('cloud.search'),
+    oninput: (e: Event) => {
+      query = (e.target as HTMLInputElement).value;
+      shown = PAGE;
+      render();
+    },
+  });
+  const order = h('select', { class: 'ed-cloud-sort', 'aria-label': t('cloud.sort'), onchange: (e: Event) => {
+    sort = (e.target as HTMLSelectElement).value as typeof sort;
+    render();
+  } },
+    h('option', { value: 'recent' }, t('cloud.sortRecent')),
+    h('option', { value: 'name' }, t('cloud.sortName')),
+  );
+  const tools = h('div', { class: 'ed-cloud-tools' }, search, order);
 
   const usage = h('p', { class: 'ed-cloud-usage' });
   const grid = h('ul', { class: 'ed-cloud-grid' });
-  const close = () => modal.remove();
+  const close = () => {
+    watcher.disconnect();
+    modal.remove();
+  };
 
   const render = () => {
     usage.textContent = o.limit !== null
@@ -398,24 +443,33 @@ async function showList(o: ListOptions) {
           } }, t('cloud.saveCurrent')),
         ),
       );
+      tools.hidden = true;
       return;
     }
-    grid.replaceChildren(...items.map(card));
+    tools.hidden = items.length <= 3; // con pocos diagramas, buscar no hace falta
+    const q = norm(query.trim());
+    const matches = items
+      .filter((d) => !q || norm(d.title || t('cloud.untitled')).includes(q) || norm(t(`type.${d.type}`)).includes(q))
+      .sort((a, b) => (sort === 'name' ? (a.title || '').localeCompare(b.title || '', lang) : b.updatedAt - a.updatedAt));
+    if (!matches.length) {
+      grid.replaceChildren(h('li', { class: 'ed-cloud-none' }, t('cloud.noMatch', { q: query.trim() })));
+      return;
+    }
+    const rest = matches.length - shown;
+    grid.replaceChildren(
+      ...matches.slice(0, shown).map(card),
+      ...(rest > 0
+        ? [h('li', { class: 'ed-cloud-more' }, h('button', { type: 'button', class: 'ed-btn', onclick: () => {
+            shown += PAGE;
+            render();
+          } }, t('cloud.showMore', { n: String(Math.min(rest, PAGE)) })))]
+        : []),
+    );
   };
 
   const card = (d: Saved) => {
-    const thumb = h('div', { class: 'ed-cloud-thumb' });
-    const cached = thumbs.get(d.id);
-    if (cached) thumb.append(cached.cloneNode(true));
-    else if (cached === undefined) {
-      thumbs.set(d.id, null);
-      void api(`/diagrams/${d.id}`).then(async (r) => {
-        if (!r.ok) return;
-        const svg = thumbnail(((await r.json()) as { diagram: Diagram }).diagram);
-        thumbs.set(d.id, svg);
-        if (svg) thumb.append(svg.cloneNode(true));
-      });
-    }
+    const thumb = h('div', { class: 'ed-cloud-thumb', 'data-id': d.id });
+    watcher.observe(thumb);
     let armed = false;
     const del = h('button', { type: 'button', class: 'ed-cloud-del', title: t('cloud.delete'), 'aria-label': t('cloud.delete'), onclick: async () => {
       // Borrar no se puede deshacer: el primer clic pide confirmación.
@@ -460,11 +514,12 @@ async function showList(o: ListOptions) {
       h('button', { type: 'button', class: 'ed-icon ed-modal-close', title: t('ed.close'), 'aria-label': t('ed.close'), onclick: () => close() }, icon(X)),
       h('h2', { class: 'ed-picker-title' }, t('cloud.mine')),
       usage,
+      tools,
       grid,
     ),
   );
   modal.addEventListener('click', (e) => e.target === modal && close());
   modal.addEventListener('keydown', (e) => (e as KeyboardEvent).key === 'Escape' && close());
   document.body.append(modal);
-  modal.querySelector<HTMLElement>('.ed-cloud-open, .ed-cloud-empty button')?.focus();
+  (tools.hidden ? modal.querySelector<HTMLElement>('.ed-cloud-open, .ed-cloud-empty button') : search)?.focus();
 }

@@ -75,7 +75,17 @@
 .ed-cloud-who span { color: var(--muted); font-size: 12px; }
 /* Mis diagramas: tarjetas con miniatura */
 .ed-cloud-dialog { width: min(100%, 820px); }
-.ed-cloud-usage { margin: 0 0 18px; color: var(--muted); font-size: 13.5px; }
+.ed-cloud-usage { margin: 0 0 14px; color: var(--muted); font-size: 13.5px; }
+.ed-cloud-tools { display: flex; gap: 8px; margin-bottom: 14px; }
+.ed-cloud-tools[hidden] { display: none; }
+.ed-cloud-search, .ed-cloud-sort {
+  height: 36px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; font-size: 14px;
+}
+.ed-cloud-search { flex: 1; min-width: 0; padding: 0 12px; outline: none; transition: border-color 160ms ease; }
+.ed-cloud-search:focus { border-color: var(--accent); }
+.ed-cloud-sort { padding: 0 10px; cursor: pointer; }
+.ed-cloud-none { grid-column: 1 / -1; padding: 28px 0; text-align: center; color: var(--muted); font-size: 14px; }
+.ed-cloud-more { grid-column: 1 / -1; display: grid; place-items: center; padding-top: 4px; }
 .ed-cloud-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
 .ed-cloud-card { position: relative; }
 .ed-cloud-open {
