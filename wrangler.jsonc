@@ -1,16 +1,15 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "fluxygram",
+  // Vista previa del sitio público (sin Cloud) en workers.dev.
+  // fluxygram.app NO se publica desde aquí: lo sirve el Worker "fluxygram" del repo privado de Cloud,
+  // que incluye este repo como submódulo y le suma la API. Publicar fluxygram.app desde este repo
+  // borraría esa API, por eso este Worker tiene otro nombre y ninguna ruta.
+  "name": "fluxygram-site",
   // Cuenta personal: un deploy nunca puede ir a otra cuenta por error.
   "account_id": "78ff399b608458d490dd22bdb61fabc8",
   "compatibility_date": "2025-09-01",
-  // Dominio propio (zona en la cuenta personal). workers.dev sigue activo.
-  "routes": [
-    { "pattern": "fluxygram.app", "custom_domain": true },
-    { "pattern": "www.fluxygram.app", "custom_domain": true }
-  ],
-  // Sitio estático (landing, playground, schema, ejemplos).
-  // Los links para compartir (Worker + R2) llegan después.
+  "workers_dev": true,
+  // Sitio estático (landing, editor, presentación, schema, ejemplos).
   "assets": {
     "directory": "./site/dist",
     "not_found_handling": "404-page"

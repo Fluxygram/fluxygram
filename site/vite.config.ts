@@ -11,6 +11,8 @@ export default defineConfig({
         view: resolve(import.meta.dirname, 'view.html'),
         present: resolve(import.meta.dirname, 'present.html'),
         notFound: resolve(import.meta.dirname, '404.html'),
+        privacy: resolve(import.meta.dirname, 'privacy.html'),
+        terms: resolve(import.meta.dirname, 'terms.html'),
       },
     },
   },

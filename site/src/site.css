@@ -127,6 +127,19 @@ details.json pre { margin: 0; padding: 0 16px 16px; max-height: 420px; overflow:
 .wordmark-404 { height: clamp(160px, 30vw, 300px); margin: 0 auto 8px; max-width: 640px; }
 
 footer { padding: 40px 0 56px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+/* Páginas legales */
+.legal { max-width: 720px; padding-top: 40px; padding-bottom: 72px; line-height: 1.65; }
+.legal h1 { margin: 0 0 6px; font-size: clamp(30px, 5vw, 40px); letter-spacing: -0.03em; }
+.legal-date { margin: 0 0 28px; color: var(--muted); font-size: 14px; }
+.legal h2 { margin: 36px 0 10px; font-size: 19px; letter-spacing: -0.01em; }
+.legal p, .legal li { color: #d6d6de; font-size: 15.5px; }
+.legal ul { padding-left: 20px; }
+.legal li { margin: 6px 0; }
+.legal a { color: var(--accent); }
+.footer-legal { color: var(--muted); font-size: 14px; }
+.footer-legal a { color: var(--muted); text-decoration: none; }
+@media (hover: hover) and (pointer: fine) { .footer-legal a:hover { color: var(--text); } }
+
 footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .footer-gh { display: inline-grid; place-items: center; color: var(--muted); transition: color 160ms ease; }
 .footer-gh svg { width: 20px; height: 20px; }
