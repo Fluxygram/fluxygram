@@ -4,6 +4,7 @@ import { h, icon } from './editor/dom';
 import type { Model } from './editor/model';
 import { copyText } from './editor/io';
 import { t } from './i18n';
+import { tourSeen } from './editor/tour';
 
 /**
  * Conector con Fluxygram Cloud. Solo habla con /api/* del mismo sitio; no tiene claves ni lógica de negocio.
@@ -91,9 +92,64 @@ function renderSignIn(host: HTMLElement, providers: string[]) {
         p === 'dev' ? t('cloud.devLogin') : t('cloud.with', { p: PROVIDER_NAMES[p] ?? p })),
     ),
   );
-  const button = h('button', { type: 'button', class: 'ed-btn', 'aria-haspopup': 'menu', onclick: () => toggle(menu) }, t('cloud.signIn'));
-  host.replaceChildren(h('div', { class: 'ed-cloud-wrap' }, button, menu));
+  const button = h('button', { type: 'button', class: 'ed-btn', 'aria-haspopup': 'menu', onclick: () => {
+    hint?.dismiss();
+    toggle(menu);
+  } }, t('cloud.signIn'));
+  const wrap = h('div', { class: 'ed-cloud-wrap' }, button, menu);
+  host.replaceChildren(wrap);
   host.hidden = false;
+  const hint = showHint(wrap, () => toggle(menu));
+}
+
+/* ---------- Aviso para iniciar sesión: una sola vez, nunca encima del recorrido guiado ---------- */
+
+const HINT_KEY = 'fluxygram:cloud-hint';
+
+function showHint(wrap: HTMLElement, openMenu: () => void): { dismiss: () => void } | undefined {
+  try {
+    if (localStorage.getItem(HINT_KEY)) return undefined;
+  } catch {
+    return undefined; // sin almacenamiento no se podría recordar que ya se vio: mejor no mostrarlo
+  }
+  if (!tourSeen()) return undefined; // la primera visita es para el recorrido; el aviso espera a la siguiente
+
+  const remember = () => {
+    try {
+      localStorage.setItem(HINT_KEY, 'seen');
+    } catch {
+      /* sin almacenamiento */
+    }
+  };
+  const card = h('div', { class: 'ed-cloud-hint', role: 'status' },
+    h('p', {}, t('cloud.hint')),
+    h('div', { class: 'ed-cloud-hint-actions' },
+      h('button', { type: 'button', class: 'ed-btn', onclick: () => dismiss() }, t('cloud.hintLater')),
+      h('button', { type: 'button', class: 'ed-btn ed-primary', onclick: () => {
+        dismiss();
+        openMenu();
+      } }, t('cloud.signIn')),
+    ),
+  );
+  const onKey = (e: KeyboardEvent) => e.key === 'Escape' && dismiss();
+  function dismiss() {
+    remember();
+    document.removeEventListener('keydown', onKey);
+    card.classList.add('is-out');
+    setTimeout(() => card.remove(), 160);
+  }
+  // Aparece un momento después de cargar, cuando la persona ya vio el editor.
+  const timer = setTimeout(() => {
+    wrap.append(card);
+    document.addEventListener('keydown', onKey);
+  }, 1200);
+  return {
+    dismiss: () => {
+      clearTimeout(timer);
+      if (card.isConnected) dismiss();
+      else remember();
+    },
+  };
 }
 
 async function signIn(provider: string) {
