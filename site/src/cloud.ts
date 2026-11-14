@@ -174,11 +174,13 @@ async function signIn(provider: string) {
 function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { model, toast, clean }: Omit<Options, 'host' | 'saveHost'>): CloudSession {
   let cloudId = store.get();
   let opening = false;
+  let lastSaved: string | null = null;
   // Un diagrama abierto desde un link (#d=) no es el que estaba guardado en la cuenta.
   if (location.hash.includes('d=')) cloudId = null;
   // Cargar otro diagrama (nuevo, ejemplo, archivo) lo desvincula del guardado.
   model.on((reason) => {
     if (reason === 'load' && !opening) {
+      lastSaved = null;
       cloudId = null;
       store.set(null);
     }
@@ -190,6 +192,8 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
       return null;
     }
     const payload = JSON.stringify({ diagram: clean(model.diagram) });
+    // Sin cambios desde el último guardado: misma versión (y el mismo link corto al compartir).
+    if (cloudId && payload === lastSaved) return cloudId;
     let r = cloudId ? await api(`/diagrams/${cloudId}`, { method: 'PUT', body: payload }) : null;
     if (!r || r.status === 404) r = await api('/diagrams', { method: 'POST', body: payload });
     if (r.status === 402) {
@@ -207,6 +211,7 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
     }
     const { id } = (await r.json()) as { id: string };
     cloudId = id;
+    lastSaved = payload;
     store.set(id);
     return id;
   };
@@ -233,6 +238,7 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
     opening = true;
     model.load(diagram);
     opening = false;
+    lastSaved = JSON.stringify({ diagram: clean(model.diagram) });
     cloudId = id;
     store.set(id);
   }, onDelete: (id) => {
