@@ -65,6 +65,7 @@
   transform-origin: top right; animation: ed-in 160ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 .ed-cloud-menu[hidden] { display: none; }
+.ed-cloud-logo { display: inline-grid; place-items: center; width: 18px; flex: none; }
 .ed-cloud-menu button {
   display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border: 0; border-radius: 8px;
   background: transparent; color: var(--text); font: inherit; font-size: 13.5px; text-align: left; cursor: pointer;
@@ -72,32 +73,54 @@
 @media (hover: hover) and (pointer: fine) { .ed-cloud-menu button:hover { background: var(--code-bg); } }
 .ed-cloud-who { display: grid; gap: 2px; margin: 0; padding: 6px 10px 8px; border-bottom: 1px solid var(--border); margin-bottom: 4px; font-size: 13px; }
 .ed-cloud-who span { color: var(--muted); font-size: 12px; }
-.ed-cloud-dialog { width: min(100%, 560px); }
-/* Aviso para iniciar sesión, bajo el botón */
-.ed-cloud-hint {
-  position: absolute; right: 0; top: calc(100% + 10px); z-index: 30; width: 280px; padding: 14px;
-  border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.6);
-  transform-origin: top right; animation: ed-in 200ms cubic-bezier(0.23, 1, 0.32, 1);
-  transition: opacity 150ms ease-out, transform 150ms ease-out;
+/* Mis diagramas: tarjetas con miniatura */
+.ed-cloud-dialog { width: min(100%, 820px); }
+.ed-cloud-usage { margin: 0 0 18px; color: var(--muted); font-size: 13.5px; }
+.ed-cloud-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+.ed-cloud-card { position: relative; }
+.ed-cloud-open {
+  display: grid; width: 100%; padding: 0; text-align: left; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+  background: var(--bg); color: var(--text); font: inherit; cursor: pointer;
+  transition: border-color 160ms ease, transform 140ms ease-out;
 }
-.ed-cloud-hint::before {
-  content: ''; position: absolute; top: -6px; right: 24px; width: 10px; height: 10px; transform: rotate(45deg);
-  background: var(--surface); border-left: 1px solid var(--border); border-top: 1px solid var(--border);
+.ed-cloud-open:active { transform: scale(0.98); }
+.ed-cloud-card.is-current .ed-cloud-open { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
+@media (hover: hover) and (pointer: fine) { .ed-cloud-open:hover { border-color: var(--accent); } }
+.ed-cloud-thumb {
+  aspect-ratio: 16 / 10; display: grid; place-items: center; padding: 12px; border-bottom: 1px solid var(--border);
+  background: radial-gradient(circle at 1px 1px, rgb(255 255 255 / 0.06) 1px, transparent 0) 0 0 / 14px 14px, var(--code-bg);
 }
-.ed-cloud-hint.is-out { opacity: 0; transform: scale(0.97); }
-.ed-cloud-hint p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--text); }
-.ed-cloud-hint-actions { display: flex; justify-content: flex-end; gap: 6px; }
-@media (prefers-reduced-motion: reduce) { .ed-cloud-hint { animation-duration: 1ms; } .ed-cloud-hint.is-out { transform: none; } }
-.ed-cloud-list { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 8px; }
-.ed-cloud-list li { display: flex; align-items: center; gap: 8px; }
-.ed-cloud-item {
-  flex: 1; display: grid; gap: 3px; padding: 12px 14px; text-align: left; border: 1px solid var(--border); border-radius: 12px;
-  background: var(--bg); color: var(--text); font: inherit; cursor: pointer; transition: border-color 160ms ease;
+.ed-cloud-thumb svg { width: 100%; height: 100%; opacity: 0; animation: ed-fade-in 240ms ease-out forwards; }
+.th-node { fill: #1c1c23; stroke: #3a3a44; stroke-width: 2; }
+.th-accent { fill: #10301f; stroke: var(--accent); }
+.th-edge { fill: none; stroke: #4a4a55; stroke-width: 2; }
+.th-group { fill: rgb(255 255 255 / 0.025); stroke: #2a2a33; stroke-width: 1.5; }
+.th-life { stroke: #2f2f38; stroke-width: 1.5; stroke-dasharray: 6 6; }
+@keyframes ed-fade-in { to { opacity: 1; } }
+.ed-cloud-card-body { display: grid; gap: 4px; padding: 12px 14px 14px; }
+.ed-cloud-card-body strong { font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ed-cloud-meta { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.ed-cloud-meta svg { color: var(--accent); flex: none; }
+.ed-cloud-badge {
+  position: absolute; top: 10px; left: 10px; padding: 3px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600;
+  background: var(--accent); color: var(--accent-text);
 }
-.ed-cloud-item strong { font-size: 14.5px; }
-.ed-cloud-item span { font-size: 12.5px; color: var(--muted); }
-@media (hover: hover) and (pointer: fine) { .ed-cloud-item:hover { border-color: var(--accent); } }
-.ed-cloud-empty { color: var(--muted); font-size: 14px; line-height: 1.5; }
+.ed-cloud-del {
+  position: absolute; top: 8px; right: 8px; display: inline-grid; place-items: center; min-width: 30px; height: 30px; padding: 0 8px;
+  border: 1px solid var(--border); border-radius: 9px; background: rgb(9 9 12 / 0.85); color: var(--muted); font: inherit; font-size: 12.5px;
+  cursor: pointer; opacity: 0; transition: opacity 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+.ed-cloud-card:hover .ed-cloud-del, .ed-cloud-del:focus-visible, .ed-cloud-del.is-armed { opacity: 1; }
+@media (hover: none) { .ed-cloud-del { opacity: 1; } }
+.ed-cloud-del:hover, .ed-cloud-del.is-armed { color: #ff6b6b; border-color: #ff6b6b; }
+.ed-cloud-empty {
+  grid-column: 1 / -1; display: grid; justify-items: center; gap: 8px; padding: 36px 20px; text-align: center;
+  border: 1px dashed var(--border); border-radius: 14px; color: var(--muted); font-size: 14px; line-height: 1.5;
+}
+.ed-cloud-empty svg { color: var(--accent); }
+.ed-cloud-empty strong { color: var(--text); font-size: 15px; }
+.ed-cloud-empty button { margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) { .ed-cloud-thumb svg { animation: none; opacity: 1; } }
 
 /* Selector de tipo (barra superior) */
 .ed-type-select { position: relative; display: inline-flex; align-items: center; }

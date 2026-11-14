@@ -1,5 +1,6 @@
 import type { Diagram } from '@fluxygram/core';
-import { CloudUpload, FolderOpen, LogOut, X } from 'lucide';
+import { ArrowLeftRight, BrainCircuit, CloudUpload, FolderOpen, Layers, LogOut, Milestone, Network, RefreshCw, Trash2, Workflow, X, type IconNode } from 'lucide';
+import { layout } from '@fluxygram/core';
 import { h, icon } from './editor/dom';
 import type { Model } from './editor/model';
 import { copyText } from './editor/io';
@@ -93,10 +94,25 @@ export async function initCloud({ model, toast, clean, host, saveHost }: Options
 
 /* ---------- Sin sesión ---------- */
 
+// Logos oficiales para los botones de inicio de sesión (GitHub mark y la "G" de Google en sus cuatro colores).
+const LOGOS: Record<string, string> = {
+  github:
+    '<svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>',
+  google:
+    '<svg viewBox="0 0 48 48" width="18" height="18" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>',
+};
+
+function providerLogo(provider: string) {
+  const span = h('span', { class: 'ed-cloud-logo' });
+  span.innerHTML = LOGOS[provider] ?? '';
+  return span;
+}
+
 function renderSignIn(host: HTMLElement, providers: string[]) {
   const menu = h('div', { class: 'ed-cloud-menu', hidden: true, role: 'menu' },
     ...providers.map((p) =>
-      h('button', { type: 'button', role: 'menuitem', onclick: () => signIn(p) },
+      h('button', { type: 'button', role: 'menuitem', class: 'ed-cloud-provider', onclick: () => signIn(p) },
+        providerLogo(p),
         p === 'dev' ? t('cloud.devLogin') : t('cloud.with', { p: PROVIDER_NAMES[p] ?? p })),
     ),
   );
@@ -231,22 +247,34 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
     toast(`${t('cloud.linkCopied')}: ${url.replace(/^https?:\/\//, '')}`, 4000);
   };
 
-  const openList = () => showList({ model, toast, onOpen: async (id) => {
-    const r = await api(`/diagrams/${id}`);
-    if (!r.ok) return toast(t('cloud.error'));
-    const { diagram } = (await r.json()) as { diagram: Diagram };
-    opening = true;
-    model.load(diagram);
-    opening = false;
-    lastSaved = JSON.stringify({ diagram: clean(model.diagram) });
-    cloudId = id;
-    store.set(id);
-  }, onDelete: (id) => {
-    if (id === cloudId) {
-      cloudId = null;
-      store.set(null);
-    }
-  } });
+  const openList = () => showList({
+    toast,
+    limit: me.limits.diagrams,
+    currentId: () => cloudId,
+    onOpen: async (id) => {
+      const r = await api(`/diagrams/${id}`);
+      if (!r.ok) return toast(t('cloud.error'));
+      const { diagram } = (await r.json()) as { diagram: Diagram };
+      opening = true;
+      model.load(diagram);
+      opening = false;
+      lastSaved = JSON.stringify({ diagram: clean(model.diagram) });
+      cloudId = id;
+      store.set(id);
+    },
+    onDelete: (id) => {
+      if (id === cloudId) {
+        cloudId = null;
+        lastSaved = null;
+        store.set(null);
+      }
+    },
+    onSaveCurrent: async () => {
+      const ok = !!(await save());
+      if (ok) toast(t('cloud.saved'));
+      return ok;
+    },
+  });
 
   const name = me.user.name || me.user.email || '?';
   const avatar = me.user.avatar
@@ -288,60 +316,155 @@ function toggle(menu: HTMLElement) {
 
 /* ---------- Mis diagramas ---------- */
 
-async function showList(o: { model: Model; toast: (t: string) => void; onOpen: (id: string) => Promise<void>; onDelete: (id: string) => void }) {
-  const r = await api('/diagrams');
-  if (!r.ok) return o.toast(t('cloud.error'));
-  const { diagrams } = (await r.json()) as { diagrams: Saved[] };
+const TYPE_ICONS: Record<string, IconNode> = {
+  flow: Workflow, architecture: Layers, timeline: Milestone, tree: Network, cycle: RefreshCw, sequence: ArrowLeftRight, mindmap: BrainCircuit,
+};
+const SVG_NS = 'http://www.w3.org/2000/svg';
 
+/** Miniatura estática: la misma posición de bloques que el diagrama real, sin animación ni texto. */
+function thumbnail(diagram: Diagram): SVGSVGElement | null {
+  let lay;
+  try {
+    lay = layout(diagram);
+  } catch {
+    return null;
+  }
+  const pad = 24;
+  const b = lay.bounds;
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', `${b.x - pad} ${b.y - pad} ${b.w + pad * 2} ${b.h + pad * 2}`);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+  svg.setAttribute('aria-hidden', 'true');
+  const add = (tag: string, attrs: Record<string, string | number>) => {
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+    svg.append(el);
+  };
+  for (const g of lay.groups) add('rect', { x: g.x, y: g.y, width: g.w, height: g.h, rx: 14, class: 'th-group' });
+  for (const l of lay.lifelines ?? []) add('line', { x1: l.x, y1: l.y1, x2: l.x, y2: l.y2, class: 'th-life' });
+  if (lay.axis) add('line', { x1: lay.axis.x1, y1: lay.axis.y, x2: lay.axis.x2, y2: lay.axis.y, class: 'th-edge' });
+  for (const e of lay.edges) add('path', { d: e.d, class: 'th-edge' });
+  for (const n of lay.nodes) {
+    const round = n.node.kind === 'start' || n.node.kind === 'end' ? n.h / 2 : 10;
+    add('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: round, class: n.node.accent ? 'th-node th-accent' : 'th-node' });
+  }
+  return svg;
+}
+
+interface ListOptions {
+  toast: (text: string, ms?: number) => void;
+  limit: number | null;
+  currentId: () => string | null;
+  onOpen: (id: string) => Promise<void>;
+  onDelete: (id: string) => void;
+  onSaveCurrent: () => Promise<boolean>;
+}
+
+async function showList(o: ListOptions) {
+  const res = await api('/diagrams');
+  if (!res.ok) return o.toast(t('cloud.error'));
+  let items = ((await res.json()) as { diagrams: Saved[] }).diagrams;
+
+  const lang = document.documentElement.lang || undefined;
+  const rel = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' });
+  const ago = (seconds: number) => {
+    const diff = seconds - Date.now() / 1000;
+    const units: [Intl.RelativeTimeFormatUnit, number][] = [['year', 31536000], ['month', 2592000], ['day', 86400], ['hour', 3600], ['minute', 60]];
+    for (const [unit, size] of units) if (Math.abs(diff) >= size) return rel.format(Math.round(diff / size), unit);
+    return rel.format(0, 'minute');
+  };
+  const thumbs = new Map<string, SVGSVGElement | null>();
+
+  const usage = h('p', { class: 'ed-cloud-usage' });
+  const grid = h('ul', { class: 'ed-cloud-grid' });
   const close = () => modal.remove();
-  const fmt = new Intl.DateTimeFormat(document.documentElement.lang || undefined, { dateStyle: 'medium', timeStyle: 'short' });
-  const list = h('ul', { class: 'ed-cloud-list' });
-  const fill = (items: Saved[]) => {
-    list.replaceChildren(
-      ...(items.length
-        ? items.map((d) => {
-            let armed = false;
-            const del = h('button', { type: 'button', class: 'ed-btn ed-danger', onclick: async () => {
-              // Borrar no se puede deshacer: el primer clic pide confirmación.
-              if (!armed) {
-                armed = true;
-                del.textContent = t('cloud.confirmDelete');
-                setTimeout(() => {
-                  armed = false;
-                  del.textContent = t('cloud.delete');
-                }, 3000);
-                return;
-              }
-              const res = await api(`/diagrams/${d.id}`, { method: 'DELETE' });
-              if (!res.ok) return o.toast(t('cloud.error'));
-              o.onDelete(d.id);
-              fill(items.filter((x) => x.id !== d.id));
-            } }, t('cloud.delete'));
-            return h('li', {},
-              h('button', { type: 'button', class: 'ed-cloud-item', onclick: async () => {
-                close();
-                await o.onOpen(d.id);
-              } },
-                h('strong', {}, d.title || t('cloud.untitled')),
-                h('span', {}, `${t(`type.${d.type}`)} · ${fmt.format(new Date(d.updatedAt * 1000))}`),
-              ),
-              del,
-            );
-          })
-        : [h('li', { class: 'ed-cloud-empty' }, t('cloud.empty'))]),
+
+  const render = () => {
+    usage.textContent = o.limit !== null
+      ? t('cloud.used', { used: String(items.length), limit: String(o.limit) })
+      : t('cloud.count', { n: String(items.length) });
+    if (!items.length) {
+      grid.replaceChildren(
+        h('li', { class: 'ed-cloud-empty' },
+          icon(CloudUpload, 28),
+          h('strong', {}, t('cloud.emptyTitle')),
+          h('span', {}, t('cloud.empty')),
+          h('button', { type: 'button', class: 'ed-btn ed-primary', onclick: async () => {
+            if (await o.onSaveCurrent()) {
+              const again = await api('/diagrams');
+              if (again.ok) items = ((await again.json()) as { diagrams: Saved[] }).diagrams;
+              render();
+            }
+          } }, t('cloud.saveCurrent')),
+        ),
+      );
+      return;
+    }
+    grid.replaceChildren(...items.map(card));
+  };
+
+  const card = (d: Saved) => {
+    const thumb = h('div', { class: 'ed-cloud-thumb' });
+    const cached = thumbs.get(d.id);
+    if (cached) thumb.append(cached.cloneNode(true));
+    else if (cached === undefined) {
+      thumbs.set(d.id, null);
+      void api(`/diagrams/${d.id}`).then(async (r) => {
+        if (!r.ok) return;
+        const svg = thumbnail(((await r.json()) as { diagram: Diagram }).diagram);
+        thumbs.set(d.id, svg);
+        if (svg) thumb.append(svg.cloneNode(true));
+      });
+    }
+    let armed = false;
+    const del = h('button', { type: 'button', class: 'ed-cloud-del', title: t('cloud.delete'), 'aria-label': t('cloud.delete'), onclick: async () => {
+      // Borrar no se puede deshacer: el primer clic pide confirmación.
+      if (!armed) {
+        armed = true;
+        del.classList.add('is-armed');
+        del.replaceChildren(t('cloud.confirmShort'));
+        setTimeout(() => {
+          if (!del.isConnected) return;
+          armed = false;
+          del.classList.remove('is-armed');
+          del.replaceChildren(icon(Trash2, 15));
+        }, 3000);
+        return;
+      }
+      const r = await api(`/diagrams/${d.id}`, { method: 'DELETE' });
+      if (!r.ok) return o.toast(t('cloud.error'));
+      o.onDelete(d.id);
+      items = items.filter((x) => x.id !== d.id);
+      render();
+    } }, icon(Trash2, 15));
+    const current = o.currentId() === d.id;
+    return h('li', { class: current ? 'ed-cloud-card is-current' : 'ed-cloud-card' },
+      h('button', { type: 'button', class: 'ed-cloud-open', onclick: async () => {
+        close();
+        await o.onOpen(d.id);
+      } },
+        thumb,
+        h('span', { class: 'ed-cloud-card-body' },
+          h('strong', {}, d.title || t('cloud.untitled')),
+          h('span', { class: 'ed-cloud-meta' }, icon(TYPE_ICONS[d.type] ?? Workflow, 13), `${t(`type.${d.type}`)} · ${ago(d.updatedAt)}`),
+        ),
+        current ? h('span', { class: 'ed-cloud-badge' }, t('cloud.current')) : undefined,
+      ),
+      del,
     );
   };
-  fill(diagrams);
 
+  render();
   const modal: HTMLDivElement = h('div', { class: 'ed-modal' },
     h('div', { class: 'ed-picker ed-cloud-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('cloud.mine') },
       h('button', { type: 'button', class: 'ed-icon ed-modal-close', title: t('ed.close'), 'aria-label': t('ed.close'), onclick: () => close() }, icon(X)),
       h('h2', { class: 'ed-picker-title' }, t('cloud.mine')),
-      list,
+      usage,
+      grid,
     ),
   );
   modal.addEventListener('click', (e) => e.target === modal && close());
   modal.addEventListener('keydown', (e) => (e as KeyboardEvent).key === 'Escape' && close());
   document.body.append(modal);
-  modal.querySelector<HTMLElement>('button')?.focus();
+  modal.querySelector<HTMLElement>('.ed-cloud-open, .ed-cloud-empty button')?.focus();
 }
