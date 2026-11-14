@@ -17,7 +17,7 @@ import { startTour, tourSeen } from './editor/tour';
 import { SEGMENT_THEME } from './editor/segment';
 import { createRubberSegment } from './vendor/rubber-segment';
 import './lang';
-import { initCloud } from './cloud';
+import { initCloud, type CloudSession } from './cloud';
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const DRAFT_KEY = 'fluxygram:editor';
@@ -189,8 +189,11 @@ $('present').onclick = async () => {
   window.open(await shareUrl(clean(model.diagram), 'present'), '_blank');
 };
 
+// Con sesión en Fluxygram Cloud, Compartir copia un link corto; sin sesión, el link con el diagrama adentro.
+let cloud: CloudSession | undefined;
 $('share').onclick = async () => {
   if (!model.diagram.nodes.length) return toast(t('ed.needNodes'));
+  if (cloud) return cloud.share();
   const url = await shareUrl(clean(model.diagram));
   if (await copyText(url)) toast(t('ed.copied'));
   else toast(`${t('ed.copyFail')} ${url}`, 8000);
@@ -510,7 +513,7 @@ function renderAll(reason: string) {
 
 model.on(renderAll);
 // Fluxygram Cloud: solo aparece si el sitio tiene servidor (/api/me responde).
-void initCloud({ model, toast, clean, host: $('cloud') });
+void initCloud({ model, toast, clean, host: $('cloud'), saveHost: $('cloudSave') }).then((session) => (cloud = session));
 renderAll('init');
 
 // La intro aparece sola la primera vez (cuando ya se dibujó todo, para que el foco encuentre cada zona).

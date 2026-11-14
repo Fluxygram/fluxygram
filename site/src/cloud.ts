@@ -1,5 +1,5 @@
 import type { Diagram } from '@fluxygram/core';
-import { CloudUpload, FolderOpen, Link2, LogOut, X } from 'lucide';
+import { CloudUpload, FolderOpen, LogOut, X } from 'lucide';
 import { h, icon } from './editor/dom';
 import type { Model } from './editor/model';
 import { copyText } from './editor/io';
@@ -28,7 +28,15 @@ interface Options {
   model: Model;
   toast: (text: string, ms?: number) => void;
   clean: (d: Diagram) => Diagram;
+  /** Donde va la cuenta (o "Iniciar sesión"): el extremo derecho de la barra. */
   host: HTMLElement;
+  /** Donde va "Guardar en tu cuenta": junto a Abrir y Descargar. */
+  saveHost: HTMLElement;
+}
+
+export interface CloudSession {
+  /** Con sesión, "Compartir" crea un link corto en lugar del link largo. */
+  share: () => Promise<void>;
 }
 
 const ID_KEY = 'fluxygram:cloud-id';
@@ -60,7 +68,7 @@ async function api(path: string, init: RequestInit = {}) {
 
 const PROVIDER_NAMES: Record<string, string> = { github: 'GitHub', google: 'Google' };
 
-export async function initCloud({ model, toast, clean, host }: Options) {
+export async function initCloud({ model, toast, clean, host, saveHost }: Options): Promise<CloudSession | undefined> {
   let res: Response;
   try {
     res = await api('/me');
@@ -80,7 +88,7 @@ export async function initCloud({ model, toast, clean, host }: Options) {
     if (body.providers?.length) renderSignIn(host, body.providers);
     return;
   }
-  renderSignedIn(host, body as Me, { model, toast, clean });
+  return renderSignedIn(host, saveHost, body as Me, { model, toast, clean });
 }
 
 /* ---------- Sin sesión ---------- */
@@ -163,7 +171,7 @@ async function signIn(provider: string) {
 
 /* ---------- Con sesión ---------- */
 
-function renderSignedIn(host: HTMLElement, me: Me, { model, toast, clean }: Omit<Options, 'host'>) {
+function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { model, toast, clean }: Omit<Options, 'host' | 'saveHost'>): CloudSession {
   let cloudId = store.get();
   let opening = false;
   // Un diagrama abierto desde un link (#d=) no es el que estaba guardado en la cuenta.
@@ -207,7 +215,8 @@ function renderSignedIn(host: HTMLElement, me: Me, { model, toast, clean }: Omit
     if (await save()) toast(t('cloud.saved'));
   } }, icon(CloudUpload));
 
-  const linkButton = h('button', { type: 'button', class: 'ed-icon', title: t('cloud.shortLink'), 'aria-label': t('cloud.shortLink'), onclick: async () => {
+  // "Compartir" con sesión: guarda y copia un link corto (/d/…) en lugar del link largo.
+  const share = async () => {
     const id = await save();
     if (!id) return;
     const r = await api('/links', { method: 'POST', body: JSON.stringify({ diagramId: id }) });
@@ -215,7 +224,7 @@ function renderSignedIn(host: HTMLElement, me: Me, { model, toast, clean }: Omit
     const { url } = (await r.json()) as { url: string };
     await copyText(url);
     toast(`${t('cloud.linkCopied')}: ${url.replace(/^https?:\/\//, '')}`, 4000);
-  } }, icon(Link2));
+  };
 
   const openList = () => showList({ model, toast, onOpen: async (id) => {
     const r = await api(`/diagrams/${id}`);
@@ -251,8 +260,11 @@ function renderSignedIn(host: HTMLElement, me: Me, { model, toast, clean }: Omit
   );
   const account = h('button', { type: 'button', class: 'ed-cloud-account', title: name, 'aria-label': name, 'aria-haspopup': 'menu', onclick: () => toggle(menu) }, avatar);
 
-  host.replaceChildren(saveButton, linkButton, h('div', { class: 'ed-cloud-wrap' }, account, menu));
+  saveHost.replaceChildren(saveButton);
+  saveHost.hidden = false;
+  host.replaceChildren(h('div', { class: 'ed-cloud-wrap' }, account, menu));
   host.hidden = false;
+  return { share };
 }
 
 function toggle(menu: HTMLElement) {

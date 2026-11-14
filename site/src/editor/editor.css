@@ -53,6 +53,8 @@
 /* Fluxygram Cloud (solo aparece con servidor) */
 .ed-cloud { display: inline-flex; align-items: center; gap: 4px; }
 .ed-cloud[hidden] { display: none; }
+/* La cuenta va al final de la barra, separada del resto */
+.ed-cloud-account-slot { margin-left: 6px; padding-left: 10px; border-left: 1px solid var(--border); }
 .ed-cloud-wrap { position: relative; }
 .ed-cloud-account { display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); cursor: pointer; overflow: hidden; }
 .ed-cloud-account img { width: 100%; height: 100%; object-fit: cover; }
