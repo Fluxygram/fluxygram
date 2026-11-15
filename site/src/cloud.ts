@@ -208,9 +208,20 @@ export async function loadMe(): Promise<MeState | undefined> {
   return { signedIn: true, ...(body as Me) };
 }
 
+/** Registra un evento de intención de pago (vista de precios, aviso de Pro, clic). Si falla, no pasa nada. */
+export function track(name: 'pricing_view' | 'upgrade_prompt' | 'pro_click', source: string, detail?: string) {
+  void fetch('/api/events', {
+    method: 'POST',
+    credentials: 'same-origin',
+    keepalive: true,
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, source, detail }),
+  }).catch(() => undefined);
+}
+
 /** Abre el pago de Polar. Devuelve false si no se pudo (el llamador avisa). */
-export async function goPro(interval: 'month' | 'year'): Promise<boolean> {
-  const r = await api('/billing/checkout', { method: 'POST', body: JSON.stringify({ interval }) });
+export async function goPro(interval: 'month' | 'year', source = 'pricing'): Promise<boolean> {
+  const r = await api('/billing/checkout', { method: 'POST', body: JSON.stringify({ interval, source }) });
   if (r.status === 401) {
     location.href = `/pricing?buy=${interval}`;
     return true;
@@ -239,7 +250,8 @@ export function renderSignInButtons(host: HTMLElement, providers: string[], next
 }
 
 /** Explica qué da Pro cuando algo lo necesita (límite de diagramas, historial, vistas). */
-function upgradeDialog(reason: string) {
+function upgradeDialog(reason: string, source: 'limit' | 'history') {
+  track('upgrade_prompt', source);
   const close = () => modal.remove();
   const modal: HTMLDivElement = h('div', { class: 'ed-modal' },
     h('div', { class: 'ed-picker ed-pro-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('pro.title') },
@@ -249,7 +261,7 @@ function upgradeDialog(reason: string) {
       h('ul', { class: 'ed-pro-list' }, ...['pricing.pro.2', 'pricing.pro.3', 'pricing.pro.4', 'pricing.pro.5'].map((k) => h('li', {}, t(k)))),
       h('div', { class: 'ed-pro-actions' },
         h('button', { type: 'button', class: 'ed-btn', onclick: close }, t('cloud.hintLater')),
-        h('a', { class: 'ed-btn ed-btn-primary', href: '/pricing' }, t('pro.see')),
+        h('a', { class: 'ed-btn ed-btn-primary', href: `/pricing?from=${source}` }, t('pro.see')),
       ),
     ),
   );
@@ -266,7 +278,7 @@ function planItems(me: Me, onError: () => void): HTMLElement[] {
       ? [h('button', { type: 'button', role: 'menuitem', onclick: () => void openPortal(onError) }, icon(CreditCard, 15), ' ', t('pro.manage'))]
       : [];
   }
-  return me.billing?.available ? [h('a', { href: '/pricing', role: 'menuitem', class: 'ed-cloud-pro' }, icon(Sparkle, 15), ' ', t('pro.go'))] : [];
+  return me.billing?.available ? [h('a', { href: '/pricing?from=menu', role: 'menuitem', class: 'ed-cloud-pro' }, icon(Sparkle, 15), ' ', t('pro.go'))] : [];
 }
 
 const planBadge = (me: Me) => (me.user.plan === 'pro' ? h('span', { class: 'ed-plan-badge' }, 'Pro') : undefined);
@@ -300,7 +312,7 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
     if (!r || r.status === 404) r = await api('/diagrams', { method: 'POST', body: payload });
     if (r.status === 402) {
       const { limit } = (await r.json()) as { limit: number };
-      if (me.billing?.available) upgradeDialog(t('pro.limit', { n: String(limit) }));
+      if (me.billing?.available) upgradeDialog(t('pro.limit', { n: String(limit) }), 'limit');
       else toast(t('cloud.limit', { n: String(limit) }), 5000);
       return null;
     }
@@ -563,7 +575,7 @@ async function showList(o: ListOptions) {
     // Historial y links: con Pro se abre el detalle; sin Pro, qué da Pro.
     const more = h('button', { type: 'button', class: 'ed-cloud-more-btn', title: t('pro.history'), 'aria-label': t('pro.history'), onclick: () => {
       if (!o.pro) {
-        if (o.billing) upgradeDialog(t('pro.historyReason'));
+        if (o.billing) upgradeDialog(t('pro.historyReason'), 'history');
         return;
       }
       void showDetails(d, o, close);

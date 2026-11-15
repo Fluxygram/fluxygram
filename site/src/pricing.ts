@@ -1,5 +1,5 @@
 import './lang';
-import { goPro, initSiteAccount, loadMe, openPortal, renderSignInButtons } from './cloud';
+import { goPro, initSiteAccount, loadMe, openPortal, renderSignInButtons, track } from './cloud';
 import { t } from './i18n';
 
 /**
@@ -12,6 +12,19 @@ const PRICES = { month: { price: 5, per: 'pricing.perMonth', billed: 'pricing.bi
 void initSiteAccount(document.getElementById('account')!);
 
 const params = new URLSearchParams(location.search);
+// De dónde llega la persona: ?from= (aviso de Pro, menú) o, si no, la página anterior.
+const from = (() => {
+  const asked = params.get('from');
+  if (asked) return asked;
+  if (params.has('buy')) return 'pricing';
+  const ref = document.referrer;
+  if (!ref) return 'direct';
+  if (ref.includes('docs.fluxygram.app')) return 'docs';
+  if (ref.startsWith(location.origin)) return new URL(ref).pathname === '/' ? 'landing' : 'nav';
+  return 'other';
+})();
+if (from !== 'pricing') track('pricing_view', from);
+if (params.has('from')) history.replaceState(null, '', location.pathname + (params.has('buy') ? `?buy=${params.get('buy')}` : ''));
 let interval: 'month' | 'year' = params.get('buy') === 'month' ? 'month' : 'year';
 const toggles = [...document.querySelectorAll<HTMLButtonElement>('[data-interval]')];
 const price = document.getElementById('proPrice')!;
@@ -55,7 +68,9 @@ if (me === undefined) {
   cta.disabled = true;
   say('pricing.soon');
 } else {
+  let resumed = false; // al volver del inicio de sesión, el clic ya se contó antes
   cta.onclick = async () => {
+    if (!resumed) track('pro_click', 'pricing', interval);
     if (!me.signedIn) {
       // Al volver del inicio de sesión, ?buy= retoma el pago con el periodo elegido.
       signin.hidden = false;
@@ -74,6 +89,7 @@ if (me === undefined) {
   };
   if (me.signedIn && params.has('buy')) {
     history.replaceState(null, '', location.pathname);
+    resumed = true;
     cta.click();
   }
 }
