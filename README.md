@@ -99,6 +99,20 @@ Full documentation at **[docs.fluxygram.app](https://docs.fluxygram.app)**: ever
 
 Dragging a block pins it (`x`, `y` in the JSON); everything else keeps its automatic layout.
 
+## Live status (tracker mode)
+
+The same diagram can also show **where a real process is right now**: an order, a delivery, a support ticket, a job application. Your app sets the current stage; done stages turn green, the current one shows its status, and every change animates.
+
+```html
+<fluxy-gram src="order.flux.json" mode="tracker" stage="shipped"></fluxy-gram>
+```
+
+```js
+tracker.setStage('delivered', 'success'); // status: pending | success | warning | error
+```
+
+For branches that join or processes that loop back, pass `history` (the stages it went through). Try the live examples in the [gallery](https://fluxygram.app/gallery) and read the [tracker guide](https://docs.fluxygram.app/guides/tracker/): connecting it to your data, translations, ideas.
+
 ## Install
 
 ```bash
@@ -172,6 +186,7 @@ Details in [LICENSE.md](LICENSE.md).
 - **Pasos opcionales:** sin ellos, el diagrama usa el movimiento de su tipo. Con ellos decides qué aparece, por dónde viaja la partícula, qué se resalta, a dónde va la cámara, los estados (éxito, error, advertencia, en progreso) en bloques y conexiones, el texto de cada paso y su duración.
 - **Editor visual** en [fluxygram.app/play](https://fluxygram.app/play): arrastras bloques, los conectas, armas la historia paso a paso y compartes un link, descargas el JSON o exportas un HTML. Todo pasa en tu navegador.
 - **Modo presentación:** el diagrama a pantalla completa para tu público y, con la tecla <kbd>N</kbd>, una segunda ventana con tus notas, el siguiente paso y un cronómetro.
+- **Estado en vivo (modo seguimiento):** el mismo diagrama muestra en qué etapa va un proceso real (un pedido, un domicilio, un ticket, una postulación). Tu aplicación cambia `stage` y el diagrama se anima: lo cumplido en verde, la etapa actual con su estado. Pruébalo en la [galería](https://fluxygram.app/gallery) y lee la [guía](https://docs.fluxygram.app/es/guides/tracker/).
 - **Para agentes:** la carpeta [`skills/fluxygram`](skills/fluxygram) le enseña a cualquier agente a escribir diagramas. En Claude Code se instala con `/plugin marketplace add Fluxygram/fluxygram` y `/plugin install fluxygram@fluxygram`; para ChatGPT, Gemini o Claude.ai, el sitio tiene un botón "Copiar prompt".
 - **Documentación** completa en [docs.fluxygram.app/es](https://docs.fluxygram.app/es/), con ejemplos en vivo de cada tipo.
 - **Paquetes en npm:** `@fluxygram/element` (el componente), `@fluxygram/core` (el formato) y `fluxygram` (un solo archivo para usar desde un CDN).
