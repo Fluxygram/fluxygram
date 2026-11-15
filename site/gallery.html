@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-i18n-title="gallery.pageTitle">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Examples — Fluxygram</title>
+    <meta name="description" content="Animated diagram examples for every kind of story: cooking, games, health, history, travel, software and more." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/site.css" />
+  </head>
+  <body>
+    <header class="wrap nav">
+      <a class="brand" href="/"><img src="/mark.svg" alt="" width="32" height="32" />fluxygram</a>
+      <nav class="nav-links">
+        <a href="/gallery" aria-current="page" data-i18n="nav.examples">Examples</a>
+        <a href="/play" data-i18n="nav.playground">Editor</a>
+        <a href="https://docs.fluxygram.app/" data-docs-link data-i18n="nav.docs">Docs</a>
+        <button class="lang-switch" type="button" data-lang-switch>Español</button>
+      </nav>
+    </header>
+
+    <main class="wrap gallery">
+      <div class="section-head">
+        <h1 data-i18n="gallery.title">Examples</h1>
+        <p data-i18n="gallery.lead">Diagrams for every kind of story. Open one to watch it, present it or make it yours in the editor.</p>
+      </div>
+
+      <div class="gal-filters">
+        <div class="tabs" role="tablist" id="themes" data-i18n-attr="aria-label:gallery.byTheme"></div>
+        <select class="gal-type" id="type" data-i18n-attr="aria-label:gallery.byType"></select>
+      </div>
+      <p class="gal-count" id="count" aria-live="polite"></p>
+      <ul class="gal-grid" id="grid"></ul>
+    </main>
+
+    <!-- Vista del diagrama animado al tocar una tarjeta -->
+    <div class="gal-modal" id="viewer" hidden>
+      <div class="gal-dialog" role="dialog" aria-modal="true" aria-labelledby="viewerTitle">
+        <div class="gal-dialog-head">
+          <h2 id="viewerTitle"></h2>
+          <button type="button" class="gal-close" id="viewerClose" data-i18n-attr="aria-label:ed.close;title:ed.close">✕</button>
+        </div>
+        <fluxy-gram id="viewerDiagram"></fluxy-gram>
+        <div class="gal-dialog-actions">
+          <a class="btn" id="viewerPresent" href="/present" data-i18n="ed.present">Present</a>
+          <a class="btn btn-primary" id="viewerEdit" href="/play" data-i18n="view.edit">Edit a copy</a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="wrap">
+        <span data-i18n="footer.tag">Fluxygram</span>
+        <span class="footer-legal"><a href="/privacy" data-i18n="legal.privacy">Privacy</a> · <a href="/terms" data-i18n="legal.terms">Terms</a></span>
+      </div>
+    </footer>
+
+    <script src="/i18n.js"></script>
+    <script type="module" src="/src/gallery.ts"></script>
+  </body>
+</html>

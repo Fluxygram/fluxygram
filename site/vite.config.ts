@@ -13,6 +13,7 @@ export default defineConfig({
         notFound: resolve(import.meta.dirname, '404.html'),
         privacy: resolve(import.meta.dirname, 'privacy.html'),
         terms: resolve(import.meta.dirname, 'terms.html'),
+        gallery: resolve(import.meta.dirname, 'gallery.html'),
       },
     },
   },
