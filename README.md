@@ -34,7 +34,7 @@
 ---
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.2"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.3"></script>
 
 <fluxy-gram src="order.flux.json"></fluxy-gram>
 ```
