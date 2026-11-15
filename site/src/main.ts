@@ -11,6 +11,7 @@ void initSiteAccount(document.getElementById('account')!);
 import { applySpecular } from './vendor/specular-button';
 import { SPECULAR } from './specular';
 import { mountTechText } from './vendor/tech-text';
+import { mountFlowline } from './flowline';
 
 const hero = document.querySelector<FluxyGram>('#hero')!;
 hero.setAttribute('src', exampleUrl(hero.dataset.example!));
@@ -50,3 +51,10 @@ for (const tab of useTabs) {
   });
 }
 void showUse(useTabs[0]!.dataset.use!);
+
+// Toda la landing como un gran diagrama: una conexión baja desde el hero y une las secciones al hacer scroll.
+mountFlowline(
+  document.querySelector<HTMLElement>('.hero-demo')!,
+  [...document.querySelectorAll<HTMLElement>('main section')].map((el) => ({ el, anchor: el.querySelector<HTMLElement>('.section-head h2')! })),
+  document.querySelector<HTMLElement>('#wordmark')!,
+);

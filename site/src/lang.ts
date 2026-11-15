@@ -1,6 +1,7 @@
 import { createRubberSegment } from './vendor/rubber-segment';
 import { SEGMENT_THEME } from './editor/segment';
 import { lang, t } from './i18n';
+import { mountNavMenu } from './navmenu';
 
 const KEY = 'fluxygram:lang';
 
@@ -34,4 +35,9 @@ for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lang-switc
     },
   });
   btn.replaceWith(seg.el);
+}
+
+// En el celular, los enlaces de la navegación se pliegan en un menú (solo en las páginas con navegación completa).
+for (const header of document.querySelectorAll<HTMLElement>('header.nav')) {
+  if (header.querySelector('[data-docs-link]')) mountNavMenu(header);
 }

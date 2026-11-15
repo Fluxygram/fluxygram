@@ -52,8 +52,42 @@ code, pre { font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monos
   .nav-links a:hover { color: var(--text); background: var(--code-bg); }
   .lang-switch:hover { color: var(--text); border-color: var(--muted); }
 }
-@media (max-width: 560px) {
-  .nav-links a[href$="gallery"]:not([aria-current]) { display: none; }
+/* El menú plegable del celular (navmenu.ts) */
+.nav-end { display: flex; align-items: center; gap: 4px; }
+.nav-menu { display: none; }
+@media (max-width: 720px) {
+  .nav { height: 64px; }
+  .nav-menu {
+    display: inline-grid; place-items: center; width: 40px; height: 40px; margin-left: 4px; padding: 0;
+    border: 1px solid var(--border); border-radius: 10px; background: transparent; color: var(--text); cursor: pointer;
+    transition: transform 140ms var(--ease-out), border-color 160ms ease;
+  }
+  .nav-menu:active { transform: scale(0.96); }
+  .nav-menu svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  .nav-menu path { transform-origin: center; transition: transform 220ms var(--ease-out); }
+  .nav-open .nav-menu-top { transform: translateY(4px) rotate(45deg); }
+  .nav-open .nav-menu-bottom { transform: translateY(-4px) rotate(-45deg); }
+  .nav-end .nav-links {
+    position: absolute; top: 60px; left: 12px; right: 12px; z-index: 20;
+    display: grid; grid-template-columns: 1fr auto; gap: 2px; padding: 8px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.6);
+    opacity: 0; transform: translateY(-6px) scale(0.98); transform-origin: top right; visibility: hidden;
+    transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out), visibility 0s linear 180ms;
+  }
+  .nav-open .nav-end .nav-links {
+    opacity: 1; transform: none; visibility: visible;
+    transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out), visibility 0s;
+  }
+  .nav-end .nav-links > a:not(.gh) { grid-column: 1 / -1; padding: 12px 14px; font-size: 17px; color: var(--text); }
+  .nav-end .nav-links > a.gh { justify-self: start; display: inline-flex; gap: 10px; align-items: center; padding: 10px 14px; margin-top: 6px; color: var(--muted); }
+  .nav-end .nav-links > a.gh::after { content: 'GitHub'; font-size: 15px; }
+  .nav-end .nav-links > a.gh svg { width: 20px; height: 20px; }
+  .nav-end .nav-links > .lang-seg { justify-self: end; align-self: center; margin: 6px 6px 0 0; }
+  .nav-end .nav-links > a:not(.gh) + a.gh { border-top: 0; }
+}
+@media (max-width: 720px) and (prefers-reduced-motion: reduce) {
+  .nav-end .nav-links, .nav-open .nav-end .nav-links { transform: none; transition: opacity 120ms ease, visibility 0s; }
 }
 
 /* ---------- Hero ---------- */
@@ -285,3 +319,20 @@ footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-cont
 @media (hover: hover) and (pointer: fine) { .nav-signin:hover { border-color: var(--muted); } }
 
 .gal-live .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---------- La landing como un gran diagrama ---------- */
+.flowline { position: absolute; top: 0; left: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+main, .wordmark, footer { position: relative; z-index: 1; }
+.nav { position: relative; z-index: 10; }
+.flowline-track { fill: none; stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 3 6; }
+.flowline-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; opacity: 0.85; }
+.flowline-node circle:first-child { fill: var(--bg); stroke: var(--border); stroke-width: 1.5; transition: stroke 240ms var(--ease-out); }
+.flowline-core { fill: var(--border); transform-box: fill-box; transform-origin: center; transition: fill 240ms var(--ease-out), transform 320ms var(--ease-out); }
+.flowline-node.is-on circle:first-child { stroke: var(--accent); }
+.flowline-node.is-on .flowline-core { fill: var(--accent); transform: scale(1.35); }
+.flowline-dot { fill: var(--accent); }
+.flowline-glow { fill: var(--accent); opacity: 0.18; }
+.flowline .is-hidden { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .flowline-node circle, .flowline-core { transition: none; } }
+@media print { .flowline { display: none; } }
+@media (max-width: 720px) { .flowline-node circle:first-child { r: 5px; } .flowline-core { r: 2px; } }
