@@ -1,0 +1,48 @@
+<!doctype html>
+<!--
+  Escenario para grabar los GIF del README (.github/assets/demo-*.gif). No se publica: solo existe en `pnpm dev`.
+  ?example=how-it-works  → el diagrama contado paso a paso
+  ?example=tracker&live  → el modo en vivo, avanzando el pedido etapa por etapa
+  Se graba con `node scripts/readme-gifs.mjs`.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fluxygram demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      html, body { margin: 0; background: #09090c; }
+      body { padding: 24px; }
+      fluxy-gram { display: block; }
+    </style>
+  </head>
+  <body>
+    <fluxy-gram id="d" lang="en" autoplay="false"></fluxy-gram>
+    <script type="module">
+      import '@fluxygram/element';
+      const params = new URLSearchParams(location.search);
+      const d = document.getElementById('d');
+      const live = params.has('live');
+      if (live) d.setAttribute('mode', 'tracker');
+      d.diagram = await (await fetch(`/examples/en/${params.get('example') ?? 'how-it-works'}.flux.json`)).json();
+      await document.fonts.ready;
+      await new Promise((r) => setTimeout(r, 400));
+
+      // El grabador espera estas marcas: empieza con data-start y corta con data-done.
+      document.body.dataset.start = '';
+      if (live) {
+        const path = ['received', 'paid', 'packed', 'shipped', 'out', 'delivered'];
+        for (const [i, stage] of path.entries()) {
+          d.setStage(stage, i === path.length - 1 ? 'success' : 'pending');
+          await new Promise((r) => setTimeout(r, i === path.length - 1 ? 2200 : 1500));
+        }
+        document.body.dataset.done = '';
+      } else {
+        d.addEventListener('fluxy-step', (e) => {
+          if (e.detail.index === e.detail.count - 1) setTimeout(() => (document.body.dataset.done = ''), 2600);
+        });
+        d.play();
+      }
+    </script>
+  </body>
+</html>

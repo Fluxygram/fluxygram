@@ -27,6 +27,10 @@
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT%20%2B%20FSL-16161c" alt="License: MIT + FSL"></a>
 </p>
 
+<p align="center">
+  <img src=".github/assets/demo-steps.gif" width="860" alt="A Fluxygram diagram telling, step by step, how a question becomes an animated diagram: blocks appear, a particle travels along each connection and the camera follows the story.">
+</p>
+
 ---
 
 ```html
@@ -110,6 +114,10 @@ The same diagram can also show **where a real process is right now**: an order, 
 ```js
 tracker.setStage('delivered', 'success'); // status: pending | success | warning | error
 ```
+
+<p align="center">
+  <img src=".github/assets/demo-live.gif" width="860" alt="Tracker mode: an order advances from Order placed to Delivered; each stage turns green as the next one becomes current.">
+</p>
 
 For branches that join or processes that loop back, pass `history` (the stages it went through). Try the live examples in the [gallery](https://fluxygram.app/gallery) and read the [tracker guide](https://docs.fluxygram.app/guides/tracker/): connecting it to your data, translations, ideas.
 
