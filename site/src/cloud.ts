@@ -1,5 +1,5 @@
 import type { Diagram } from '@fluxygram/core';
-import { CloudUpload, FolderOpen, LogOut, PencilLine, Trash2, Workflow, X, type IconNode } from 'lucide';
+import { CloudUpload, CreditCard, Eye, FolderOpen, History, Link2, LogOut, PencilLine, Sparkle, Trash2, Workflow, X, type IconNode } from 'lucide';
 import { thumbnail, TYPE_ICONS } from './thumbnail';
 import { h, icon } from './editor/dom';
 import type { Model } from './editor/model';
@@ -18,6 +18,10 @@ interface Me {
   user: { id: string; name: string | null; email: string | null; avatar: string | null; plan: 'free' | 'pro' };
   providers: string[];
   limits: { diagrams: number | null; used: number };
+  billing?: {
+    available: boolean;
+    subscription: { status: string; interval: string | null; periodEnd: number | null; cancelAtPeriodEnd: boolean; pro: boolean } | null;
+  };
 }
 interface Saved {
   id: string;
@@ -177,14 +181,95 @@ function showHint(wrap: HTMLElement, openMenu: () => void): { dismiss: () => voi
   };
 }
 
-async function signIn(provider: string) {
+async function signIn(provider: string, next = location.pathname) {
   if (provider === 'dev') {
     await api('/auth/dev', { method: 'POST', body: '{}' });
-    location.reload();
+    location.href = next;
     return;
   }
-  location.href = `/api/auth/${provider}?next=${encodeURIComponent(location.pathname)}`;
+  location.href = `/api/auth/${provider}?next=${encodeURIComponent(next)}`;
 }
+
+/* ---------- Pro: pago, portal y aviso de límite ---------- */
+
+export type MeState = ({ signedIn: true } & Me) | { signedIn: false; providers: string[] };
+
+/** La cuenta actual. undefined = no hay Cloud (sin servidor o sin red). */
+export async function loadMe(): Promise<MeState | undefined> {
+  let res: Response;
+  try {
+    res = await api('/me');
+  } catch {
+    return undefined;
+  }
+  if (!res.headers.get('Content-Type')?.includes('application/json') || (res.status !== 200 && res.status !== 401)) return undefined;
+  const body = (await res.json()) as Partial<Me> & { providers?: string[] };
+  if (res.status === 401) return { signedIn: false, providers: body.providers ?? [] };
+  return { signedIn: true, ...(body as Me) };
+}
+
+/** Abre el pago de Polar. Devuelve false si no se pudo (el llamador avisa). */
+export async function goPro(interval: 'month' | 'year'): Promise<boolean> {
+  const r = await api('/billing/checkout', { method: 'POST', body: JSON.stringify({ interval }) });
+  if (r.status === 401) {
+    location.href = `/pricing?buy=${interval}`;
+    return true;
+  }
+  if (!r.ok) return false;
+  location.href = ((await r.json()) as { url: string }).url;
+  return true;
+}
+
+/** Portal de Polar: tarjeta, facturas, cancelar. */
+export async function openPortal(onError: () => void) {
+  const r = await api('/billing/portal', { method: 'POST', body: '{}' });
+  if (!r.ok) return onError();
+  location.href = ((await r.json()) as { url: string }).url;
+}
+
+/** Botones de inicio de sesión sueltos (sin menú), con a dónde volver. */
+export function renderSignInButtons(host: HTMLElement, providers: string[], next: string) {
+  host.replaceChildren(
+    ...providers.map((p) =>
+      h('button', { type: 'button', class: 'btn plan-provider', onclick: () => signIn(p, next) },
+        providerLogo(p),
+        p === 'dev' ? t('cloud.devLogin') : t('cloud.with', { p: PROVIDER_NAMES[p] ?? p })),
+    ),
+  );
+}
+
+/** Explica qué da Pro cuando algo lo necesita (límite de diagramas, historial, vistas). */
+function upgradeDialog(reason: string) {
+  const close = () => modal.remove();
+  const modal: HTMLDivElement = h('div', { class: 'ed-modal' },
+    h('div', { class: 'ed-picker ed-pro-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('pro.title') },
+      h('button', { type: 'button', class: 'ed-icon ed-modal-close', title: t('ed.close'), 'aria-label': t('ed.close'), onclick: close }, icon(X)),
+      h('h2', { class: 'ed-picker-title' }, t('pro.title')),
+      h('p', { class: 'ed-pro-reason' }, reason),
+      h('ul', { class: 'ed-pro-list' }, ...['pricing.pro.2', 'pricing.pro.3', 'pricing.pro.4', 'pricing.pro.5'].map((k) => h('li', {}, t(k)))),
+      h('div', { class: 'ed-pro-actions' },
+        h('button', { type: 'button', class: 'ed-btn', onclick: close }, t('cloud.hintLater')),
+        h('a', { class: 'ed-btn ed-btn-primary', href: '/pricing' }, t('pro.see')),
+      ),
+    ),
+  );
+  modal.addEventListener('click', (e) => e.target === modal && close());
+  modal.addEventListener('keydown', (e) => (e as KeyboardEvent).key === 'Escape' && close());
+  document.body.append(modal);
+  modal.querySelector<HTMLElement>('a')?.focus();
+}
+
+/** Opciones de la cuenta según el plan: "Hazte Pro" o "Gestionar suscripción". */
+function planItems(me: Me, onError: () => void): HTMLElement[] {
+  if (me.user.plan === 'pro') {
+    return me.billing?.available
+      ? [h('button', { type: 'button', role: 'menuitem', onclick: () => void openPortal(onError) }, icon(CreditCard, 15), ' ', t('pro.manage'))]
+      : [];
+  }
+  return me.billing?.available ? [h('a', { href: '/pricing', role: 'menuitem', class: 'ed-cloud-pro' }, icon(Sparkle, 15), ' ', t('pro.go'))] : [];
+}
+
+const planBadge = (me: Me) => (me.user.plan === 'pro' ? h('span', { class: 'ed-plan-badge' }, 'Pro') : undefined);
 
 /* ---------- Con sesión ---------- */
 
@@ -215,7 +300,8 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
     if (!r || r.status === 404) r = await api('/diagrams', { method: 'POST', body: payload });
     if (r.status === 402) {
       const { limit } = (await r.json()) as { limit: number };
-      toast(t('cloud.limit', { n: String(limit) }), 5000);
+      if (me.billing?.available) upgradeDialog(t('pro.limit', { n: String(limit) }));
+      else toast(t('cloud.limit', { n: String(limit) }), 5000);
       return null;
     }
     if (r.status === 400) {
@@ -250,10 +336,12 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
 
   const openList = () => showList({
     toast,
+    pro: me.user.plan === 'pro',
+    billing: !!me.billing?.available,
     limit: me.limits.diagrams,
     currentId: () => cloudId,
-    onOpen: async (id) => {
-      const r = await api(`/diagrams/${id}`);
+    onOpen: async (id, version) => {
+      const r = await api(`/diagrams/${id}${version ? `?version=${version}` : ''}`);
       if (!r.ok) return toast(t('cloud.error'));
       const { diagram } = (await r.json()) as { diagram: Diagram };
       opening = true;
@@ -282,11 +370,12 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
     ? h('img', { src: me.user.avatar, alt: '', width: 22, height: 22, referrerpolicy: 'no-referrer' })
     : h('span', { class: 'ed-cloud-initial' }, name.slice(0, 1).toUpperCase());
   const menu = h('div', { class: 'ed-cloud-menu', hidden: true, role: 'menu' },
-    h('p', { class: 'ed-cloud-who' }, h('strong', {}, name), me.user.email && me.user.email !== name ? h('span', {}, me.user.email) : undefined),
+    h('p', { class: 'ed-cloud-who' }, h('strong', {}, name, planBadge(me)), me.user.email && me.user.email !== name ? h('span', {}, me.user.email) : undefined),
     h('button', { type: 'button', role: 'menuitem', onclick: () => {
       menu.hidden = true;
       void openList();
     } }, icon(FolderOpen, 15), ' ', t('cloud.mine')),
+    ...planItems(me, () => toast(t('cloud.error'))),
     h('button', { type: 'button', role: 'menuitem', onclick: async () => {
       await api('/auth/logout', { method: 'POST', body: '{}' });
       store.set(null);
@@ -295,9 +384,15 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
   );
   const account = h('button', { type: 'button', class: 'ed-cloud-account', title: name, 'aria-label': name, 'aria-haspopup': 'menu', onclick: () => toggle(menu) }, avatar);
 
-  if (new URLSearchParams(location.search).has('mine')) {
+  const params = new URLSearchParams(location.search);
+  if (params.has('mine')) {
     history.replaceState(null, '', location.pathname + location.hash);
     void openList();
+  }
+  // Vuelta del pago: el webhook puede tardar unos segundos en activar Pro.
+  if (params.get('pro') === 'welcome') {
+    history.replaceState(null, '', location.pathname + location.hash);
+    toast(me.user.plan === 'pro' ? t('pro.welcome') : t('pro.activating'), 6000);
   }
 
   saveHost.replaceChildren(saveButton);
@@ -324,9 +419,11 @@ function toggle(menu: HTMLElement) {
 
 interface ListOptions {
   toast: (text: string, ms?: number) => void;
+  pro: boolean;
+  billing: boolean;
   limit: number | null;
   currentId: () => string | null;
-  onOpen: (id: string) => Promise<void>;
+  onOpen: (id: string, version?: number) => Promise<void>;
   onDelete: (id: string) => void;
   onSaveCurrent: () => Promise<boolean>;
 }
@@ -463,6 +560,14 @@ async function showList(o: ListOptions) {
       render();
     } }, icon(Trash2, 15));
     const current = o.currentId() === d.id;
+    // Historial y links: con Pro se abre el detalle; sin Pro, qué da Pro.
+    const more = h('button', { type: 'button', class: 'ed-cloud-more-btn', title: t('pro.history'), 'aria-label': t('pro.history'), onclick: () => {
+      if (!o.pro) {
+        if (o.billing) upgradeDialog(t('pro.historyReason'));
+        return;
+      }
+      void showDetails(d, o, close);
+    } }, icon(History, 15));
     return h('li', { class: current ? 'ed-cloud-card is-current' : 'ed-cloud-card' },
       h('button', { type: 'button', class: 'ed-cloud-open', onclick: async () => {
         close();
@@ -475,6 +580,7 @@ async function showList(o: ListOptions) {
         ),
         current ? h('span', { class: 'ed-cloud-badge' }, t('cloud.current')) : undefined,
       ),
+      o.pro || o.billing ? more : undefined,
       del,
     );
   };
@@ -524,9 +630,10 @@ export async function initSiteAccount(host: HTMLElement) {
     return a;
   };
   const menu = h('div', { class: 'ed-cloud-menu', hidden: true, role: 'menu' },
-    h('p', { class: 'ed-cloud-who' }, h('strong', {}, name), me.user.email && me.user.email !== name ? h('span', {}, me.user.email) : undefined),
+    h('p', { class: 'ed-cloud-who' }, h('strong', {}, name, planBadge(me)), me.user.email && me.user.email !== name ? h('span', {}, me.user.email) : undefined),
     link('/play?mine', FolderOpen, t('cloud.mine')),
     link('/play', PencilLine, t('cloud.openEditor')),
+    ...planItems(me, () => undefined),
     h('button', { type: 'button', role: 'menuitem', onclick: async () => {
       await api('/auth/logout', { method: 'POST', body: '{}' });
       location.reload();
@@ -535,4 +642,58 @@ export async function initSiteAccount(host: HTMLElement) {
   const account = h('button', { type: 'button', class: 'ed-cloud-account', title: name, 'aria-label': name, 'aria-haspopup': 'menu', onclick: () => toggle(menu) }, avatar);
   host.replaceChildren(h('div', { class: 'ed-cloud-wrap' }, account, menu));
   host.hidden = false;
+}
+
+/* ---------- Detalle de un diagrama (Pro): historial de versiones y links ---------- */
+
+async function showDetails(d: Saved, o: ListOptions, closeList: () => void) {
+  const [vr, lr] = await Promise.all([api(`/diagrams/${d.id}/versions`), api(`/diagrams/${d.id}/links`)]);
+  if (!vr.ok || !lr.ok) return o.toast(t('cloud.error'));
+  const { versions } = (await vr.json()) as { versions: { version: number; savedAt: number }[] };
+  const { links } = (await lr.json()) as { links: { slug: string; url: string; version: number; views: number | null; disabled: boolean }[] };
+  const date = new Intl.DateTimeFormat(document.documentElement.lang || undefined, { dateStyle: 'medium', timeStyle: 'short' });
+  const close = () => modal.remove();
+
+  const versionRows = versions.map((v, i) =>
+    h('li', { class: 'ed-detail-row' },
+      h('span', {}, h('strong', {}, t('pro.version', { n: String(v.version) })), i === 0 ? h('span', { class: 'ed-cloud-badge' }, t('pro.latest')) : undefined),
+      h('span', { class: 'ed-detail-meta' }, date.format(v.savedAt * 1000)),
+      h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
+        close();
+        closeList();
+        await o.onOpen(d.id, i === 0 ? undefined : v.version);
+        if (i !== 0) o.toast(t('pro.openedOld', { n: String(v.version) }), 5000);
+      } }, t('pro.open')),
+    ),
+  );
+
+  type LinkInfo = (typeof links)[number];
+  const linkRow = (l: LinkInfo): HTMLLIElement => {
+    const row: HTMLLIElement = h('li', { class: l.disabled ? 'ed-detail-row is-off' : 'ed-detail-row' },
+      h('span', {}, icon(Link2, 14), ' ', h('a', { href: l.url, target: '_blank', rel: 'noopener' }, l.url.replace(/^https?:\/\//, ''))),
+      h('span', { class: 'ed-detail-meta' }, icon(Eye, 13), ' ', t('pro.views', { n: String(l.views ?? 0) }), ' · ', t('pro.version', { n: String(l.version) }), l.disabled ? ` · ${t('pro.off')}` : ''),
+      h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
+        const r = await api(`/links/${l.slug}`, { method: 'PATCH', body: JSON.stringify({ disabled: !l.disabled }) });
+        if (!r.ok) return o.toast(t('cloud.error'));
+        l.disabled = !l.disabled;
+        row.replaceWith(linkRow(l));
+      } }, l.disabled ? t('pro.linkOn') : t('pro.linkOff')),
+    );
+    return row;
+  };
+
+  const modal: HTMLDivElement = h('div', { class: 'ed-modal' },
+    h('div', { class: 'ed-picker ed-detail-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': d.title || t('cloud.untitled') },
+      h('button', { type: 'button', class: 'ed-icon ed-modal-close', title: t('ed.close'), 'aria-label': t('ed.close'), onclick: close }, icon(X)),
+      h('h2', { class: 'ed-picker-title' }, d.title || t('cloud.untitled')),
+      h('h3', { class: 'ed-detail-h' }, t('pro.history')),
+      h('ul', { class: 'ed-detail-list' }, ...versionRows),
+      h('h3', { class: 'ed-detail-h' }, t('pro.links')),
+      links.length ? h('ul', { class: 'ed-detail-list' }, ...links.map(linkRow)) : h('p', { class: 'ed-detail-empty' }, t('pro.noLinks')),
+    ),
+  );
+  modal.addEventListener('click', (e) => e.target === modal && close());
+  modal.addEventListener('keydown', (e) => (e as KeyboardEvent).key === 'Escape' && close());
+  document.body.append(modal);
+  modal.querySelector<HTMLElement>('.ed-modal-close')?.focus();
 }

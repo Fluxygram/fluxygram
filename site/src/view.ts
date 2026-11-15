@@ -10,9 +10,11 @@ const edit = document.querySelector<HTMLAnchorElement>('#edit')!;
 
 // Link corto de Fluxygram Cloud (/d/abc123): el diagrama se pide a la API. Si no, va dentro del link (#d=).
 const short = location.pathname.match(/^\/d\/([A-Za-z0-9]+)\/?$/)?.[1];
+let linkDisabled = false;
 async function diagramFromShortLink(slug: string): Promise<unknown | undefined> {
   try {
     const res = await fetch(`/api/links/${slug}`);
+    linkDisabled = res.status === 410;
     return res.ok ? ((await res.json()) as { diagram: unknown }).diagram : undefined;
   } catch {
     return undefined;
@@ -30,6 +32,7 @@ if (result?.ok) {
   document.querySelector<HTMLAnchorElement>('#present')!.href = `/present${hash}`;
 } else {
   el.hidden = true;
+  if (linkDisabled) missing.textContent = window.FLUXY_I18N?.t('view.disabled') ?? missing.textContent;
   missing.hidden = false;
   document.querySelector<HTMLElement>('#present')!.hidden = true;
 }

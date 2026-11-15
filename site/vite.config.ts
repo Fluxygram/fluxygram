@@ -14,6 +14,7 @@ export default defineConfig({
         privacy: resolve(import.meta.dirname, 'privacy.html'),
         terms: resolve(import.meta.dirname, 'terms.html'),
         gallery: resolve(import.meta.dirname, 'gallery.html'),
+        pricing: resolve(import.meta.dirname, 'pricing.html'),
       },
     },
   },

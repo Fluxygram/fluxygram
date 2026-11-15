@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en" data-i18n-title="pricing.pageTitle">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pricing — Fluxygram</title>
+    <meta name="description" content="Fluxygram is free: the editor, the component and the agent skill. Pro adds unlimited saved diagrams, version history, link views and links you can turn off." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://fluxygram.app/pricing" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Fluxygram" />
+    <meta property="og:title" content="Pricing — Fluxygram" />
+    <meta property="og:description" content="Fluxygram is free: the editor, the component and the agent skill. Pro adds unlimited saved diagrams, version history, link views and links you can turn off." />
+    <meta property="og:url" content="https://fluxygram.app/pricing" />
+    <meta property="og:image" content="https://fluxygram.app/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Fluxygram: diagrams that explain themselves" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#09090c" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/site.css" />
+  </head>
+  <body>
+    <header class="wrap nav">
+      <a class="brand" href="/"><img src="/mark.svg" alt="" width="32" height="32" />fluxygram</a>
+      <nav class="nav-links">
+        <a href="/gallery" data-i18n="nav.examples">Examples</a>
+        <a href="/play" data-i18n="nav.playground">Editor</a>
+        <a href="https://docs.fluxygram.app/" data-docs-link data-i18n="nav.docs">Docs</a>
+        <a href="/pricing" aria-current="page" data-i18n="nav.pricing">Pricing</a>
+        <button class="lang-switch" type="button" data-lang-switch>Español</button>
+        <div class="site-account" id="account" hidden></div>
+      </nav>
+    </header>
+
+    <main class="wrap pricing">
+      <div class="pricing-head">
+        <h1 data-i18n="pricing.title">Free to make. Pro to keep.</h1>
+        <p data-i18n="pricing.lead">The editor, the component and the agent skill are free and open source. Pro is for keeping your diagrams in the cloud and sharing them with control.</p>
+        <div class="pricing-toggle" role="radiogroup" data-i18n-attr="aria-label:pricing.billing">
+          <button type="button" role="radio" aria-checked="false" data-interval="month" data-i18n="pricing.monthly">Monthly</button>
+          <button type="button" role="radio" aria-checked="true" data-interval="year"><span data-i18n="pricing.yearly">Yearly</span> <span class="pricing-save" data-i18n="pricing.save">save 20%</span></button>
+        </div>
+      </div>
+
+      <div class="pricing-grid">
+        <section class="plan">
+          <h2>Free</h2>
+          <p class="plan-price"><strong>$0</strong></p>
+          <p class="plan-for" data-i18n="pricing.free.for">To make and share diagrams.</p>
+          <ul>
+            <li data-i18n="pricing.free.1">Full editor, presentation mode and live mode</li>
+            <li data-i18n="pricing.free.2">The &lt;fluxy-gram&gt; component for your site</li>
+            <li data-i18n="pricing.free.3">Agent skill for Claude, ChatGPT and more</li>
+            <li data-i18n="pricing.free.4">3 diagrams saved in your account</li>
+            <li data-i18n="pricing.free.5">Short links to share</li>
+          </ul>
+          <a class="btn plan-cta" href="/play" data-i18n="pricing.free.cta">Open the editor</a>
+        </section>
+
+        <section class="plan plan-pro">
+          <h2>Pro <span class="plan-tag" data-i18n="pricing.founder">Founder price</span></h2>
+          <p class="plan-price"><strong id="proPrice">$4</strong> <span id="proPer" data-i18n="pricing.perMonth">/ month</span></p>
+          <p class="plan-billed" id="proBilled" data-i18n="pricing.billedYearly">Billed $48 a year</p>
+          <p class="plan-for" data-i18n="pricing.pro.for">To keep everything and share with control.</p>
+          <ul>
+            <li data-i18n="pricing.pro.1">Everything in Free</li>
+            <li data-i18n="pricing.pro.2">Unlimited saved diagrams</li>
+            <li data-i18n="pricing.pro.3">Version history: open any earlier save</li>
+            <li data-i18n="pricing.pro.4">See how many times each link was opened</li>
+            <li data-i18n="pricing.pro.5">Turn a link off whenever you want</li>
+            <li data-i18n="pricing.pro.6">What comes next (AI generation, video) at the same price</li>
+          </ul>
+          <button type="button" class="btn btn-primary plan-cta" id="proCta" data-i18n="pricing.pro.cta">Go Pro</button>
+          <div class="plan-signin" id="proSignin" hidden>
+            <p data-i18n="pricing.signinFirst">Sign in first, so Pro is linked to your account:</p>
+            <div id="proSigninButtons"></div>
+          </div>
+          <p class="plan-note" id="proNote" hidden></p>
+        </section>
+      </div>
+
+      <section class="pricing-faq">
+        <h2 data-i18n="pricing.faq">Questions</h2>
+        <details><summary data-i18n="pricing.q1">Can I cancel?</summary><p data-i18n="pricing.a1">Yes, whenever you want, from your account. You keep Pro until the end of the period you paid for.</p></details>
+        <details><summary data-i18n="pricing.q2">What happens to my diagrams if I cancel?</summary><p data-i18n="pricing.a2">Nothing is deleted. You can open, edit and share all of them; you just can't save new ones beyond the free 3 until you delete some.</p></details>
+        <details><summary data-i18n="pricing.q3">Who charges me?</summary><p data-i18n="pricing.a3">Payments are handled by Polar, our merchant of record. They charge the card, send the invoice and handle taxes for your country. We never see your card details.</p></details>
+        <details><summary data-i18n="pricing.q4">Can I get a refund?</summary><p data-i18n="pricing.a4">Yes. If Pro isn't for you, write to hello@fluxygram.app within 14 days of your first payment and we'll refund it.</p></details>
+        <details><summary data-i18n="pricing.q5">What is the founder price?</summary><p data-i18n="pricing.a5">The price for the first subscribers. It stays the same for you while your subscription is active, even when Pro gets new features and its price goes up.</p></details>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <span data-i18n="footer.tag">Fluxygram</span>
+        <span class="footer-legal"><a href="/pricing" data-i18n="nav.pricing">Pricing</a> · <a href="/privacy" data-i18n="legal.privacy">Privacy</a> · <a href="/terms" data-i18n="legal.terms">Terms</a></span>
+      </div>
+    </footer>
+
+    <script src="/i18n.js"></script>
+    <script type="module" src="/src/pricing.ts"></script>
+  </body>
+</html>
