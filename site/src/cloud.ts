@@ -656,7 +656,7 @@ async function showDetails(d: Saved, o: ListOptions, closeList: () => void) {
 
   const versionRows = versions.map((v, i) =>
     h('li', { class: 'ed-detail-row' },
-      h('span', {}, h('strong', {}, t('pro.version', { n: String(v.version) })), i === 0 ? h('span', { class: 'ed-cloud-badge' }, t('pro.latest')) : undefined),
+      h('span', {}, h('strong', {}, t('pro.version', { n: String(v.version) })), i === 0 ? h('span', { class: 'ed-detail-badge' }, t('pro.latest')) : undefined),
       h('span', { class: 'ed-detail-meta' }, date.format(v.savedAt * 1000)),
       h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
         close();
@@ -671,7 +671,7 @@ async function showDetails(d: Saved, o: ListOptions, closeList: () => void) {
   const linkRow = (l: LinkInfo): HTMLLIElement => {
     const row: HTMLLIElement = h('li', { class: l.disabled ? 'ed-detail-row is-off' : 'ed-detail-row' },
       h('span', {}, icon(Link2, 14), ' ', h('a', { href: l.url, target: '_blank', rel: 'noopener' }, l.url.replace(/^https?:\/\//, ''))),
-      h('span', { class: 'ed-detail-meta' }, icon(Eye, 13), ' ', t('pro.views', { n: String(l.views ?? 0) }), ' · ', t('pro.version', { n: String(l.version) }), l.disabled ? ` · ${t('pro.off')}` : ''),
+      h('span', { class: 'ed-detail-meta' }, icon(Eye, 13), ' ', t(l.views === 1 ? 'pro.view1' : 'pro.views', { n: String(l.views ?? 0) }), ' · ', t('pro.version', { n: String(l.version) }), l.disabled ? ` · ${t('pro.off')}` : ''),
       h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
         const r = await api(`/links/${l.slug}`, { method: 'PATCH', body: JSON.stringify({ disabled: !l.disabled }) });
         if (!r.ok) return o.toast(t('cloud.error'));
