@@ -5,7 +5,7 @@
 This package is the single-file build of the `<fluxy-gram>` component: no install, no bundler.
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.1"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.2"></script>
 
 <fluxy-gram src="checkout.flux.json"></fluxy-gram>
 ```
