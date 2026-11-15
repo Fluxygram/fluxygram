@@ -18,24 +18,43 @@ interface Example {
   theme: Theme;
   diagram?: Diagram;
   /** Ejemplo del modo seguimiento: se abre con controles para avanzar el proceso. */
-  live?: boolean;
+  live?: Live;
+}
+interface Live {
+  /** Etapas del camino feliz, en orden (puede repetir etapas si el proceso vuelve atrás). */
+  path: string[];
+  /** Etapa a la que salta "Simular un problema", si hay una conexión desde la etapa actual. */
+  fail?: string;
+  /** Se pasa el historial al componente: para ramas que se juntan o procesos que vuelven atrás. */
+  history?: boolean;
 }
 
 // Orden mezclado a propósito: la galería muestra variedad desde la primera fila.
 const EXAMPLES: Example[] = [
-  { name: 'tracker', theme: 'work', live: true },
+  { name: 'tracker', theme: 'work', live: { path: ['received', 'paid', 'packed', 'shipped', 'out', 'delivered'], fail: 'declined' } },
   { name: 'how-it-works', theme: 'software' },
   { name: 'bread', theme: 'cooking' },
   { name: 'game', theme: 'games' },
   { name: 'architecture', theme: 'software' },
+  { name: 'track-food', theme: 'cooking', live: { path: ['placed', 'accepted', 'cooking', 'pickup', 'way', 'delivered'], fail: 'rejected' } },
   { name: 'blood', theme: 'health' },
   { name: 'coffee', theme: 'history' },
   { name: 'order', theme: 'work' },
   { name: 'law', theme: 'society' },
+  {
+    name: 'track-ticket',
+    theme: 'work',
+    live: { path: ['open', 'assigned', 'working', 'waiting', 'working', 'resolved', 'closed'], history: true },
+  },
   { name: 'trip', theme: 'travel' },
   { name: 'sequence', theme: 'software' },
   { name: 'animals', theme: 'nature' },
   { name: 'doctor', theme: 'health' },
+  {
+    name: 'track-job',
+    theme: 'work',
+    live: { path: ['applied', 'screening', 'interview', 'offer', 'hired'], fail: 'rejected', history: true },
+  },
   { name: 'mindmap', theme: 'work' },
   { name: 'cycle', theme: 'nature' },
   { name: 'tree', theme: 'work' },
@@ -112,13 +131,12 @@ async function open(ex: Example) {
   lastFocus = document.activeElement as HTMLElement | null;
   $('viewerTitle').textContent = d.title ?? ex.name;
   // El modo se fija antes de cargar el diagrama: el componente dibuja según el modo.
+  current = ex;
   if (ex.live) {
     viewerDiagram.setAttribute('mode', 'tracker');
-    viewerDiagram.setStage(LIVE_PATH[0]!);
+    goLive(0);
   } else {
-    viewerDiagram.removeAttribute('mode');
-    viewerDiagram.removeAttribute('stage');
-    viewerDiagram.removeAttribute('status');
+    for (const a of ['mode', 'stage', 'status', 'history']) viewerDiagram.removeAttribute(a);
   }
   $('live').hidden = !ex.live;
   viewerDiagram.diagram = d;
@@ -140,25 +158,48 @@ $('viewerClose').onclick = close;
 viewer.addEventListener('click', (e) => e.target === viewer && close());
 document.addEventListener('keydown', (e) => e.key === 'Escape' && !viewer.hidden && close());
 
-/* ---------- Ejemplo en vivo: avanzar el pedido ---------- */
+/* ---------- Ejemplos en vivo: avanzar el proceso ---------- */
 
-const LIVE_PATH = ['received', 'paid', 'packed', 'shipped', 'out', 'delivered'];
+let current: Example | null = null;
+let at = 0; // posición en el camino feliz
+let visited: string[] = [];
+
+function goLive(index: number, status: 'pending' | 'success' | 'error' | 'warning' = 'pending', stage?: string) {
+  const live = current!.live!;
+  at = index;
+  visited = stage ? [...live.path.slice(0, index + 1), stage] : live.path.slice(0, index + 1);
+  const target = stage ?? live.path[index]!;
+  // La última etapa queda como terminada (verde).
+  const final = !stage && index === live.path.length - 1;
+  viewerDiagram.history = live.history ? visited : null;
+  viewerDiagram.setStage(target, final ? 'success' : status);
+  updateButtons();
+}
+function updateButtons() {
+  const live = current?.live;
+  if (!live) return;
+  const stage = viewerDiagram.stage;
+  const ended = stage !== live.path[at] || at === live.path.length - 1;
+  const canFail = !!live.fail && !ended && !!current!.diagram?.edges?.some((e) => e.from === stage && e.to === live.fail);
+  $<HTMLButtonElement>('liveNext').disabled = ended;
+  $<HTMLButtonElement>('liveDelay').disabled = ended;
+  $<HTMLButtonElement>('liveFail').disabled = !canFail;
+  $('liveFail').hidden = !live.fail;
+}
 function showCode() {
-  if ($('live').hidden) return;
+  if ($('live').hidden || !current) return;
   const stage = viewerDiagram.stage ?? '';
   const status = viewerDiagram.status;
-  $('liveCode').textContent = `<fluxy-gram src="order.flux.json" mode="tracker"
-  stage="${stage}"${status !== 'pending' ? ` status="${status}"` : ''}></fluxy-gram>`;
+  const history = current.live?.history ? `
+  history="${viewerDiagram.history.join(',')}"` : '';
+  $('liveCode').textContent = `<fluxy-gram src="${current.name}.flux.json" mode="tracker"
+  stage="${stage}"${status !== 'pending' ? ` status="${status}"` : ''}${history}></fluxy-gram>`;
 }
 viewerDiagram.addEventListener('fluxy-stage', showCode);
-$('liveNext').onclick = () => {
-  const at = LIVE_PATH.indexOf(viewerDiagram.stage ?? '');
-  const next = at < 0 ? 0 : Math.min(at + 1, LIVE_PATH.length - 1);
-  // La última etapa queda como terminada (verde); las demás, en curso.
-  viewerDiagram.setStage(LIVE_PATH[next]!, next === LIVE_PATH.length - 1 ? 'success' : 'pending');
-};
-$('liveFail').onclick = () => viewerDiagram.setStage('declined', 'error');
-$('liveReset').onclick = () => viewerDiagram.setStage(LIVE_PATH[0]!);
+$('liveNext').onclick = () => goLive(Math.min(at + 1, current!.live!.path.length - 1));
+$('liveDelay').onclick = () => goLive(at, 'warning');
+$('liveFail').onclick = () => goLive(at, 'error', current!.live!.fail);
+$('liveReset').onclick = () => goLive(0);
 
 /* ---------- Carga ---------- */
 

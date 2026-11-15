@@ -1,0 +1,67 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Tu solicitud de soporte",
+  "nodes": [
+    {
+      "id": "open",
+      "label": "Solicitud recibida",
+      "icon": "inbox",
+      "kind": "start"
+    },
+    {
+      "id": "assigned",
+      "label": "Agente asignado",
+      "icon": "user"
+    },
+    {
+      "id": "working",
+      "label": "Trabajando en ello",
+      "icon": "tool"
+    },
+    {
+      "id": "waiting",
+      "label": "Esperando tu respuesta",
+      "icon": "chat"
+    },
+    {
+      "id": "resolved",
+      "label": "Resuelto",
+      "icon": "check"
+    },
+    {
+      "id": "closed",
+      "label": "Cerrado",
+      "icon": "star",
+      "kind": "end"
+    }
+  ],
+  "edges": [
+    {
+      "from": "open",
+      "to": "assigned"
+    },
+    {
+      "from": "assigned",
+      "to": "working"
+    },
+    {
+      "from": "working",
+      "to": "waiting",
+      "label": "falta info"
+    },
+    {
+      "from": "waiting",
+      "to": "working",
+      "label": "respondiste"
+    },
+    {
+      "from": "working",
+      "to": "resolved"
+    },
+    {
+      "from": "resolved",
+      "to": "closed"
+    }
+  ]
+}

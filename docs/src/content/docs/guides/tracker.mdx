@@ -1,53 +1,87 @@
 ---
 title: Live status (tracker mode)
-description: Show which stage a real process is at — an order, a shipment, an application — and animate every change.
+description: Show which stage a real process is at — an order, a delivery, a support ticket, an application — and animate every change.
 sidebar:
   order: 4
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Steps } from '@astrojs/starlight/components';
 
-A diagram usually *explains* a process. In **tracker mode**, it shows **where something real is right now**: an order being shipped, a support ticket, a loan application, an onboarding. Your site already knows the status; Fluxygram turns it into an animated picture.
+A diagram usually *explains* a process. In **tracker mode**, it shows **where something real is right now**: an order on its way, a food delivery, a support ticket, a job application, a paperwork process. Your site already knows the status; Fluxygram turns it into an animated picture your customers understand at a glance.
 
-[Try it in the gallery](https://fluxygram.app/gallery): open **Your order** and press **Next stage**.
+<Aside type="tip" title="Try it">
+  The [gallery](https://fluxygram.app/gallery) has four live examples: **Your order**, **Your food order**, **Your support request** and **Your application**. Open one and press **Next stage**, **Simulate a delay** or **Simulate a problem**.
+</Aside>
 
-## How it works
+## The idea in 30 seconds
+
+You draw the process once, as a normal `flow` diagram. Then, on each page, you tell the component **which block is the current stage**:
 
 ```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.2"></script>
+
 <fluxy-gram src="order.flux.json" mode="tracker" stage="shipped"></fluxy-gram>
 ```
 
-- Stages already done (everything that leads to `stage`, following the connections) turn **green** with a check.
-- The current stage shows **in progress**, and a particle travels into it.
-- Stages still ahead are dimmed, so the whole path is visible but what's done stands out.
-- There's no step bar and no autoplay: the diagram shows the status, nothing else.
+That's all. When the stage changes, you change the attribute and the diagram animates to the new stage by itself.
 
-When the status changes, update the attribute and the diagram animates to the new stage:
+## What the customer sees
+
+| Part of the diagram | How it looks |
+| --- | --- |
+| Stages already done | **Green**, with a check |
+| The current stage | Depends on `status` (below), and a particle travels into it |
+| Stages still ahead | Dimmed: the whole path is visible, but what's done stands out |
+| Step bar, autoplay | Hidden: a tracker shows the status, nothing else |
+
+The current stage's `status` says how it's going:
+
+| `status` | Meaning | Use it for |
+| --- | --- | --- |
+| `pending` (default) | In progress | Most of the time |
+| `success` | Done (green) | The last stage, when the process ends |
+| `warning` | Needs attention (amber) | A delay, waiting for the customer |
+| `error` | Something went wrong (red) | A declined payment, a rejected application |
+
+## Changing the stage
+
+Any of these animate the diagram:
 
 ```js
 const tracker = document.querySelector('fluxy-gram');
-tracker.stage = 'out';                    // next stage
-tracker.setStage('delivered', 'success'); // last stage, finished
-tracker.setStage('declined', 'error');    // something went wrong
+
+tracker.stage = 'out';                    // property
+tracker.setAttribute('stage', 'out');     // attribute
+tracker.setStage('out', 'warning');       // stage and status in one animation
+tracker.setStage('delivered', 'success'); // the end
 ```
 
-## Attributes and API
+Prefer `setStage()` when both change: setting `stage` and `status` separately also works (they are batched), but `setStage()` says what you mean.
 
-| | What it does |
-| --- | --- |
-| `mode="tracker"` | Turns tracker mode on |
-| `stage` | Id of the current stage (a block of the diagram). Without it, nothing is highlighted: the process hasn't started |
-| `status` | How the current stage is going: `pending` (default), `success`, `error`, `warning` |
-| `caption` | Optional sentence under the diagram, such as "Arrives tomorrow" |
-| `setStage(id, status?)` | Changes stage and status in one animation |
-| `fluxy-stage` event | Fires on every change, with `{ stage, status }` |
+Every change fires `fluxy-stage`, handy for updating text next to the diagram:
 
-## Designing a tracker diagram
+```js
+tracker.addEventListener('fluxy-stage', (e) => {
+  const { stage, status, history } = e.detail;
+  document.querySelector('#eta').hidden = stage === 'delivered';
+});
+```
 
-1. **Use a `flow`** with one block per stage, connected in order.
-2. **Give stages stable, meaningful ids** that match your system: `received`, `paid`, `shipped`. Labels can change or be translated; ids shouldn't.
-3. **Put failures in their own block**, connected from the stage where they happen: `received → declined`. Set `stage="declined" status="error"` and that branch turns red.
-4. **Mark the end as done** with `status="success"` on the last stage.
+## Designing the diagram
+
+<Steps>
+
+1. **Use a `flow`**, one block per stage, connected in the order things happen. Add `kind: "start"` and `kind: "end"` to the first and last blocks.
+
+2. **Use your system's status values as ids.** If your database says `shipped`, the block id is `shipped`. The ids are the contract between your app and the diagram; labels can change, be reworded or translated freely.
+
+3. **Write labels for the customer**, not for your team: "On the way" instead of "OUT_FOR_DELIVERY". A `description` adds a short second line ("you get a full refund").
+
+4. **Give each failure its own block**, connected from the stage where it can happen: `received → declined`. Then `stage="declined" status="error"` turns that branch red.
+
+5. **Add `steps` only if you also want the diagram to explain the process** elsewhere: tracker mode ignores them, so the same file can do both.
+
+</Steps>
 
 ```json
 {
@@ -56,7 +90,7 @@ tracker.setStage('declined', 'error');    // something went wrong
   "nodes": [
     { "id": "received", "label": "Order placed", "kind": "start", "icon": "cart" },
     { "id": "paid", "label": "Payment confirmed", "icon": "card" },
-    { "id": "declined", "label": "Payment declined", "icon": "alert" },
+    { "id": "declined", "label": "Payment declined", "description": "try another card", "icon": "alert" },
     { "id": "shipped", "label": "Shipped", "icon": "truck" },
     { "id": "delivered", "label": "Delivered", "kind": "end", "icon": "home" }
   ],
@@ -69,17 +103,142 @@ tracker.setStage('declined', 'error');    // something went wrong
 }
 ```
 
-## In a framework
+## Branches and loops: `history`
+
+By default, Fluxygram works out what's done by following the connections backwards from the current stage. That's perfect for a straight line with failure branches, and you only need `stage`.
+
+It can't guess in two cases:
+
+- **Paths that join.** In a job application, *Not selected* can come after *Résumé review* or after the *Interview*. Following connections backwards, both look done.
+- **Loops.** A support ticket goes *Working on it → Waiting for your reply → Working on it* again.
+
+For those, pass the stages it actually went through, in order, in `history`. Only those turn green, and only the connections between consecutive stages:
+
+```html
+<fluxy-gram src="application.flux.json" mode="tracker"
+  stage="rejected" status="error"
+  history="applied,screening,interview,rejected"></fluxy-gram>
+```
+
+```js
+tracker.history = ['open', 'assigned', 'working', 'waiting', 'working'];
+tracker.setStage('working');
+```
+
+Most systems already store this (an order's status log, a ticket's timeline). The current stage can be the last item of `history` or not: both work.
+
+## Connecting it to your data
+
+Fluxygram doesn't fetch anything by itself: your page decides where the status comes from. Three common ways, from simplest to most live:
+
+### 1. Rendered with the page
+
+Your server already knows the order when it builds the page. Write the stage in the HTML and you're done; the customer sees the latest status every time they open it.
 
 ```jsx
-// React: pass the order status straight through
+// React, Next.js, Remix, Astro…
 <fluxy-gram src="/order.flux.json" mode="tracker" stage={order.status} />
 ```
 
-<Aside>
-  Tracker mode runs entirely in the page: no account and no server. Fluxygram Cloud will add hosted trackers that update themselves from your backend, with a link per order.
+```php
+<fluxy-gram src="/order.flux.json" mode="tracker" stage="<?= htmlspecialchars($order->status) ?>"></fluxy-gram>
+```
+
+### 2. Checking every so often
+
+For a page that stays open (a delivery on its way), ask your API for the status every 30 seconds or so. If nothing changed, nothing animates.
+
+```js
+const tracker = document.querySelector('fluxy-gram');
+
+async function refresh() {
+  const res = await fetch(`/api/orders/${orderId}`);
+  const order = await res.json();
+  tracker.setStage(order.status, order.status === 'delivered' ? 'success' : 'pending');
+}
+refresh();
+setInterval(refresh, 30_000);
+```
+
+### 3. Pushed in real time
+
+If your backend can push events (Server-Sent Events, WebSockets, Firebase, Supabase Realtime, Pusher…), call `setStage()` when one arrives:
+
+```js
+const events = new EventSource(`/api/orders/${orderId}/events`);
+events.onmessage = (e) => {
+  const { status, history } = JSON.parse(e.data);
+  tracker.history = history;
+  tracker.setStage(status);
+};
+```
+
+### Your statuses don't match the blocks?
+
+Map them in one place. It's also where you decide which status means a delay or a problem:
+
+```js
+const STAGES = {
+  PENDING_PAYMENT: ['received', 'pending'],
+  PAYMENT_FAILED: ['declined', 'error'],
+  PICKING: ['packed', 'pending'],
+  CARRIER_DELAYED: ['shipped', 'warning'],
+  DELIVERED: ['delivered', 'success'],
+};
+const [stage, status] = STAGES[order.state] ?? [undefined, 'pending'];
+if (stage) tracker.setStage(stage, status);
+```
+
+## A sentence under the diagram
+
+`caption` shows a short line under the diagram, for what the picture can't say: a date, a tracking number, what to do next.
+
+```html
+<fluxy-gram src="order.flux.json" mode="tracker" stage="out" caption="Arrives today before 6 pm"></fluxy-gram>
+```
+
+Change it like any attribute: `tracker.setAttribute('caption', 'Delayed by the carrier: arrives tomorrow')`.
+
+## Translations
+
+Keep the same ids in every language and translate only the labels: one file per language (`order.en.flux.json`, `order.es.flux.json`), and pick the file by the customer's language. Your code keeps sending the same `stage` values. Set `lang` so the component's own texts match too.
+
+```html
+<fluxy-gram src="/order.es.flux.json" lang="es" mode="tracker" stage="shipped"></fluxy-gram>
+```
+
+## Several on one page
+
+Each `<fluxy-gram>` is independent: a list of orders can show one tracker per order, all using the same `src`. The file is loaded once per element; it's small and the browser caches it.
+
+```html
+<fluxy-gram src="/order.flux.json" mode="tracker" stage="paid"></fluxy-gram>
+<fluxy-gram src="/order.flux.json" mode="tracker" stage="delivered" status="success"></fluxy-gram>
+```
+
+## Ideas
+
+Anything with stages a person waits on:
+
+- **Stores:** order, return, refund, repair, custom-made product.
+- **Delivery:** food, groceries, parcels, moving.
+- **Services:** support tickets, insurance claims, warranty, car service.
+- **Paperwork:** visa, license, loan, bank account opening, enrollment.
+- **People:** job applications, onboarding, patient visits ("triage → doctor → results").
+- **Teams:** a deploy, a content approval, a purchase request.
+
+<Aside type="tip">
+  An agent with the [Fluxygram skill](/guides/agents/) can draft the diagram from your status list: "make a tracker for these order statuses: …".
 </Aside>
 
-## Outside the browser
+## Questions
 
-The same logic is available in [`@fluxygram/core`](/start/install/#packages) as `trackerState(layout, stage, status)`, which returns which blocks are done, current and dimmed.
+**What if `stage` is a block that doesn't exist?** The diagram shows neutral, as if the process hadn't started. It never breaks; check the id if you expected otherwise.
+
+**Does it need an account or a server?** No. Tracker mode runs entirely in the page, from the free, open-source component. Fluxygram Cloud will add hosted trackers that update themselves from your backend, with a shareable link per order.
+
+**Can I go back to an earlier stage?** Yes, set it. Without `history`, everything before it turns green again; with `history`, it shows exactly the path you pass.
+
+**Can people still click and zoom?** Yes: dragging, zooming and clicking a block work as in any diagram.
+
+**Is the logic available outside the browser?** Yes: [`@fluxygram/core`](/start/install/#packages) exports `trackerState(layout, stage, status, history)`, which returns which blocks are done, current and dimmed. Useful for tests or your own renderer.

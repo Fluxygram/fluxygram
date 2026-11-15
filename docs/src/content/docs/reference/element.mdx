@@ -26,6 +26,7 @@ sidebar:
 | `stage` | Tracker mode: id of the current stage | — |
 | `status` | Tracker mode: `pending`, `success`, `error` or `warning` | `pending` |
 | `caption` | Tracker mode: optional sentence under the diagram | — |
+| `history` | Tracker mode: stages it went through, comma-separated, for branches that join or loops | — |
 
 ## Property
 
@@ -47,7 +48,7 @@ sidebar:
 
 ## Event
 
-`fluxy-step` fires every time the step changes (in tracker mode, `fluxy-stage` fires instead, with `{ stage, status }`):
+`fluxy-step` fires every time the step changes (in tracker mode, `fluxy-stage` fires instead, with `{ stage, status, history }`):
 
 ```js
 el.addEventListener('fluxy-step', (e) => {

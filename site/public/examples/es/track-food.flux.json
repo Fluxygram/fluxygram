@@ -1,0 +1,71 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Tu domicilio",
+  "nodes": [
+    {
+      "id": "placed",
+      "label": "Pedido hecho",
+      "icon": "cart",
+      "kind": "start"
+    },
+    {
+      "id": "accepted",
+      "label": "El restaurante aceptó",
+      "icon": "store"
+    },
+    {
+      "id": "rejected",
+      "label": "Restaurante cerrado",
+      "icon": "alert",
+      "description": "te devolvemos todo"
+    },
+    {
+      "id": "cooking",
+      "label": "Cocinando",
+      "icon": "food"
+    },
+    {
+      "id": "pickup",
+      "label": "El repartidor lo recoge",
+      "icon": "user"
+    },
+    {
+      "id": "way",
+      "label": "En camino",
+      "icon": "car"
+    },
+    {
+      "id": "delivered",
+      "label": "¡Buen provecho!",
+      "icon": "home",
+      "kind": "end"
+    }
+  ],
+  "edges": [
+    {
+      "from": "placed",
+      "to": "accepted"
+    },
+    {
+      "from": "placed",
+      "to": "rejected"
+    },
+    {
+      "from": "accepted",
+      "to": "cooking"
+    },
+    {
+      "from": "cooking",
+      "to": "pickup"
+    },
+    {
+      "from": "pickup",
+      "to": "way"
+    },
+    {
+      "from": "way",
+      "to": "delivered"
+    }
+  ]
+}

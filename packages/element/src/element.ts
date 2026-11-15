@@ -49,7 +49,7 @@ export function detectLocale(el?: Element): Locale {
  * Event: `fluxy-stage` with { stage, status }.
  */
 export class FluxyGram extends HTMLElement {
-  static observedAttributes = ['src', 'mode', 'stage', 'status', 'caption'];
+  static observedAttributes = ['src', 'mode', 'stage', 'status', 'caption', 'history'];
 
   private root: ShadowRoot;
   private body: HTMLDivElement;
@@ -155,7 +155,7 @@ export class FluxyGram extends HTMLElement {
     if (name === 'src' && value && this.isConnected) void this.load(value);
     // Pasar a modo seguimiento (o salir) cambia la interfaz: se vuelve a dibujar.
     else if (name === 'mode' && this.data) this.render(this.data);
-    else if ((name === 'stage' || name === 'status' || name === 'caption') && this.tracking) this.applyTracker();
+    else if ((name === 'stage' || name === 'status' || name === 'caption' || name === 'history') && this.tracking) this.applyTracker();
   }
 
   /* ---------- Modo seguimiento ---------- */
@@ -182,6 +182,15 @@ export class FluxyGram extends HTMLElement {
     this.setAttribute('status', value);
   }
 
+  /** Etapas por las que pasó el proceso, en orden (atributo `history`, separadas por comas). Opcional. */
+  get history(): string[] {
+    return (this.getAttribute('history') ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+  }
+  set history(value: string[] | null) {
+    if (!value?.length) this.removeAttribute('history');
+    else this.setAttribute('history', value.join(','));
+  }
+
   /** Cambia la etapa (y opcionalmente cómo va) de una sola vez. */
   setStage(stage: string, status: TrackerStatus = 'pending') {
     this.setAttribute('status', status);
@@ -196,12 +205,12 @@ export class FluxyGram extends HTMLElement {
     queueMicrotask(() => {
       this.trackerQueued = false;
       if (!this.player || !this.tracking || !this.data) return;
-      const state = trackerState(this.player.layoutOf(), this.stage ?? undefined, this.status);
+      const state = trackerState(this.player.layoutOf(), this.stage ?? undefined, this.status, this.history);
       const caption = this.getAttribute('caption');
       if (caption) state.caption = caption;
       this.started = true;
       this.player.track(state);
-      this.dispatchEvent(new CustomEvent('fluxy-stage', { detail: { stage: this.stage, status: this.status } }));
+      this.dispatchEvent(new CustomEvent('fluxy-stage', { detail: { stage: this.stage, status: this.status, history: this.history } }));
     });
   }
 

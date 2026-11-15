@@ -26,6 +26,7 @@ sidebar:
 | `stage` | Modo seguimiento: id de la etapa actual | — |
 | `status` | Modo seguimiento: `pending`, `success`, `error` o `warning` | `pending` |
 | `caption` | Modo seguimiento: frase opcional debajo del diagrama | — |
+| `history` | Modo seguimiento: etapas por las que pasó, separadas por comas, para ramas que se juntan o ciclos | — |
 
 ## Propiedad
 
@@ -47,7 +48,7 @@ sidebar:
 
 ## Evento
 
-`fluxy-step` se dispara cada vez que cambia el paso (en modo seguimiento se dispara `fluxy-stage`, con `{ stage, status }`):
+`fluxy-step` se dispara cada vez que cambia el paso (en modo seguimiento se dispara `fluxy-stage`, con `{ stage, status, history }`):
 
 ```js
 el.addEventListener('fluxy-step', (e) => {

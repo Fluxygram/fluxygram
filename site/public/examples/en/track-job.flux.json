@@ -1,0 +1,65 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Your application",
+  "nodes": [
+    {
+      "id": "applied",
+      "label": "Applied",
+      "icon": "send",
+      "kind": "start"
+    },
+    {
+      "id": "screening",
+      "label": "Résumé review",
+      "icon": "file"
+    },
+    {
+      "id": "interview",
+      "label": "Interview",
+      "icon": "chat"
+    },
+    {
+      "id": "offer",
+      "label": "Offer",
+      "icon": "deal"
+    },
+    {
+      "id": "rejected",
+      "label": "Not selected this time",
+      "icon": "error"
+    },
+    {
+      "id": "hired",
+      "label": "Welcome aboard",
+      "icon": "work",
+      "kind": "end"
+    }
+  ],
+  "edges": [
+    {
+      "from": "applied",
+      "to": "screening"
+    },
+    {
+      "from": "screening",
+      "to": "interview"
+    },
+    {
+      "from": "screening",
+      "to": "rejected"
+    },
+    {
+      "from": "interview",
+      "to": "offer"
+    },
+    {
+      "from": "interview",
+      "to": "rejected"
+    },
+    {
+      "from": "offer",
+      "to": "hired"
+    }
+  ]
+}

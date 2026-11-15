@@ -1,0 +1,65 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Tu postulación",
+  "nodes": [
+    {
+      "id": "applied",
+      "label": "Postulación enviada",
+      "icon": "send",
+      "kind": "start"
+    },
+    {
+      "id": "screening",
+      "label": "Revisión de hoja de vida",
+      "icon": "file"
+    },
+    {
+      "id": "interview",
+      "label": "Entrevista",
+      "icon": "chat"
+    },
+    {
+      "id": "offer",
+      "label": "Oferta",
+      "icon": "deal"
+    },
+    {
+      "id": "rejected",
+      "label": "No seleccionado esta vez",
+      "icon": "error"
+    },
+    {
+      "id": "hired",
+      "label": "¡Bienvenido al equipo!",
+      "icon": "work",
+      "kind": "end"
+    }
+  ],
+  "edges": [
+    {
+      "from": "applied",
+      "to": "screening"
+    },
+    {
+      "from": "screening",
+      "to": "interview"
+    },
+    {
+      "from": "screening",
+      "to": "rejected"
+    },
+    {
+      "from": "interview",
+      "to": "offer"
+    },
+    {
+      "from": "interview",
+      "to": "rejected"
+    },
+    {
+      "from": "offer",
+      "to": "hired"
+    }
+  ]
+}

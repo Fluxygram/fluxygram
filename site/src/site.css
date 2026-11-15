@@ -283,3 +283,5 @@ footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-cont
   color: var(--text); font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; transition: border-color 160ms ease;
 }
 @media (hover: hover) and (pointer: fine) { .nav-signin:hover { border-color: var(--muted); } }
+
+.gal-live .btn:disabled { opacity: 0.4; cursor: not-allowed; }

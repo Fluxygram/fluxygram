@@ -155,7 +155,9 @@ When the user wants to show **where a real process is right now** (an order, a s
 - Use a `flow`, one block per stage, connected in order. No `steps`: tracker mode ignores them.
 - Give every stage a **stable id that matches the status values in their system** (`received`, `paid`, `shipped`), and say so: the ids are the contract.
 - Put each failure in its own block connected from where it happens (`received → declined`), so `stage="declined" status="error"` turns that branch red.
-- Tell the user to set `status="success"` on the last stage when the process ends.
+- Tell the user to set `status="success"` on the last stage when the process ends, and `status="warning"` for delays.
+- If a failure can be reached from several stages, or the process can loop back (a ticket waiting for the customer), tell them to also pass `history` (the stages it actually went through, comma-separated) so only the real path turns green.
+- Guide: https://docs.fluxygram.app/guides/tracker/
 
 ## Storytelling rules
 

@@ -1,0 +1,67 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Your support request",
+  "nodes": [
+    {
+      "id": "open",
+      "label": "Request received",
+      "icon": "inbox",
+      "kind": "start"
+    },
+    {
+      "id": "assigned",
+      "label": "Agent assigned",
+      "icon": "user"
+    },
+    {
+      "id": "working",
+      "label": "Working on it",
+      "icon": "tool"
+    },
+    {
+      "id": "waiting",
+      "label": "Waiting for your reply",
+      "icon": "chat"
+    },
+    {
+      "id": "resolved",
+      "label": "Solved",
+      "icon": "check"
+    },
+    {
+      "id": "closed",
+      "label": "Closed",
+      "icon": "star",
+      "kind": "end"
+    }
+  ],
+  "edges": [
+    {
+      "from": "open",
+      "to": "assigned"
+    },
+    {
+      "from": "assigned",
+      "to": "working"
+    },
+    {
+      "from": "working",
+      "to": "waiting",
+      "label": "we need info"
+    },
+    {
+      "from": "waiting",
+      "to": "working",
+      "label": "you replied"
+    },
+    {
+      "from": "working",
+      "to": "resolved"
+    },
+    {
+      "from": "resolved",
+      "to": "closed"
+    }
+  ]
+}

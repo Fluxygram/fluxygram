@@ -44,7 +44,7 @@ Show which stage a real process is at (an order, a shipment, an application) and
 el.setStage('delivered', 'success'); // status: pending | success | error | warning
 ```
 
-Done stages turn green, the current one shows its status, the rest are dimmed. Attributes `stage`, `status`, `caption`; event `fluxy-stage` with `{ stage, status }`. Guide: [docs.fluxygram.app/guides/tracker](https://docs.fluxygram.app/guides/tracker/).
+Done stages turn green, the current one shows its status, the rest are dimmed. Attributes `stage`, `status`, `caption`, `history` (stages it went through, for branches that join or loops); event `fluxy-stage` with `{ stage, status, history }`. Guide: [docs.fluxygram.app/guides/tracker](https://docs.fluxygram.app/guides/tracker/).
 
 Without a bundler, use the single-file build: [`fluxygram`](https://www.npmjs.com/package/fluxygram).
 

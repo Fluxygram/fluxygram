@@ -1,0 +1,71 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Your food order",
+  "nodes": [
+    {
+      "id": "placed",
+      "label": "Order placed",
+      "icon": "cart",
+      "kind": "start"
+    },
+    {
+      "id": "accepted",
+      "label": "Restaurant accepted",
+      "icon": "store"
+    },
+    {
+      "id": "rejected",
+      "label": "Restaurant closed",
+      "icon": "alert",
+      "description": "you get a full refund"
+    },
+    {
+      "id": "cooking",
+      "label": "Cooking",
+      "icon": "food"
+    },
+    {
+      "id": "pickup",
+      "label": "Rider picks it up",
+      "icon": "user"
+    },
+    {
+      "id": "way",
+      "label": "On the way",
+      "icon": "car"
+    },
+    {
+      "id": "delivered",
+      "label": "Enjoy your meal",
+      "icon": "home",
+      "kind": "end"
+    }
+  ],
+  "edges": [
+    {
+      "from": "placed",
+      "to": "accepted"
+    },
+    {
+      "from": "placed",
+      "to": "rejected"
+    },
+    {
+      "from": "accepted",
+      "to": "cooking"
+    },
+    {
+      "from": "cooking",
+      "to": "pickup"
+    },
+    {
+      "from": "pickup",
+      "to": "way"
+    },
+    {
+      "from": "way",
+      "to": "delivered"
+    }
+  ]
+}

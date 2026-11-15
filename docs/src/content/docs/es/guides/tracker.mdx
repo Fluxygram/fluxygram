@@ -1,53 +1,87 @@
 ---
 title: Estado en vivo (modo seguimiento)
-description: Muestra en qué etapa va un proceso real (un pedido, un envío, un trámite) y anima cada cambio.
+description: Muestra en qué etapa va un proceso real (un pedido, un domicilio, un ticket de soporte, una postulación) y anima cada cambio.
 sidebar:
   order: 4
 ---
 
-import { Aside } from '@astrojs/starlight/components';
+import { Aside, Steps } from '@astrojs/starlight/components';
 
-Un diagrama normalmente *explica* un proceso. En **modo seguimiento** muestra **dónde está algo real ahora mismo**: un pedido en camino, un ticket de soporte, una solicitud de préstamo, un onboarding. Tu sitio ya conoce el estado; Fluxygram lo convierte en una imagen animada.
+Un diagrama normalmente *explica* un proceso. En **modo seguimiento** muestra **dónde está algo real ahora mismo**: un pedido en camino, un domicilio, un ticket de soporte, una postulación a un empleo, un trámite. Tu sitio ya conoce el estado; Fluxygram lo convierte en una imagen animada que tus clientes entienden de un vistazo.
 
-[Pruébalo en la galería](https://fluxygram.app/gallery): abre **Tu pedido** y presiona **Siguiente etapa**.
+<Aside type="tip" title="Pruébalo">
+  La [galería](https://fluxygram.app/gallery) tiene cuatro ejemplos en vivo: **Tu pedido**, **Tu domicilio**, **Tu solicitud de soporte** y **Tu postulación**. Abre uno y presiona **Siguiente etapa**, **Simular un retraso** o **Simular un problema**.
+</Aside>
 
-## Cómo funciona
+## La idea en 30 segundos
+
+Dibujas el proceso una vez, como un diagrama `flow` normal. Después, en cada página, le dices al componente **cuál bloque es la etapa actual**:
 
 ```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/fluxygram@0.2"></script>
+
 <fluxy-gram src="pedido.flux.json" mode="tracker" stage="shipped"></fluxy-gram>
 ```
 
-- Las etapas ya cumplidas (todo lo que lleva hasta `stage`, siguiendo las conexiones) quedan en **verde**, con un check.
-- La etapa actual se ve **en progreso** y una partícula llega hasta ella.
-- Las etapas que faltan se atenúan: se ve el camino completo, pero destaca lo recorrido.
-- No hay barra de pasos ni reproducción automática: el diagrama muestra el estado y nada más.
+Eso es todo. Cuando cambia la etapa, cambias el atributo y el diagrama se anima solo hasta la etapa nueva.
 
-Cuando cambia el estado, actualizas el atributo y el diagrama se anima hasta la etapa nueva:
+## Lo que ve el cliente
+
+| Parte del diagrama | Cómo se ve |
+| --- | --- |
+| Etapas ya cumplidas | **Verdes**, con un check |
+| La etapa actual | Según `status` (abajo), y una partícula llega hasta ella |
+| Etapas que faltan | Atenuadas: se ve el camino completo, pero destaca lo recorrido |
+| Barra de pasos, reproducción automática | Ocultas: un seguimiento muestra el estado y nada más |
+
+El `status` de la etapa actual dice cómo va:
+
+| `status` | Significa | Úsalo para |
+| --- | --- | --- |
+| `pending` (por defecto) | En curso | Casi siempre |
+| `success` | Terminado (verde) | La última etapa, cuando el proceso acaba |
+| `warning` | Requiere atención (ámbar) | Un retraso, esperando al cliente |
+| `error` | Algo salió mal (rojo) | Un pago rechazado, una solicitud negada |
+
+## Cambiar la etapa
+
+Cualquiera de estas anima el diagrama:
 
 ```js
 const seguimiento = document.querySelector('fluxy-gram');
-seguimiento.stage = 'out';                    // siguiente etapa
-seguimiento.setStage('delivered', 'success'); // última etapa, terminada
-seguimiento.setStage('declined', 'error');    // algo salió mal
+
+seguimiento.stage = 'out';                    // propiedad
+seguimiento.setAttribute('stage', 'out');     // atributo
+seguimiento.setStage('out', 'warning');       // etapa y estado en una sola animación
+seguimiento.setStage('delivered', 'success'); // el final
 ```
 
-## Atributos y API
+Prefiere `setStage()` cuando cambian los dos: asignar `stage` y `status` por separado también funciona (se agrupan), pero `setStage()` dice lo que quieres.
 
-| | Qué hace |
-| --- | --- |
-| `mode="tracker"` | Activa el modo seguimiento |
-| `stage` | Id de la etapa actual (un bloque del diagrama). Sin él, nada se destaca: el proceso aún no empezó |
-| `status` | Cómo va la etapa actual: `pending` (por defecto), `success`, `error`, `warning` |
-| `caption` | Frase opcional debajo del diagrama, como "Llega mañana" |
-| `setStage(id, status?)` | Cambia etapa y estado en una sola animación |
-| Evento `fluxy-stage` | Se dispara con cada cambio, con `{ stage, status }` |
+Cada cambio dispara `fluxy-stage`, útil para actualizar textos junto al diagrama:
 
-## Cómo diseñar un diagrama de seguimiento
+```js
+seguimiento.addEventListener('fluxy-stage', (e) => {
+  const { stage, status, history } = e.detail;
+  document.querySelector('#llegada').hidden = stage === 'delivered';
+});
+```
 
-1. **Usa un `flow`** con un bloque por etapa, conectados en orden.
-2. **Dale a las etapas ids estables y con sentido** que coincidan con tu sistema: `received`, `paid`, `shipped`. Los nombres visibles pueden cambiar o traducirse; los ids no.
-3. **Pon los fallos en su propio bloque**, conectado desde la etapa donde ocurren: `received → declined`. Con `stage="declined" status="error"`, esa rama se pone roja.
-4. **Marca el final como terminado** con `status="success"` en la última etapa.
+## Cómo diseñar el diagrama
+
+<Steps>
+
+1. **Usa un `flow`**, un bloque por etapa, conectados en el orden en que pasan las cosas. Pon `kind: "start"` y `kind: "end"` en el primer y el último bloque.
+
+2. **Usa como ids los valores de estado de tu sistema.** Si tu base de datos dice `shipped`, el id del bloque es `shipped`. Los ids son el contrato entre tu aplicación y el diagrama; los nombres visibles pueden cambiar, reescribirse o traducirse libremente.
+
+3. **Escribe los nombres para el cliente**, no para tu equipo: "En camino" en vez de "OUT_FOR_DELIVERY". Un `description` agrega una segunda línea corta ("te devolvemos todo").
+
+4. **Dale a cada fallo su propio bloque**, conectado desde la etapa donde puede ocurrir: `received → declined`. Así, `stage="declined" status="error"` pone esa rama en rojo.
+
+5. **Agrega `steps` solo si también quieres que el diagrama explique el proceso** en otra parte: el modo seguimiento los ignora, así que el mismo archivo sirve para las dos cosas.
+
+</Steps>
 
 ```json
 {
@@ -56,7 +90,7 @@ seguimiento.setStage('declined', 'error');    // algo salió mal
   "nodes": [
     { "id": "received", "label": "Pedido recibido", "kind": "start", "icon": "cart" },
     { "id": "paid", "label": "Pago confirmado", "icon": "card" },
-    { "id": "declined", "label": "Pago rechazado", "icon": "alert" },
+    { "id": "declined", "label": "Pago rechazado", "description": "prueba otra tarjeta", "icon": "alert" },
     { "id": "shipped", "label": "Enviado", "icon": "truck" },
     { "id": "delivered", "label": "Entregado", "kind": "end", "icon": "home" }
   ],
@@ -69,17 +103,142 @@ seguimiento.setStage('declined', 'error');    // algo salió mal
 }
 ```
 
-## En un framework
+## Ramas y ciclos: `history`
+
+Por defecto, Fluxygram deduce qué está cumplido siguiendo las conexiones hacia atrás desde la etapa actual. Para una línea recta con ramas de fallo es perfecto, y solo necesitas `stage`.
+
+Hay dos casos en los que no puede adivinar:
+
+- **Caminos que se juntan.** En una postulación, *No seleccionado* puede venir después de la *Revisión de hoja de vida* o después de la *Entrevista*. Siguiendo las conexiones hacia atrás, las dos parecen cumplidas.
+- **Ciclos.** Un ticket de soporte va *Trabajando en ello → Esperando tu respuesta → Trabajando en ello* otra vez.
+
+Para esos, pasa en `history` las etapas por las que realmente pasó, en orden. Solo esas quedan en verde, y solo las conexiones entre etapas seguidas:
+
+```html
+<fluxy-gram src="postulacion.flux.json" mode="tracker"
+  stage="rejected" status="error"
+  history="applied,screening,interview,rejected"></fluxy-gram>
+```
+
+```js
+seguimiento.history = ['open', 'assigned', 'working', 'waiting', 'working'];
+seguimiento.setStage('working');
+```
+
+La mayoría de los sistemas ya guardan esto (el registro de estados de un pedido, la línea de tiempo de un ticket). La etapa actual puede ser el último elemento de `history` o no: funciona de las dos formas.
+
+## Conectarlo a tus datos
+
+Fluxygram no consulta nada por su cuenta: tu página decide de dónde sale el estado. Tres formas comunes, de la más simple a la más en vivo:
+
+### 1. Con la página
+
+Tu servidor ya conoce el pedido cuando arma la página. Escribe la etapa en el HTML y listo; el cliente ve el último estado cada vez que la abre.
 
 ```jsx
-// React: pasa el estado del pedido tal cual
+// React, Next.js, Remix, Astro…
 <fluxy-gram src="/pedido.flux.json" mode="tracker" stage={pedido.estado} />
 ```
 
-<Aside>
-  El modo seguimiento funciona completo en la página: sin cuenta y sin servidor. Fluxygram Cloud sumará seguimientos alojados que se actualizan solos desde tu backend, con un link por pedido.
+```php
+<fluxy-gram src="/pedido.flux.json" mode="tracker" stage="<?= htmlspecialchars($pedido->estado) ?>"></fluxy-gram>
+```
+
+### 2. Consultando cada cierto tiempo
+
+Para una página que se queda abierta (un domicilio en camino), pide el estado a tu API cada 30 segundos o algo así. Si nada cambió, nada se anima.
+
+```js
+const seguimiento = document.querySelector('fluxy-gram');
+
+async function actualizar() {
+  const res = await fetch(`/api/pedidos/${idPedido}`);
+  const pedido = await res.json();
+  seguimiento.setStage(pedido.estado, pedido.estado === 'delivered' ? 'success' : 'pending');
+}
+actualizar();
+setInterval(actualizar, 30_000);
+```
+
+### 3. En tiempo real
+
+Si tu backend puede enviar eventos (Server-Sent Events, WebSockets, Firebase, Supabase Realtime, Pusher…), llama a `setStage()` cuando llegue uno:
+
+```js
+const eventos = new EventSource(`/api/pedidos/${idPedido}/eventos`);
+eventos.onmessage = (e) => {
+  const { estado, historial } = JSON.parse(e.data);
+  seguimiento.history = historial;
+  seguimiento.setStage(estado);
+};
+```
+
+### ¿Tus estados no coinciden con los bloques?
+
+Tradúcelos en un solo lugar. Ahí también decides qué estado significa un retraso o un problema:
+
+```js
+const ETAPAS = {
+  PENDIENTE_PAGO: ['received', 'pending'],
+  PAGO_FALLIDO: ['declined', 'error'],
+  ALISTANDO: ['packed', 'pending'],
+  TRANSPORTADORA_RETRASADA: ['shipped', 'warning'],
+  ENTREGADO: ['delivered', 'success'],
+};
+const [etapa, estado] = ETAPAS[pedido.estado] ?? [undefined, 'pending'];
+if (etapa) seguimiento.setStage(etapa, estado);
+```
+
+## Una frase debajo del diagrama
+
+`caption` muestra una línea corta debajo del diagrama, para lo que la imagen no dice: una fecha, un número de guía, qué hacer después.
+
+```html
+<fluxy-gram src="pedido.flux.json" mode="tracker" stage="out" caption="Llega hoy antes de las 6 pm"></fluxy-gram>
+```
+
+Cámbiala como cualquier atributo: `seguimiento.setAttribute('caption', 'Retrasado por la transportadora: llega mañana')`.
+
+## Traducciones
+
+Mantén los mismos ids en todos los idiomas y traduce solo los nombres: un archivo por idioma (`pedido.en.flux.json`, `pedido.es.flux.json`), y elige el archivo según el idioma del cliente. Tu código sigue enviando los mismos valores de `stage`. Pon `lang` para que los textos propios del componente también coincidan.
+
+```html
+<fluxy-gram src="/pedido.es.flux.json" lang="es" mode="tracker" stage="shipped"></fluxy-gram>
+```
+
+## Varios en una página
+
+Cada `<fluxy-gram>` es independiente: una lista de pedidos puede mostrar un seguimiento por pedido, todos con el mismo `src`. El archivo se carga una vez por elemento; es pequeño y el navegador lo guarda en caché.
+
+```html
+<fluxy-gram src="/pedido.flux.json" mode="tracker" stage="paid"></fluxy-gram>
+<fluxy-gram src="/pedido.flux.json" mode="tracker" stage="delivered" status="success"></fluxy-gram>
+```
+
+## Ideas
+
+Cualquier cosa con etapas que alguien espera:
+
+- **Tiendas:** pedido, devolución, reembolso, reparación, producto hecho a la medida.
+- **Entregas:** comida, mercado, paquetes, trasteos.
+- **Servicios:** tickets de soporte, reclamaciones de seguros, garantías, taller del carro.
+- **Trámites:** visa, licencia, préstamo, apertura de cuenta, matrícula.
+- **Personas:** postulaciones, onboarding, citas médicas ("triaje → médico → resultados").
+- **Equipos:** un despliegue, la aprobación de un contenido, una solicitud de compra.
+
+<Aside type="tip">
+  Un agente con el [skill de Fluxygram](/es/guides/agents/) puede armar el diagrama a partir de tu lista de estados: "haz un seguimiento para estos estados de pedido: …".
 </Aside>
 
-## Fuera del navegador
+## Preguntas
 
-La misma lógica está en [`@fluxygram/core`](/es/start/install/#paquetes) como `trackerState(layout, stage, status)`, que devuelve qué bloques están cumplidos, cuál es el actual y cuáles quedan atenuados.
+**¿Y si `stage` es un bloque que no existe?** El diagrama se ve neutro, como si el proceso no hubiera empezado. Nunca se rompe; revisa el id si esperabas otra cosa.
+
+**¿Necesita cuenta o servidor?** No. El modo seguimiento funciona completo en la página, con el componente gratuito y de código abierto. Fluxygram Cloud sumará seguimientos alojados que se actualizan solos desde tu backend, con un link para compartir por pedido.
+
+**¿Puedo volver a una etapa anterior?** Sí, asígnala. Sin `history`, todo lo anterior vuelve a quedar en verde; con `history`, muestra exactamente el camino que pasas.
+
+**¿Se puede seguir arrastrando y haciendo zoom?** Sí: arrastrar, hacer zoom y hacer clic en un bloque funcionan como en cualquier diagrama.
+
+**¿La lógica está disponible fuera del navegador?** Sí: [`@fluxygram/core`](/es/start/install/#paquetes) exporta `trackerState(layout, stage, status, history)`, que devuelve qué bloques están cumplidos, cuál es el actual y cuáles quedan atenuados. Sirve para pruebas o para tu propio renderizador.
