@@ -148,6 +148,15 @@ Any node can set its own `"enter"` and any edge its own `"travel"`, overriding t
 
 After the last step, Fluxygram adds an automatic finale: the camera zooms out to the whole diagram and particles run along every visible connection. Leave it on (the default); set `"motion": { "finale": false }` only when the last step must stay framed on a detail.
 
+## Tracker mode (live status)
+
+When the user wants to show **where a real process is right now** (an order, a shipment, a ticket, an application) rather than explain it, write a diagram for tracker mode. It is embedded with `<fluxy-gram src="order.flux.json" mode="tracker" stage="shipped">`, and their app changes `stage` (and `status`: `pending`, `success`, `error`, `warning`) as the process advances.
+
+- Use a `flow`, one block per stage, connected in order. No `steps`: tracker mode ignores them.
+- Give every stage a **stable id that matches the status values in their system** (`received`, `paid`, `shipped`), and say so: the ids are the contract.
+- Put each failure in its own block connected from where it happens (`received → declined`), so `stage="declined" status="error"` turns that branch red.
+- Tell the user to set `status="success"` on the last stage when the process ends.
+
 ## Storytelling rules
 
 These make the difference between a diagram that moves and one that explains.

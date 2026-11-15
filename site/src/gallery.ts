@@ -17,10 +17,13 @@ interface Example {
   name: string;
   theme: Theme;
   diagram?: Diagram;
+  /** Ejemplo del modo seguimiento: se abre con controles para avanzar el proceso. */
+  live?: boolean;
 }
 
 // Orden mezclado a propósito: la galería muestra variedad desde la primera fila.
 const EXAMPLES: Example[] = [
+  { name: 'tracker', theme: 'work', live: true },
   { name: 'how-it-works', theme: 'software' },
   { name: 'bread', theme: 'cooking' },
   { name: 'game', theme: 'games' },
@@ -81,7 +84,7 @@ function card(ex: Example) {
     h('button', { type: 'button', class: 'gal-card', onclick: () => void open(ex) },
       thumb,
       h('span', { class: 'gal-card-body' },
-        h('strong', {}, d.title ?? ex.name),
+        h('strong', {}, d.title ?? ex.name, ex.live ? h('span', { class: 'gal-live-badge' }, t('live.badge')) : undefined),
         h('span', { class: 'gal-meta' },
           icon(TYPE_ICONS[d.type] ?? TYPE_ICONS.flow!, 13),
           t(`type.${d.type}`),
@@ -108,7 +111,18 @@ async function open(ex: Example) {
   const d = ex.diagram!;
   lastFocus = document.activeElement as HTMLElement | null;
   $('viewerTitle').textContent = d.title ?? ex.name;
+  // El modo se fija antes de cargar el diagrama: el componente dibuja según el modo.
+  if (ex.live) {
+    viewerDiagram.setAttribute('mode', 'tracker');
+    viewerDiagram.setStage(LIVE_PATH[0]!);
+  } else {
+    viewerDiagram.removeAttribute('mode');
+    viewerDiagram.removeAttribute('stage');
+    viewerDiagram.removeAttribute('status');
+  }
+  $('live').hidden = !ex.live;
   viewerDiagram.diagram = d;
+  showCode();
   const code = await encodeDiagram(d);
   $<HTMLAnchorElement>('viewerPresent').href = `/present#d=${code}`;
   $<HTMLAnchorElement>('viewerEdit').href = `/play#d=${code}`;
@@ -125,6 +139,26 @@ function close() {
 $('viewerClose').onclick = close;
 viewer.addEventListener('click', (e) => e.target === viewer && close());
 document.addEventListener('keydown', (e) => e.key === 'Escape' && !viewer.hidden && close());
+
+/* ---------- Ejemplo en vivo: avanzar el pedido ---------- */
+
+const LIVE_PATH = ['received', 'paid', 'packed', 'shipped', 'out', 'delivered'];
+function showCode() {
+  if ($('live').hidden) return;
+  const stage = viewerDiagram.stage ?? '';
+  const status = viewerDiagram.status;
+  $('liveCode').textContent = `<fluxy-gram src="order.flux.json" mode="tracker"
+  stage="${stage}"${status !== 'pending' ? ` status="${status}"` : ''}></fluxy-gram>`;
+}
+viewerDiagram.addEventListener('fluxy-stage', showCode);
+$('liveNext').onclick = () => {
+  const at = LIVE_PATH.indexOf(viewerDiagram.stage ?? '');
+  const next = at < 0 ? 0 : Math.min(at + 1, LIVE_PATH.length - 1);
+  // La última etapa queda como terminada (verde); las demás, en curso.
+  viewerDiagram.setStage(LIVE_PATH[next]!, next === LIVE_PATH.length - 1 ? 'success' : 'pending');
+};
+$('liveFail').onclick = () => viewerDiagram.setStage('declined', 'error');
+$('liveReset').onclick = () => viewerDiagram.setStage(LIVE_PATH[0]!);
 
 /* ---------- Carga ---------- */
 

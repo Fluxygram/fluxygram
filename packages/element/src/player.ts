@@ -1,4 +1,4 @@
-import type { Layout, MotionPlan, Rect, TravelStyle } from '@fluxygram/core';
+import type { Layout, MotionPlan, Rect, StepState, TravelStyle } from '@fluxygram/core';
 import type { Scene } from './svg';
 import { el } from './svg';
 
@@ -91,6 +91,10 @@ export class Player {
     return this.layout.stage;
   }
 
+  layoutOf() {
+    return this.layout;
+  }
+
   go(i: number) {
     const target = Math.max(0, Math.min(this.count - 1, i));
     if (target === this.index) return;
@@ -98,6 +102,21 @@ export class Player {
     const first = this.index === -1;
     const state = this.plan.steps[target]!;
     this.index = target;
+    this.render(state, forward, first);
+  }
+
+  /**
+   * Modo seguimiento: reemplaza el plan por un único estado (la etapa actual de un proceso real) y lo aplica.
+   * Cada cambio de etapa anima la transición como un paso hacia adelante; la cámara solo salta la primera vez.
+   */
+  track(state: StepState) {
+    const first = this.index === -1;
+    this.plan = { steps: [state] };
+    this.index = 0;
+    this.render(state, true, first);
+  }
+
+  private render(state: StepState, forward: boolean, first: boolean) {
     this.hovered = undefined;
 
     // Orden de entrada: primero grupos y nodos, después las conexiones que los unen.

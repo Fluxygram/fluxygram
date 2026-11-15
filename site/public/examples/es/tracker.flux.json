@@ -1,0 +1,71 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Tu pedido",
+  "nodes": [
+    {
+      "id": "received",
+      "label": "Pedido recibido",
+      "kind": "start",
+      "icon": "cart"
+    },
+    {
+      "id": "paid",
+      "label": "Pago confirmado",
+      "icon": "card"
+    },
+    {
+      "id": "declined",
+      "label": "Pago rechazado",
+      "description": "prueba otra tarjeta",
+      "icon": "alert"
+    },
+    {
+      "id": "packed",
+      "label": "Preparando",
+      "icon": "box"
+    },
+    {
+      "id": "shipped",
+      "label": "Enviado",
+      "icon": "truck"
+    },
+    {
+      "id": "out",
+      "label": "En reparto",
+      "icon": "map"
+    },
+    {
+      "id": "delivered",
+      "label": "Entregado",
+      "kind": "end",
+      "icon": "home"
+    }
+  ],
+  "edges": [
+    {
+      "from": "received",
+      "to": "paid"
+    },
+    {
+      "from": "received",
+      "to": "declined"
+    },
+    {
+      "from": "paid",
+      "to": "packed"
+    },
+    {
+      "from": "packed",
+      "to": "shipped"
+    },
+    {
+      "from": "shipped",
+      "to": "out"
+    },
+    {
+      "from": "out",
+      "to": "delivered"
+    }
+  ]
+}

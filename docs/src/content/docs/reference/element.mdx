@@ -22,6 +22,10 @@ sidebar:
 | `lang` | `en` or `es` | the page's or the browser's language |
 | `gestures` | `"full"` when the diagram is the main content of the page | — |
 | `present` | Presentation mode styling (used by the presentation page) | — |
+| `mode` | `"tracker"` to show the current stage of a real process ([tracker mode](/guides/tracker/)) | — |
+| `stage` | Tracker mode: id of the current stage | — |
+| `status` | Tracker mode: `pending`, `success`, `error` or `warning` | `pending` |
+| `caption` | Tracker mode: optional sentence under the diagram | — |
 
 ## Property
 
@@ -39,10 +43,11 @@ sidebar:
 | `play()` | Start autoplay |
 | `pause()` | Pause autoplay |
 | `replay()` | Start over from the first step |
+| `setStage(id, status?)` | Tracker mode: change the stage (and its status) in one animation |
 
 ## Event
 
-`fluxy-step` fires every time the step changes:
+`fluxy-step` fires every time the step changes (in tracker mode, `fluxy-stage` fires instead, with `{ stage, status }`):
 
 ```js
 el.addEventListener('fluxy-step', (e) => {

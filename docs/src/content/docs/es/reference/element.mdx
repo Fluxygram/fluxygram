@@ -22,6 +22,10 @@ sidebar:
 | `lang` | `en` o `es` | el idioma de la página o del navegador |
 | `gestures` | `"full"` cuando el diagrama es el contenido principal de la página | — |
 | `present` | Estilo del modo presentación (lo usa la página de presentación) | — |
+| `mode` | `"tracker"` para mostrar la etapa actual de un proceso real ([modo seguimiento](/es/guides/tracker/)) | — |
+| `stage` | Modo seguimiento: id de la etapa actual | — |
+| `status` | Modo seguimiento: `pending`, `success`, `error` o `warning` | `pending` |
+| `caption` | Modo seguimiento: frase opcional debajo del diagrama | — |
 
 ## Propiedad
 
@@ -39,10 +43,11 @@ sidebar:
 | `play()` | Inicia la reproducción automática |
 | `pause()` | Pausa la reproducción automática |
 | `replay()` | Vuelve a empezar desde el primer paso |
+| `setStage(id, status?)` | Modo seguimiento: cambia la etapa (y su estado) en una sola animación |
 
 ## Evento
 
-`fluxy-step` se dispara cada vez que cambia el paso:
+`fluxy-step` se dispara cada vez que cambia el paso (en modo seguimiento se dispara `fluxy-stage`, con `{ stage, status }`):
 
 ```js
 el.addEventListener('fluxy-step', (e) => {

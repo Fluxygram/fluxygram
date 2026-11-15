@@ -1,6 +1,6 @@
 {
   "name": "fluxygram",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Diagrams that explain themselves. One file with the <fluxy-gram> component, ready for a <script> tag or a CDN.",
   "keywords": [
     "diagram",

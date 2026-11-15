@@ -1,0 +1,71 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Your order",
+  "nodes": [
+    {
+      "id": "received",
+      "label": "Order placed",
+      "kind": "start",
+      "icon": "cart"
+    },
+    {
+      "id": "paid",
+      "label": "Payment confirmed",
+      "icon": "card"
+    },
+    {
+      "id": "declined",
+      "label": "Payment declined",
+      "description": "try another card",
+      "icon": "alert"
+    },
+    {
+      "id": "packed",
+      "label": "Packed",
+      "icon": "box"
+    },
+    {
+      "id": "shipped",
+      "label": "Shipped",
+      "icon": "truck"
+    },
+    {
+      "id": "out",
+      "label": "Out for delivery",
+      "icon": "map"
+    },
+    {
+      "id": "delivered",
+      "label": "Delivered",
+      "kind": "end",
+      "icon": "home"
+    }
+  ],
+  "edges": [
+    {
+      "from": "received",
+      "to": "paid"
+    },
+    {
+      "from": "received",
+      "to": "declined"
+    },
+    {
+      "from": "paid",
+      "to": "packed"
+    },
+    {
+      "from": "packed",
+      "to": "shipped"
+    },
+    {
+      "from": "shipped",
+      "to": "out"
+    },
+    {
+      "from": "out",
+      "to": "delivered"
+    }
+  ]
+}

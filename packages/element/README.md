@@ -32,6 +32,20 @@ import '@fluxygram/element'; // registers <fluxy-gram>
 
 Methods: `next()`, `prev()`, `goTo(i)`, `play()`, `pause()`, `replay()`. Property: `.diagram` (object or JSON string). Event: `fluxy-step` with `{ index, count }`.
 
+## Live status (tracker mode)
+
+Show which stage a real process is at (an order, a shipment, an application) and animate every change:
+
+```html
+<fluxy-gram src="order.flux.json" mode="tracker" stage="shipped"></fluxy-gram>
+```
+
+```js
+el.setStage('delivered', 'success'); // status: pending | success | error | warning
+```
+
+Done stages turn green, the current one shows its status, the rest are dimmed. Attributes `stage`, `status`, `caption`; event `fluxy-stage` with `{ stage, status }`. Guide: [docs.fluxygram.app/guides/tracker](https://docs.fluxygram.app/guides/tracker/).
+
 Without a bundler, use the single-file build: [`fluxygram`](https://www.npmjs.com/package/fluxygram).
 
 MIT license.

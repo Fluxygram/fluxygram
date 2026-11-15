@@ -45,6 +45,16 @@
           <button type="button" class="gal-close" id="viewerClose" data-i18n-attr="aria-label:ed.close;title:ed.close">✕</button>
         </div>
         <fluxy-gram id="viewerDiagram"></fluxy-gram>
+        <!-- Solo para el ejemplo "en vivo": avanza el pedido como lo haría tu sistema -->
+        <div class="gal-live" id="live" hidden>
+          <div class="gal-live-buttons">
+            <button type="button" class="btn btn-primary" id="liveNext" data-i18n="live.next">Next stage</button>
+            <button type="button" class="btn" id="liveFail" data-i18n="live.fail">Simulate a problem</button>
+            <button type="button" class="btn" id="liveReset" data-i18n="live.reset">Start over</button>
+          </div>
+          <pre class="code gal-live-code" id="liveCode"></pre>
+          <p class="gal-live-note" data-i18n="live.note">Your site only changes the stage attribute when the order changes; the diagram animates by itself.</p>
+        </div>
         <div class="gal-dialog-actions">
           <a class="btn" id="viewerPresent" href="/present" data-i18n="ed.present">Present</a>
           <a class="btn btn-primary" id="viewerEdit" href="/play" data-i18n="view.edit">Edit a copy</a>

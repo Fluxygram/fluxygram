@@ -1,4 +1,4 @@
-import { layout, plan, validate, type Diagram, type Locale, type ValidationIssue } from '@fluxygram/core';
+import { layout, plan, trackerState, validate, type Diagram, type Locale, type TrackerStatus, type ValidationIssue } from '@fluxygram/core';
 import { attachInteractions } from './interact';
 import { Player } from './player';
 import { STYLES } from './styles';
@@ -42,9 +42,14 @@ export function detectLocale(el?: Element): Locale {
  * Attributes: src, theme (dark | light), autoplay="false", controls="false", lang (en | es).
  * Also accepts the JSON inside a child <script type="application/json">, or through the `.diagram` property.
  * Methods: next(), prev(), goTo(i), play(), pause(), replay(). Event: `fluxy-step` with { index, count }.
+ *
+ * Tracker mode (mode="tracker"): shows which stage a real process is at, instead of telling it step by step.
+ *   <fluxy-gram src="order.flux.json" mode="tracker" stage="shipped" status="pending"></fluxy-gram>
+ * Change `stage` / `status` (attributes, properties or setStage()) and the diagram animates to the new stage.
+ * Event: `fluxy-stage` with { stage, status }.
  */
 export class FluxyGram extends HTMLElement {
-  static observedAttributes = ['src'];
+  static observedAttributes = ['src', 'mode', 'stage', 'status', 'caption'];
 
   private root: ShadowRoot;
   private body: HTMLDivElement;
@@ -146,16 +151,69 @@ export class FluxyGram extends HTMLElement {
   }
 
   attributeChangedCallback(name: string, old: string | null, value: string | null) {
-    if (name === 'src' && value && old !== value && this.isConnected) void this.load(value);
+    if (old === value) return;
+    if (name === 'src' && value && this.isConnected) void this.load(value);
+    // Pasar a modo seguimiento (o salir) cambia la interfaz: se vuelve a dibujar.
+    else if (name === 'mode' && this.data) this.render(this.data);
+    else if ((name === 'stage' || name === 'status' || name === 'caption') && this.tracking) this.applyTracker();
+  }
+
+  /* ---------- Modo seguimiento ---------- */
+
+  private get tracking() {
+    return this.getAttribute('mode') === 'tracker';
+  }
+
+  /** Etapa actual del proceso (id de un nodo). */
+  get stage(): string | null {
+    return this.getAttribute('stage');
+  }
+  set stage(value: string | null) {
+    if (value === null) this.removeAttribute('stage');
+    else this.setAttribute('stage', value);
+  }
+
+  /** Cómo va la etapa actual: pending (por defecto), success, error o warning. */
+  get status(): TrackerStatus {
+    const value = this.getAttribute('status');
+    return value === 'success' || value === 'error' || value === 'warning' ? value : 'pending';
+  }
+  set status(value: TrackerStatus) {
+    this.setAttribute('status', value);
+  }
+
+  /** Cambia la etapa (y opcionalmente cómo va) de una sola vez. */
+  setStage(stage: string, status: TrackerStatus = 'pending') {
+    this.setAttribute('status', status);
+    this.setAttribute('stage', stage);
+  }
+
+  private trackerQueued = false;
+  /** Aplica la etapa actual. Se agrupa en un microtask: setStage() cambia dos atributos y anima una sola vez. */
+  private applyTracker() {
+    if (this.trackerQueued) return;
+    this.trackerQueued = true;
+    queueMicrotask(() => {
+      this.trackerQueued = false;
+      if (!this.player || !this.tracking || !this.data) return;
+      const state = trackerState(this.player.layoutOf(), this.stage ?? undefined, this.status);
+      const caption = this.getAttribute('caption');
+      if (caption) state.caption = caption;
+      this.started = true;
+      this.player.track(state);
+      this.dispatchEvent(new CustomEvent('fluxy-stage', { detail: { stage: this.stage, status: this.status } }));
+    });
   }
 
   /* ---------- API pública ---------- */
 
   next() {
+    if (this.tracking) return;
     this.pause();
     this.step(1);
   }
   prev() {
+    if (this.tracking) return;
     this.pause();
     this.step(-1);
   }
@@ -233,7 +291,7 @@ export class FluxyGram extends HTMLElement {
     caption.className = 'fx-caption';
     caption.setAttribute('aria-live', 'polite');
     this.els.caption = caption;
-    const hasCaptions = motion.steps.some((s) => s.caption);
+    const hasCaptions = this.tracking ? this.hasAttribute('caption') : motion.steps.some((s) => s.caption);
     if (hasCaptions) this.body.append(caption);
 
     this.player = new Player(scene, lay, motion, (text, dir) => this.setCaption(text, dir));
@@ -252,12 +310,14 @@ export class FluxyGram extends HTMLElement {
       wheelZooms: () => this.getAttribute('gestures') === 'full' || this.hasAttribute('present'),
       onWheelPassThrough: () => this.showZoomHint(),
     });
-    if (this.getAttribute('controls') !== 'false' && motion.steps.length > 1) this.buildControls(motion.steps.length);
+    if (!this.tracking && this.getAttribute('controls') !== 'false' && motion.steps.length > 1) this.buildControls(motion.steps.length);
 
     this.started = false;
-    this.playing = this.getAttribute('autoplay') !== 'false';
+    this.playing = !this.tracking && this.getAttribute('autoplay') !== 'false';
     this.updateButtons();
-    if (this.seen) this.start();
+    // En modo seguimiento el estado se muestra de inmediato, aunque el diagrama aún no esté a la vista.
+    if (this.tracking) this.applyTracker();
+    else if (this.seen) this.start();
   }
 
   private hintTimer = 0;
@@ -279,7 +339,7 @@ export class FluxyGram extends HTMLElement {
   }
 
   private start() {
-    if (this.started || !this.player) return;
+    if (this.started || !this.player || this.tracking) return;
     this.started = true;
     this.show(0);
   }

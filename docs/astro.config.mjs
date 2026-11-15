@@ -46,7 +46,7 @@ export default defineConfig({
         {
           label: 'Guides',
           translations: { es: 'Guías' },
-          items: ['guides/present', 'guides/agents', 'guides/codebase'],
+          items: ['guides/present', 'guides/tracker', 'guides/agents', 'guides/codebase'],
         },
         {
           label: 'Reference',
