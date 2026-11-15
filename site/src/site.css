@@ -244,3 +244,36 @@ footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-cont
 .th-group { fill: rgb(255 255 255 / 0.03); stroke: #33333d; stroke-width: 1; }
 .th-life { stroke: #3a3a44; stroke-width: 1; stroke-dasharray: 4 4; }
 @keyframes ed-fade-in { to { opacity: 1; } }
+
+/* Cuenta de Fluxygram Cloud (editor y encabezado del sitio) */
+.ed-cloud-wrap { position: relative; }
+.ed-cloud-account { display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); cursor: pointer; overflow: hidden; }
+.ed-cloud-account img { width: 100%; height: 100%; object-fit: cover; }
+.ed-cloud-initial { font-size: 13px; font-weight: 600; color: var(--accent); }
+.ed-cloud-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; min-width: 220px; padding: 6px;
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface); box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.6);
+  transform-origin: top right; animation: ed-in 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.ed-cloud-menu[hidden] { display: none; }
+.ed-cloud-logo { display: inline-grid; place-items: center; width: 18px; flex: none; }
+.ed-cloud-menu button {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--text); font: inherit; font-size: 13.5px; text-align: left; cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) { .ed-cloud-menu button:hover { background: var(--code-bg); } }
+.ed-cloud-who { display: grid; gap: 2px; margin: 0; padding: 6px 10px 8px; border-bottom: 1px solid var(--border); margin-bottom: 4px; font-size: 13px; }
+.ed-cloud-who span { color: var(--muted); font-size: 12px; }
+.ed-cloud-menu a {
+  display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px 10px; border-radius: 8px;
+  color: var(--text); font-size: 13.5px; text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) { .ed-cloud-menu a:hover { background: var(--code-bg); } }
+.site-account { margin-left: 6px; }
+.site-account[hidden] { display: none; }
+.site-account .ed-cloud-account { width: 36px; height: 36px; }
+.nav-signin {
+  height: 36px; padding: 0 14px; border: 1px solid var(--border); border-radius: 9px; background: transparent;
+  color: var(--text); font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; transition: border-color 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) { .nav-signin:hover { border-color: var(--muted); } }

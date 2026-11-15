@@ -5,6 +5,9 @@ import { encodeDiagram } from './editor/io';
 import type { Diagram } from '@fluxygram/core';
 import './agents';
 import './lang';
+import { initSiteAccount } from './cloud';
+
+void initSiteAccount(document.getElementById('account')!);
 import { applySpecular } from './vendor/specular-button';
 import { SPECULAR } from './specular';
 import { mountTechText } from './vendor/tech-text';

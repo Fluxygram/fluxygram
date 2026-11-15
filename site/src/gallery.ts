@@ -6,6 +6,9 @@ import { encodeDiagram } from './editor/io';
 import { h, icon } from './editor/dom';
 import { thumbnail, TYPE_ICONS } from './thumbnail';
 import './lang';
+import { initSiteAccount } from './cloud';
+
+void initSiteAccount(document.getElementById('account')!);
 
 /** Galería de ejemplos: tarjetas con miniatura, filtros por tema y por tipo, y el diagrama animado al abrir una. */
 

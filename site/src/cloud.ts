@@ -1,5 +1,5 @@
 import type { Diagram } from '@fluxygram/core';
-import { CloudUpload, FolderOpen, LogOut, Trash2, Workflow, X } from 'lucide';
+import { CloudUpload, FolderOpen, LogOut, PencilLine, Trash2, Workflow, X, type IconNode } from 'lucide';
 import { thumbnail, TYPE_ICONS } from './thumbnail';
 import { h, icon } from './editor/dom';
 import type { Model } from './editor/model';
@@ -67,7 +67,7 @@ async function api(path: string, init: RequestInit = {}) {
   });
 }
 
-const PROVIDER_NAMES: Record<string, string> = { github: 'GitHub', google: 'Google' };
+const PROVIDER_NAMES: Record<string, string> = { github: 'GitHub', google: 'Google', microsoft: 'Microsoft' };
 
 export async function initCloud({ model, toast, clean, host, saveHost }: Options): Promise<CloudSession | undefined> {
   let res: Response;
@@ -96,6 +96,7 @@ export async function initCloud({ model, toast, clean, host, saveHost }: Options
 
 // Logos oficiales para los botones de inicio de sesión (GitHub mark y la "G" de Google en sus cuatro colores).
 const LOGOS: Record<string, string> = {
+  microsoft: '<svg viewBox="0 0 23 23" width="18" height="18" aria-hidden="true"><path fill="#F25022" d="M1 1h10v10H1z"/><path fill="#7FBA00" d="M12 1h10v10H12z"/><path fill="#00A4EF" d="M1 12h10v10H1z"/><path fill="#FFB900" d="M12 12h10v10H12z"/></svg>',
   github:
     '<svg viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>',
   google:
@@ -108,7 +109,7 @@ function providerLogo(provider: string) {
   return span;
 }
 
-function renderSignIn(host: HTMLElement, providers: string[]) {
+function renderSignIn(host: HTMLElement, providers: string[], opts: { hint?: boolean; buttonClass?: string } = {}) {
   const menu = h('div', { class: 'ed-cloud-menu', hidden: true, role: 'menu' },
     ...providers.map((p) =>
       h('button', { type: 'button', role: 'menuitem', class: 'ed-cloud-provider', onclick: () => signIn(p) },
@@ -116,14 +117,14 @@ function renderSignIn(host: HTMLElement, providers: string[]) {
         p === 'dev' ? t('cloud.devLogin') : t('cloud.with', { p: PROVIDER_NAMES[p] ?? p })),
     ),
   );
-  const button = h('button', { type: 'button', class: 'ed-btn', 'aria-haspopup': 'menu', onclick: () => {
+  const button = h('button', { type: 'button', class: opts.buttonClass ?? 'ed-btn', 'aria-haspopup': 'menu', onclick: () => {
     hint?.dismiss();
     toggle(menu);
   } }, t('cloud.signIn'));
   const wrap = h('div', { class: 'ed-cloud-wrap' }, button, menu);
   host.replaceChildren(wrap);
   host.hidden = false;
-  const hint = showHint(wrap, () => toggle(menu));
+  const hint = opts.hint === false ? undefined : showHint(wrap, () => toggle(menu));
 }
 
 /* ---------- Aviso para iniciar sesión: una sola vez, nunca encima del recorrido guiado ---------- */
@@ -293,6 +294,11 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
     } }, icon(LogOut, 15), ' ', t('cloud.signOut')),
   );
   const account = h('button', { type: 'button', class: 'ed-cloud-account', title: name, 'aria-label': name, 'aria-haspopup': 'menu', onclick: () => toggle(menu) }, avatar);
+
+  if (new URLSearchParams(location.search).has('mine')) {
+    history.replaceState(null, '', location.pathname + location.hash);
+    void openList();
+  }
 
   saveHost.replaceChildren(saveButton);
   saveHost.hidden = false;
@@ -487,4 +493,46 @@ async function showList(o: ListOptions) {
   modal.addEventListener('keydown', (e) => (e as KeyboardEvent).key === 'Escape' && close());
   document.body.append(modal);
   (tools.hidden ? modal.querySelector<HTMLElement>('.ed-cloud-open, .ed-cloud-empty button') : search)?.focus();
+}
+
+/* ---------- Cuenta en el encabezado del sitio (landing, galería) ---------- */
+
+/**
+ * En las páginas del sitio: sin sesión, "Iniciar sesión"; con sesión, la foto con un menú para ir al editor,
+ * a "Mis diagramas" o cerrar sesión. Sin servidor de Cloud no muestra nada.
+ */
+export async function initSiteAccount(host: HTMLElement) {
+  let res: Response;
+  try {
+    res = await api('/me');
+  } catch {
+    return;
+  }
+  if (!res.headers.get('Content-Type')?.includes('application/json') || (res.status !== 200 && res.status !== 401)) return;
+  const body = (await res.json()) as Partial<Me> & { providers?: string[] };
+  if (res.status === 401) {
+    if (body.providers?.length) renderSignIn(host, body.providers, { hint: false, buttonClass: 'nav-signin' });
+    return;
+  }
+  const me = body as Me;
+  const name = me.user.name || me.user.email || '?';
+  const avatar = me.user.avatar
+    ? h('img', { src: me.user.avatar, alt: '', width: 22, height: 22, referrerpolicy: 'no-referrer' })
+    : h('span', { class: 'ed-cloud-initial' }, name.slice(0, 1).toUpperCase());
+  const link = (href: string, icn: IconNode, text: string) => {
+    const a = h('a', { href, role: 'menuitem' }, icon(icn, 15), ' ', text);
+    return a;
+  };
+  const menu = h('div', { class: 'ed-cloud-menu', hidden: true, role: 'menu' },
+    h('p', { class: 'ed-cloud-who' }, h('strong', {}, name), me.user.email && me.user.email !== name ? h('span', {}, me.user.email) : undefined),
+    link('/play?mine', FolderOpen, t('cloud.mine')),
+    link('/play', PencilLine, t('cloud.openEditor')),
+    h('button', { type: 'button', role: 'menuitem', onclick: async () => {
+      await api('/auth/logout', { method: 'POST', body: '{}' });
+      location.reload();
+    } }, icon(LogOut, 15), ' ', t('cloud.signOut')),
+  );
+  const account = h('button', { type: 'button', class: 'ed-cloud-account', title: name, 'aria-label': name, 'aria-haspopup': 'menu', onclick: () => toggle(menu) }, avatar);
+  host.replaceChildren(h('div', { class: 'ed-cloud-wrap' }, account, menu));
+  host.hidden = false;
 }
