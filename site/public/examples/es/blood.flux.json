@@ -5,8 +5,9 @@
   "nodes": [
     {
       "id": "right",
-      "label": "Corazón derecho",
-      "icon": "health"
+      "label": "Corazón (lado derecho)",
+      "icon": "health",
+      "description": "manda la sangre a los pulmones"
     },
     {
       "id": "lungs",
@@ -16,9 +17,10 @@
     },
     {
       "id": "left",
-      "label": "Corazón izquierdo",
+      "label": "Corazón (lado izquierdo)",
       "icon": "health",
-      "accent": true
+      "accent": true,
+      "description": "manda la sangre al cuerpo"
     },
     {
       "id": "body",
@@ -58,21 +60,21 @@
       "show": [
         "right"
       ],
-      "caption": "El lado derecho del corazón recibe la sangre usada"
+      "caption": "La sangre usada vuelve al lado derecho del corazón"
     },
     {
       "show": [
         "c1"
       ],
       "flow": "c1",
-      "caption": "La bombea a los pulmones para soltar el CO₂"
+      "caption": "Ese lado la manda a los pulmones a soltar el CO₂"
     },
     {
       "show": [
         "c2"
       ],
       "flow": "c2",
-      "caption": "Vuelve cargada de oxígeno"
+      "caption": "Vuelve de los pulmones cargada de oxígeno"
     },
     {
       "show": [
@@ -82,7 +84,7 @@
       "highlight": [
         "left"
       ],
-      "caption": "El lado izquierdo la envía a todo el cuerpo"
+      "caption": "El lado izquierdo la manda a todo el cuerpo"
     },
     {
       "show": [

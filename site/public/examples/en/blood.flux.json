@@ -5,8 +5,9 @@
   "nodes": [
     {
       "id": "right",
-      "label": "Right heart",
-      "icon": "health"
+      "label": "Heart, right side",
+      "icon": "health",
+      "description": "sends blood to the lungs"
     },
     {
       "id": "lungs",
@@ -16,9 +17,10 @@
     },
     {
       "id": "left",
-      "label": "Left heart",
+      "label": "Heart, left side",
       "icon": "health",
-      "accent": true
+      "accent": true,
+      "description": "sends blood to the body"
     },
     {
       "id": "body",
@@ -58,7 +60,7 @@
       "show": [
         "right"
       ],
-      "caption": "The right side of the heart receives used blood"
+      "caption": "Used blood returns to the right side of the heart"
     },
     {
       "show": [
@@ -82,7 +84,7 @@
       "highlight": [
         "left"
       ],
-      "caption": "The left side sends it to the whole body"
+      "caption": "The left side pumps it to the whole body"
     },
     {
       "show": [
