@@ -1,0 +1,65 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "sequence",
+  "title": "Una visita al médico",
+  "nodes": [
+    {
+      "id": "patient",
+      "label": "Paciente",
+      "icon": "user"
+    },
+    {
+      "id": "desk",
+      "label": "Recepción",
+      "icon": "clipboard"
+    },
+    {
+      "id": "doctor",
+      "label": "Médico",
+      "icon": "health",
+      "accent": true
+    },
+    {
+      "id": "pharmacy",
+      "label": "Farmacia",
+      "icon": "pill"
+    }
+  ],
+  "edges": [
+    {
+      "from": "patient",
+      "to": "desk",
+      "label": "pide una cita"
+    },
+    {
+      "from": "desk",
+      "to": "patient",
+      "label": "fecha y hora"
+    },
+    {
+      "from": "patient",
+      "to": "doctor",
+      "label": "síntomas"
+    },
+    {
+      "from": "doctor",
+      "to": "patient",
+      "label": "diagnóstico"
+    },
+    {
+      "from": "doctor",
+      "to": "patient",
+      "label": "receta"
+    },
+    {
+      "from": "patient",
+      "to": "pharmacy",
+      "label": "receta"
+    },
+    {
+      "from": "pharmacy",
+      "to": "patient",
+      "label": "medicamento"
+    }
+  ]
+}

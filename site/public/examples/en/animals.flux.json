@@ -1,0 +1,99 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "tree",
+  "title": "How animals are classified",
+  "nodes": [
+    {
+      "id": "animals",
+      "label": "Animals",
+      "icon": "leaf",
+      "accent": true
+    },
+    {
+      "id": "vert",
+      "label": "Vertebrates",
+      "description": "have a backbone",
+      "icon": "fitness"
+    },
+    {
+      "id": "invert",
+      "label": "Invertebrates",
+      "description": "no backbone",
+      "icon": "bug"
+    },
+    {
+      "id": "mammals",
+      "label": "Mammals"
+    },
+    {
+      "id": "birds",
+      "label": "Birds"
+    },
+    {
+      "id": "fish",
+      "label": "Fish"
+    },
+    {
+      "id": "reptiles",
+      "label": "Reptiles"
+    },
+    {
+      "id": "amphibians",
+      "label": "Amphibians"
+    },
+    {
+      "id": "insects",
+      "label": "Insects"
+    },
+    {
+      "id": "arachnids",
+      "label": "Arachnids"
+    },
+    {
+      "id": "molluscs",
+      "label": "Molluscs"
+    }
+  ],
+  "edges": [
+    {
+      "from": "animals",
+      "to": "vert"
+    },
+    {
+      "from": "animals",
+      "to": "invert"
+    },
+    {
+      "from": "vert",
+      "to": "mammals"
+    },
+    {
+      "from": "vert",
+      "to": "birds"
+    },
+    {
+      "from": "vert",
+      "to": "fish"
+    },
+    {
+      "from": "vert",
+      "to": "reptiles"
+    },
+    {
+      "from": "vert",
+      "to": "amphibians"
+    },
+    {
+      "from": "invert",
+      "to": "insects"
+    },
+    {
+      "from": "invert",
+      "to": "arachnids"
+    },
+    {
+      "from": "invert",
+      "to": "molluscs"
+    }
+  ]
+}

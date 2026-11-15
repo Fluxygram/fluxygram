@@ -1,0 +1,95 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "cycle",
+  "title": "How blood travels through the body",
+  "nodes": [
+    {
+      "id": "right",
+      "label": "Right heart",
+      "icon": "health"
+    },
+    {
+      "id": "lungs",
+      "label": "Lungs",
+      "description": "swap CO₂ for oxygen",
+      "icon": "activity"
+    },
+    {
+      "id": "left",
+      "label": "Left heart",
+      "icon": "health",
+      "accent": true
+    },
+    {
+      "id": "body",
+      "label": "The body",
+      "description": "uses the oxygen",
+      "icon": "fitness"
+    }
+  ],
+  "edges": [
+    {
+      "id": "c1",
+      "from": "right",
+      "to": "lungs",
+      "carries": "CO₂"
+    },
+    {
+      "id": "c2",
+      "from": "lungs",
+      "to": "left",
+      "carries": "O₂"
+    },
+    {
+      "id": "c3",
+      "from": "left",
+      "to": "body",
+      "carries": "O₂"
+    },
+    {
+      "id": "c4",
+      "from": "body",
+      "to": "right",
+      "carries": "CO₂"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "right"
+      ],
+      "caption": "The right side of the heart receives used blood"
+    },
+    {
+      "show": [
+        "c1"
+      ],
+      "flow": "c1",
+      "caption": "It pumps it to the lungs to drop the CO₂"
+    },
+    {
+      "show": [
+        "c2"
+      ],
+      "flow": "c2",
+      "caption": "It comes back full of oxygen"
+    },
+    {
+      "show": [
+        "c3"
+      ],
+      "flow": "c3",
+      "highlight": [
+        "left"
+      ],
+      "caption": "The left side sends it to the whole body"
+    },
+    {
+      "show": [
+        "c4"
+      ],
+      "flow": "c4",
+      "caption": "And it starts again, about 100,000 beats a day"
+    }
+  ]
+}

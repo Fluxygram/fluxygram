@@ -1,0 +1,99 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "tree",
+  "title": "Cómo se clasifican los animales",
+  "nodes": [
+    {
+      "id": "animals",
+      "label": "Animales",
+      "icon": "leaf",
+      "accent": true
+    },
+    {
+      "id": "vert",
+      "label": "Vertebrados",
+      "description": "tienen columna",
+      "icon": "fitness"
+    },
+    {
+      "id": "invert",
+      "label": "Invertebrados",
+      "description": "sin columna",
+      "icon": "bug"
+    },
+    {
+      "id": "mammals",
+      "label": "Mamíferos"
+    },
+    {
+      "id": "birds",
+      "label": "Aves"
+    },
+    {
+      "id": "fish",
+      "label": "Peces"
+    },
+    {
+      "id": "reptiles",
+      "label": "Reptiles"
+    },
+    {
+      "id": "amphibians",
+      "label": "Anfibios"
+    },
+    {
+      "id": "insects",
+      "label": "Insectos"
+    },
+    {
+      "id": "arachnids",
+      "label": "Arácnidos"
+    },
+    {
+      "id": "molluscs",
+      "label": "Moluscos"
+    }
+  ],
+  "edges": [
+    {
+      "from": "animals",
+      "to": "vert"
+    },
+    {
+      "from": "animals",
+      "to": "invert"
+    },
+    {
+      "from": "vert",
+      "to": "mammals"
+    },
+    {
+      "from": "vert",
+      "to": "birds"
+    },
+    {
+      "from": "vert",
+      "to": "fish"
+    },
+    {
+      "from": "vert",
+      "to": "reptiles"
+    },
+    {
+      "from": "vert",
+      "to": "amphibians"
+    },
+    {
+      "from": "invert",
+      "to": "insects"
+    },
+    {
+      "from": "invert",
+      "to": "arachnids"
+    },
+    {
+      "from": "invert",
+      "to": "molluscs"
+    }
+  ]
+}

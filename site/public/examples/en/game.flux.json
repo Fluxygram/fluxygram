@@ -1,0 +1,188 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "A run in an adventure game",
+  "nodes": [
+    {
+      "id": "start",
+      "label": "New game",
+      "kind": "start",
+      "icon": "gamepad"
+    },
+    {
+      "id": "explore",
+      "label": "Explore",
+      "description": "the dungeon",
+      "icon": "map"
+    },
+    {
+      "id": "fight",
+      "label": "Battle",
+      "description": "an enemy appears",
+      "icon": "zap"
+    },
+    {
+      "id": "won",
+      "label": "Did you win?",
+      "kind": "decision"
+    },
+    {
+      "id": "over",
+      "label": "Game over",
+      "description": "back to the last save",
+      "icon": "repeat"
+    },
+    {
+      "id": "loot",
+      "label": "Loot",
+      "description": "gold and items",
+      "icon": "coins"
+    },
+    {
+      "id": "level",
+      "label": "Level up",
+      "icon": "up"
+    },
+    {
+      "id": "boss",
+      "label": "Final boss",
+      "icon": "flag"
+    },
+    {
+      "id": "victory",
+      "label": "Victory",
+      "kind": "end",
+      "accent": true,
+      "icon": "trophy"
+    }
+  ],
+  "edges": [
+    {
+      "id": "g1",
+      "from": "start",
+      "to": "explore"
+    },
+    {
+      "id": "g2",
+      "from": "explore",
+      "to": "fight"
+    },
+    {
+      "id": "g3",
+      "from": "fight",
+      "to": "won"
+    },
+    {
+      "id": "gno",
+      "from": "won",
+      "to": "over",
+      "label": "no"
+    },
+    {
+      "id": "gyes",
+      "from": "won",
+      "to": "loot",
+      "label": "yes",
+      "carries": "XP"
+    },
+    {
+      "id": "g5",
+      "from": "loot",
+      "to": "level",
+      "carries": "XP"
+    },
+    {
+      "id": "g6",
+      "from": "level",
+      "to": "boss"
+    },
+    {
+      "id": "g7",
+      "from": "boss",
+      "to": "victory"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "start"
+      ],
+      "caption": "A new run begins"
+    },
+    {
+      "show": [
+        "g1"
+      ],
+      "flow": "g1",
+      "caption": "You explore the dungeon"
+    },
+    {
+      "show": [
+        "g2"
+      ],
+      "flow": "g2",
+      "state": {
+        "fight": "pending"
+      },
+      "caption": "An enemy blocks the way"
+    },
+    {
+      "show": [
+        "g3"
+      ],
+      "flow": "g3",
+      "caption": "The battle decides what happens next"
+    },
+    {
+      "show": [
+        "gno"
+      ],
+      "flow": "gno",
+      "state": {
+        "over": "error",
+        "gno": "error"
+      },
+      "caption": "Lose, and you go back to your last save"
+    },
+    {
+      "show": [
+        "gyes"
+      ],
+      "flow": "gyes",
+      "state": {
+        "fight": "success"
+      },
+      "caption": "Win, and you collect the loot"
+    },
+    {
+      "show": [
+        "g5"
+      ],
+      "flow": "g5",
+      "caption": "Experience makes you stronger"
+    },
+    {
+      "show": [
+        "g6"
+      ],
+      "flow": "g6",
+      "state": {
+        "boss": "pending"
+      },
+      "caption": "Ready for the final boss"
+    },
+    {
+      "show": [
+        "g7"
+      ],
+      "flow": "g7",
+      "state": {
+        "boss": "success"
+      },
+      "highlight": [
+        "victory"
+      ],
+      "caption": "Victory!"
+    }
+  ]
+}

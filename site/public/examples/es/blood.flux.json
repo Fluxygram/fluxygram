@@ -1,0 +1,95 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "cycle",
+  "title": "Cómo viaja la sangre por el cuerpo",
+  "nodes": [
+    {
+      "id": "right",
+      "label": "Corazón derecho",
+      "icon": "health"
+    },
+    {
+      "id": "lungs",
+      "label": "Pulmones",
+      "description": "cambian CO₂ por oxígeno",
+      "icon": "activity"
+    },
+    {
+      "id": "left",
+      "label": "Corazón izquierdo",
+      "icon": "health",
+      "accent": true
+    },
+    {
+      "id": "body",
+      "label": "El cuerpo",
+      "description": "usa el oxígeno",
+      "icon": "fitness"
+    }
+  ],
+  "edges": [
+    {
+      "id": "c1",
+      "from": "right",
+      "to": "lungs",
+      "carries": "CO₂"
+    },
+    {
+      "id": "c2",
+      "from": "lungs",
+      "to": "left",
+      "carries": "O₂"
+    },
+    {
+      "id": "c3",
+      "from": "left",
+      "to": "body",
+      "carries": "O₂"
+    },
+    {
+      "id": "c4",
+      "from": "body",
+      "to": "right",
+      "carries": "CO₂"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "right"
+      ],
+      "caption": "El lado derecho del corazón recibe la sangre usada"
+    },
+    {
+      "show": [
+        "c1"
+      ],
+      "flow": "c1",
+      "caption": "La bombea a los pulmones para soltar el CO₂"
+    },
+    {
+      "show": [
+        "c2"
+      ],
+      "flow": "c2",
+      "caption": "Vuelve cargada de oxígeno"
+    },
+    {
+      "show": [
+        "c3"
+      ],
+      "flow": "c3",
+      "highlight": [
+        "left"
+      ],
+      "caption": "El lado izquierdo la envía a todo el cuerpo"
+    },
+    {
+      "show": [
+        "c4"
+      ],
+      "flow": "c4",
+      "caption": "Y vuelve a empezar, unas 100 000 veces al día"
+    }
+  ]
+}

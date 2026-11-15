@@ -133,6 +133,15 @@ const EXAMPLES: [string, string, DiagramType][] = [
   ['cycle', 'play.p.cycle', 'cycle'],
   ['tree', 'play.p.tree', 'tree'],
   ['mindmap', 'play.p.mindmap', 'mindmap'],
+  // Fuera de la tecnología
+  ['bread', 'play.p.bread', 'flow'],
+  ['game', 'play.p.game', 'flow'],
+  ['blood', 'play.p.blood', 'cycle'],
+  ['coffee', 'play.p.coffee', 'timeline'],
+  ['law', 'play.p.law', 'flow'],
+  ['trip', 'play.p.trip', 'mindmap'],
+  ['animals', 'play.p.animals', 'tree'],
+  ['doctor', 'play.p.doctor', 'sequence'],
 ];
 $('exampleGrid').replaceChildren(
   ...EXAMPLES.map(([name, key, type]) =>

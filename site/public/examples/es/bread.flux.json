@@ -1,0 +1,169 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Cómo hacer pan en casa",
+  "nodes": [
+    {
+      "id": "mix",
+      "label": "Mezclar",
+      "description": "harina, agua, sal, levadura",
+      "kind": "start",
+      "icon": "food"
+    },
+    {
+      "id": "knead",
+      "label": "Amasar",
+      "description": "10 minutos",
+      "icon": "repeat"
+    },
+    {
+      "id": "rise",
+      "label": "Dejar levar",
+      "description": "1 a 2 horas",
+      "icon": "hourglass"
+    },
+    {
+      "id": "doubled",
+      "label": "¿Dobló su tamaño?",
+      "kind": "decision"
+    },
+    {
+      "id": "wait",
+      "label": "Esperar un poco más",
+      "icon": "timer"
+    },
+    {
+      "id": "shape",
+      "label": "Formar el pan",
+      "icon": "design"
+    },
+    {
+      "id": "bake",
+      "label": "Hornear",
+      "description": "220 °C · 30 min",
+      "icon": "fire"
+    },
+    {
+      "id": "done",
+      "label": "Pan listo",
+      "kind": "end",
+      "accent": true,
+      "icon": "check"
+    }
+  ],
+  "edges": [
+    {
+      "id": "b1",
+      "from": "mix",
+      "to": "knead",
+      "carries": "masa"
+    },
+    {
+      "id": "b2",
+      "from": "knead",
+      "to": "rise"
+    },
+    {
+      "id": "b3",
+      "from": "rise",
+      "to": "doubled"
+    },
+    {
+      "id": "no",
+      "from": "doubled",
+      "to": "wait",
+      "label": "no"
+    },
+    {
+      "id": "yes",
+      "from": "doubled",
+      "to": "shape",
+      "label": "sí"
+    },
+    {
+      "id": "b5",
+      "from": "shape",
+      "to": "bake"
+    },
+    {
+      "id": "b6",
+      "from": "bake",
+      "to": "done"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "mix"
+      ],
+      "caption": "Se mezclan los cuatro ingredientes"
+    },
+    {
+      "show": [
+        "b1"
+      ],
+      "flow": "b1",
+      "caption": "Amasar desarrolla el gluten"
+    },
+    {
+      "show": [
+        "b2"
+      ],
+      "flow": "b2",
+      "state": {
+        "rise": "pending"
+      },
+      "caption": "La levadura hace crecer la masa"
+    },
+    {
+      "show": [
+        "b3"
+      ],
+      "flow": "b3",
+      "caption": "¿Ya dobló su tamaño?"
+    },
+    {
+      "show": [
+        "no"
+      ],
+      "flow": "no",
+      "state": {
+        "wait": "warning"
+      },
+      "caption": "Todavía no: hay que darle más tiempo"
+    },
+    {
+      "show": [
+        "yes"
+      ],
+      "flow": "yes",
+      "state": {
+        "rise": "success"
+      },
+      "caption": "Sí: es hora de darle forma"
+    },
+    {
+      "show": [
+        "b5"
+      ],
+      "flow": "b5",
+      "state": {
+        "bake": "pending"
+      },
+      "caption": "Al horno bien caliente"
+    },
+    {
+      "show": [
+        "b6"
+      ],
+      "flow": "b6",
+      "state": {
+        "bake": "success"
+      },
+      "highlight": [
+        "done"
+      ],
+      "caption": "Pan recién hecho, en casa"
+    }
+  ]
+}

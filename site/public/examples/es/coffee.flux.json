@@ -1,0 +1,51 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "timeline",
+  "title": "Una breve historia del café",
+  "nodes": [
+    {
+      "id": "k1",
+      "label": "Primeros cafés",
+      "description": "Estambul",
+      "date": "1554",
+      "icon": "coffee"
+    },
+    {
+      "id": "k2",
+      "label": "Llega a Londres",
+      "description": "el primer café de la ciudad",
+      "date": "1652",
+      "icon": "store"
+    },
+    {
+      "id": "k3",
+      "label": "Llega a Brasil",
+      "description": "hoy el mayor productor",
+      "date": "1727",
+      "icon": "leaf"
+    },
+    {
+      "id": "k4",
+      "label": "Máquina de espresso",
+      "description": "Turín, Italia",
+      "date": "1884",
+      "icon": "factory",
+      "accent": true
+    },
+    {
+      "id": "k5",
+      "label": "Café instantáneo",
+      "description": "llega a todas las casas",
+      "date": "1938",
+      "icon": "box"
+    },
+    {
+      "id": "k6",
+      "label": "Cadenas de cafeterías",
+      "description": "Seattle, 1971",
+      "date": "1971",
+      "icon": "cart"
+    }
+  ],
+  "edges": []
+}

@@ -1,0 +1,115 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "mindmap",
+  "title": "Planning a trip",
+  "nodes": [
+    {
+      "id": "trip",
+      "label": "My trip",
+      "icon": "plane",
+      "accent": true
+    },
+    {
+      "id": "where",
+      "label": "Destination",
+      "icon": "map"
+    },
+    {
+      "id": "weather",
+      "label": "Weather"
+    },
+    {
+      "id": "season",
+      "label": "Best season"
+    },
+    {
+      "id": "money",
+      "label": "Budget",
+      "icon": "wallet"
+    },
+    {
+      "id": "tickets",
+      "label": "Tickets"
+    },
+    {
+      "id": "stay",
+      "label": "Where to stay"
+    },
+    {
+      "id": "bag",
+      "label": "Packing",
+      "icon": "box"
+    },
+    {
+      "id": "docs",
+      "label": "Documents"
+    },
+    {
+      "id": "clothes",
+      "label": "Clothes"
+    },
+    {
+      "id": "todo",
+      "label": "Things to do",
+      "icon": "star"
+    },
+    {
+      "id": "food",
+      "label": "Local food"
+    },
+    {
+      "id": "walks",
+      "label": "Walks"
+    }
+  ],
+  "edges": [
+    {
+      "from": "trip",
+      "to": "where"
+    },
+    {
+      "from": "where",
+      "to": "weather"
+    },
+    {
+      "from": "where",
+      "to": "season"
+    },
+    {
+      "from": "trip",
+      "to": "money"
+    },
+    {
+      "from": "money",
+      "to": "tickets"
+    },
+    {
+      "from": "money",
+      "to": "stay"
+    },
+    {
+      "from": "trip",
+      "to": "bag"
+    },
+    {
+      "from": "bag",
+      "to": "docs"
+    },
+    {
+      "from": "bag",
+      "to": "clothes"
+    },
+    {
+      "from": "trip",
+      "to": "todo"
+    },
+    {
+      "from": "todo",
+      "to": "food"
+    },
+    {
+      "from": "todo",
+      "to": "walks"
+    }
+  ]
+}

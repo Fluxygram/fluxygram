@@ -1,0 +1,147 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "How a bill becomes law",
+  "nodes": [
+    {
+      "id": "bill",
+      "label": "Proposal",
+      "description": "someone drafts a bill",
+      "kind": "start",
+      "icon": "file"
+    },
+    {
+      "id": "committee",
+      "label": "Committee",
+      "description": "studies and amends it",
+      "icon": "users"
+    },
+    {
+      "id": "debate",
+      "label": "Debate",
+      "description": "in congress",
+      "icon": "message"
+    },
+    {
+      "id": "vote",
+      "label": "Approved?",
+      "kind": "decision"
+    },
+    {
+      "id": "shelved",
+      "label": "Shelved",
+      "icon": "folder"
+    },
+    {
+      "id": "sign",
+      "label": "Signed",
+      "description": "by the head of state",
+      "icon": "pen"
+    },
+    {
+      "id": "law",
+      "label": "It's law",
+      "kind": "end",
+      "accent": true,
+      "icon": "check"
+    }
+  ],
+  "edges": [
+    {
+      "id": "l1",
+      "from": "bill",
+      "to": "committee",
+      "carries": "bill"
+    },
+    {
+      "id": "l2",
+      "from": "committee",
+      "to": "debate"
+    },
+    {
+      "id": "l3",
+      "from": "debate",
+      "to": "vote"
+    },
+    {
+      "id": "lno",
+      "from": "vote",
+      "to": "shelved",
+      "label": "no"
+    },
+    {
+      "id": "lyes",
+      "from": "vote",
+      "to": "sign",
+      "label": "yes"
+    },
+    {
+      "id": "l6",
+      "from": "sign",
+      "to": "law"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "bill"
+      ],
+      "caption": "Someone proposes a new law"
+    },
+    {
+      "show": [
+        "l1"
+      ],
+      "flow": "l1",
+      "caption": "A committee studies and amends it"
+    },
+    {
+      "show": [
+        "l2"
+      ],
+      "flow": "l2",
+      "caption": "It is debated in congress"
+    },
+    {
+      "show": [
+        "l3"
+      ],
+      "flow": "l3",
+      "state": {
+        "vote": "pending"
+      },
+      "caption": "Then comes the vote"
+    },
+    {
+      "show": [
+        "lno"
+      ],
+      "flow": "lno",
+      "state": {
+        "shelved": "error",
+        "lno": "error"
+      },
+      "caption": "Without enough votes, it is shelved"
+    },
+    {
+      "show": [
+        "lyes"
+      ],
+      "flow": "lyes",
+      "state": {
+        "vote": "success"
+      },
+      "caption": "If approved, it goes to be signed"
+    },
+    {
+      "show": [
+        "l6"
+      ],
+      "flow": "l6",
+      "highlight": [
+        "law"
+      ],
+      "caption": "And it becomes law"
+    }
+  ]
+}

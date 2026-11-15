@@ -1,0 +1,115 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "mindmap",
+  "title": "Planear un viaje",
+  "nodes": [
+    {
+      "id": "trip",
+      "label": "Mi viaje",
+      "icon": "plane",
+      "accent": true
+    },
+    {
+      "id": "where",
+      "label": "Destino",
+      "icon": "map"
+    },
+    {
+      "id": "weather",
+      "label": "Clima"
+    },
+    {
+      "id": "season",
+      "label": "Mejor época"
+    },
+    {
+      "id": "money",
+      "label": "Presupuesto",
+      "icon": "wallet"
+    },
+    {
+      "id": "tickets",
+      "label": "Pasajes"
+    },
+    {
+      "id": "stay",
+      "label": "Hospedaje"
+    },
+    {
+      "id": "bag",
+      "label": "Equipaje",
+      "icon": "box"
+    },
+    {
+      "id": "docs",
+      "label": "Documentos"
+    },
+    {
+      "id": "clothes",
+      "label": "Ropa"
+    },
+    {
+      "id": "todo",
+      "label": "Qué hacer",
+      "icon": "star"
+    },
+    {
+      "id": "food",
+      "label": "Comida local"
+    },
+    {
+      "id": "walks",
+      "label": "Paseos"
+    }
+  ],
+  "edges": [
+    {
+      "from": "trip",
+      "to": "where"
+    },
+    {
+      "from": "where",
+      "to": "weather"
+    },
+    {
+      "from": "where",
+      "to": "season"
+    },
+    {
+      "from": "trip",
+      "to": "money"
+    },
+    {
+      "from": "money",
+      "to": "tickets"
+    },
+    {
+      "from": "money",
+      "to": "stay"
+    },
+    {
+      "from": "trip",
+      "to": "bag"
+    },
+    {
+      "from": "bag",
+      "to": "docs"
+    },
+    {
+      "from": "bag",
+      "to": "clothes"
+    },
+    {
+      "from": "trip",
+      "to": "todo"
+    },
+    {
+      "from": "todo",
+      "to": "food"
+    },
+    {
+      "from": "todo",
+      "to": "walks"
+    }
+  ]
+}

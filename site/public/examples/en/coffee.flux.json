@@ -1,0 +1,51 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "timeline",
+  "title": "A short history of coffee",
+  "nodes": [
+    {
+      "id": "k1",
+      "label": "First coffeehouses",
+      "description": "Istanbul",
+      "date": "1554",
+      "icon": "coffee"
+    },
+    {
+      "id": "k2",
+      "label": "Reaches London",
+      "description": "the city's first café",
+      "date": "1652",
+      "icon": "store"
+    },
+    {
+      "id": "k3",
+      "label": "Reaches Brazil",
+      "description": "today's top producer",
+      "date": "1727",
+      "icon": "leaf"
+    },
+    {
+      "id": "k4",
+      "label": "Espresso machine",
+      "description": "Turin, Italy",
+      "date": "1884",
+      "icon": "factory",
+      "accent": true
+    },
+    {
+      "id": "k5",
+      "label": "Instant coffee",
+      "description": "sold to the masses",
+      "date": "1938",
+      "icon": "box"
+    },
+    {
+      "id": "k6",
+      "label": "Coffee shop chains",
+      "description": "Seattle, 1971",
+      "date": "1971",
+      "icon": "cart"
+    }
+  ],
+  "edges": []
+}

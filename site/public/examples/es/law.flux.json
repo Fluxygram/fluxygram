@@ -1,0 +1,147 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Cómo se aprueba una ley",
+  "nodes": [
+    {
+      "id": "bill",
+      "label": "Propuesta",
+      "description": "alguien redacta un proyecto",
+      "kind": "start",
+      "icon": "file"
+    },
+    {
+      "id": "committee",
+      "label": "Comisión",
+      "description": "lo estudia y lo ajusta",
+      "icon": "users"
+    },
+    {
+      "id": "debate",
+      "label": "Debate",
+      "description": "en el congreso",
+      "icon": "message"
+    },
+    {
+      "id": "vote",
+      "label": "¿Se aprueba?",
+      "kind": "decision"
+    },
+    {
+      "id": "shelved",
+      "label": "Se archiva",
+      "icon": "folder"
+    },
+    {
+      "id": "sign",
+      "label": "Se firma",
+      "description": "por el jefe de Estado",
+      "icon": "pen"
+    },
+    {
+      "id": "law",
+      "label": "Es ley",
+      "kind": "end",
+      "accent": true,
+      "icon": "check"
+    }
+  ],
+  "edges": [
+    {
+      "id": "l1",
+      "from": "bill",
+      "to": "committee",
+      "carries": "proyecto"
+    },
+    {
+      "id": "l2",
+      "from": "committee",
+      "to": "debate"
+    },
+    {
+      "id": "l3",
+      "from": "debate",
+      "to": "vote"
+    },
+    {
+      "id": "lno",
+      "from": "vote",
+      "to": "shelved",
+      "label": "no"
+    },
+    {
+      "id": "lyes",
+      "from": "vote",
+      "to": "sign",
+      "label": "sí"
+    },
+    {
+      "id": "l6",
+      "from": "sign",
+      "to": "law"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "bill"
+      ],
+      "caption": "Alguien propone una ley nueva"
+    },
+    {
+      "show": [
+        "l1"
+      ],
+      "flow": "l1",
+      "caption": "Una comisión la estudia y la ajusta"
+    },
+    {
+      "show": [
+        "l2"
+      ],
+      "flow": "l2",
+      "caption": "Se debate en el congreso"
+    },
+    {
+      "show": [
+        "l3"
+      ],
+      "flow": "l3",
+      "state": {
+        "vote": "pending"
+      },
+      "caption": "Llega la votación"
+    },
+    {
+      "show": [
+        "lno"
+      ],
+      "flow": "lno",
+      "state": {
+        "shelved": "error",
+        "lno": "error"
+      },
+      "caption": "Sin votos suficientes, se archiva"
+    },
+    {
+      "show": [
+        "lyes"
+      ],
+      "flow": "lyes",
+      "state": {
+        "vote": "success"
+      },
+      "caption": "Si se aprueba, pasa a la firma"
+    },
+    {
+      "show": [
+        "l6"
+      ],
+      "flow": "l6",
+      "highlight": [
+        "law"
+      ],
+      "caption": "Y se convierte en ley"
+    }
+  ]
+}

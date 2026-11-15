@@ -1,6 +1,8 @@
 import '@fluxygram/element';
 import type { FluxyGram } from '@fluxygram/element';
-import { exampleUrl } from './i18n';
+import { exampleUrl, t } from './i18n';
+import { encodeDiagram } from './editor/io';
+import type { Diagram } from '@fluxygram/core';
 import './agents';
 import './lang';
 import { applySpecular } from './vendor/specular-button';
@@ -45,3 +47,22 @@ mountTechText(document.querySelector<HTMLElement>('#wordmark')!, {
 // "Ver en GitHub": botón de cristal cuyo borde se enciende hacia el cursor. El verde sigue siendo la acción principal.
 const github = document.querySelector<HTMLElement>('.hero .cta a.btn:not(.btn-primary)');
 if (github) applySpecular(github, SPECULAR);
+
+// Casos de uso fuera de la tecnología: una pestaña por área, el diagrama en vivo y un botón para editarlo.
+const useDiagram = document.querySelector<FluxyGram>('#useDiagram')!;
+const useNote = document.querySelector<HTMLElement>('#useNote')!;
+const useOpen = document.querySelector<HTMLAnchorElement>('#useOpen')!;
+const useTabs = [...document.querySelectorAll<HTMLButtonElement>('.tab[data-use]')];
+async function showUse(name: string) {
+  const diagram = (await (await fetch(exampleUrl(name))).json()) as Diagram;
+  useDiagram.diagram = diagram;
+  useNote.textContent = t(`uses.note.${name}`);
+  useOpen.href = `/play#d=${await encodeDiagram(diagram)}`;
+}
+for (const tab of useTabs) {
+  tab.addEventListener('click', () => {
+    for (const x of useTabs) x.setAttribute('aria-selected', String(x === tab));
+    void showUse(tab.dataset.use!);
+  });
+}
+void showUse(useTabs[0]!.dataset.use!);

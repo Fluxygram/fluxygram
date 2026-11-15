@@ -1,0 +1,65 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "sequence",
+  "title": "A visit to the doctor",
+  "nodes": [
+    {
+      "id": "patient",
+      "label": "Patient",
+      "icon": "user"
+    },
+    {
+      "id": "desk",
+      "label": "Front desk",
+      "icon": "clipboard"
+    },
+    {
+      "id": "doctor",
+      "label": "Doctor",
+      "icon": "health",
+      "accent": true
+    },
+    {
+      "id": "pharmacy",
+      "label": "Pharmacy",
+      "icon": "pill"
+    }
+  ],
+  "edges": [
+    {
+      "from": "patient",
+      "to": "desk",
+      "label": "books a visit"
+    },
+    {
+      "from": "desk",
+      "to": "patient",
+      "label": "date and time"
+    },
+    {
+      "from": "patient",
+      "to": "doctor",
+      "label": "symptoms"
+    },
+    {
+      "from": "doctor",
+      "to": "patient",
+      "label": "diagnosis"
+    },
+    {
+      "from": "doctor",
+      "to": "patient",
+      "label": "prescription"
+    },
+    {
+      "from": "patient",
+      "to": "pharmacy",
+      "label": "prescription"
+    },
+    {
+      "from": "pharmacy",
+      "to": "patient",
+      "label": "medicine"
+    }
+  ]
+}

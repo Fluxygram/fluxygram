@@ -1,0 +1,169 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "How to bake bread at home",
+  "nodes": [
+    {
+      "id": "mix",
+      "label": "Mix",
+      "description": "flour, water, salt, yeast",
+      "kind": "start",
+      "icon": "food"
+    },
+    {
+      "id": "knead",
+      "label": "Knead",
+      "description": "10 minutes",
+      "icon": "repeat"
+    },
+    {
+      "id": "rise",
+      "label": "Let it rise",
+      "description": "1 to 2 hours",
+      "icon": "hourglass"
+    },
+    {
+      "id": "doubled",
+      "label": "Doubled in size?",
+      "kind": "decision"
+    },
+    {
+      "id": "wait",
+      "label": "Wait a bit more",
+      "icon": "timer"
+    },
+    {
+      "id": "shape",
+      "label": "Shape the loaf",
+      "icon": "design"
+    },
+    {
+      "id": "bake",
+      "label": "Bake",
+      "description": "220 °C · 30 min",
+      "icon": "fire"
+    },
+    {
+      "id": "done",
+      "label": "Fresh bread",
+      "kind": "end",
+      "accent": true,
+      "icon": "check"
+    }
+  ],
+  "edges": [
+    {
+      "id": "b1",
+      "from": "mix",
+      "to": "knead",
+      "carries": "dough"
+    },
+    {
+      "id": "b2",
+      "from": "knead",
+      "to": "rise"
+    },
+    {
+      "id": "b3",
+      "from": "rise",
+      "to": "doubled"
+    },
+    {
+      "id": "no",
+      "from": "doubled",
+      "to": "wait",
+      "label": "no"
+    },
+    {
+      "id": "yes",
+      "from": "doubled",
+      "to": "shape",
+      "label": "yes"
+    },
+    {
+      "id": "b5",
+      "from": "shape",
+      "to": "bake"
+    },
+    {
+      "id": "b6",
+      "from": "bake",
+      "to": "done"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "mix"
+      ],
+      "caption": "Mix the four ingredients"
+    },
+    {
+      "show": [
+        "b1"
+      ],
+      "flow": "b1",
+      "caption": "Kneading builds the gluten"
+    },
+    {
+      "show": [
+        "b2"
+      ],
+      "flow": "b2",
+      "state": {
+        "rise": "pending"
+      },
+      "caption": "The yeast makes the dough grow"
+    },
+    {
+      "show": [
+        "b3"
+      ],
+      "flow": "b3",
+      "caption": "Has it doubled in size?"
+    },
+    {
+      "show": [
+        "no"
+      ],
+      "flow": "no",
+      "state": {
+        "wait": "warning"
+      },
+      "caption": "Not yet: give it more time"
+    },
+    {
+      "show": [
+        "yes"
+      ],
+      "flow": "yes",
+      "state": {
+        "rise": "success"
+      },
+      "caption": "Yes: time to shape it"
+    },
+    {
+      "show": [
+        "b5"
+      ],
+      "flow": "b5",
+      "state": {
+        "bake": "pending"
+      },
+      "caption": "Into a hot oven"
+    },
+    {
+      "show": [
+        "b6"
+      ],
+      "flow": "b6",
+      "state": {
+        "bake": "success"
+      },
+      "highlight": [
+        "done"
+      ],
+      "caption": "Fresh bread, made at home"
+    }
+  ]
+}
