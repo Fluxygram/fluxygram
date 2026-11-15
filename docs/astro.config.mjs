@@ -25,6 +25,10 @@ export default defineConfig({
         ThemeSelect: './src/components/Empty.astro',
       },
       head: [
+        { tag: 'meta', attrs: { property: 'og:image', content: 'https://fluxygram.app/og.png' } },
+        { tag: 'meta', attrs: { property: 'og:image:width', content: '1200' } },
+        { tag: 'meta', attrs: { property: 'og:image:height', content: '630' } },
+        { tag: 'meta', attrs: { name: 'twitter:image', content: 'https://fluxygram.app/og.png' } },
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.googleapis.com' } },
         { tag: 'link', attrs: { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' } },
         {
