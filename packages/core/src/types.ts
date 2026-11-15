@@ -4,8 +4,41 @@ export const DIAGRAM_TYPES: DiagramType[] = ['flow', 'architecture', 'timeline',
 
 export type Direction = 'LR' | 'TB';
 
-export type NodeKind = 'default' | 'decision' | 'start' | 'end' | 'data' | 'database' | 'note';
-export const NODE_KINDS: NodeKind[] = ['default', 'decision', 'start', 'end', 'data', 'database', 'note'];
+export type NodeKind =
+  | 'default'
+  | 'decision'
+  | 'start'
+  | 'end'
+  | 'data'
+  | 'database'
+  | 'note'
+  | 'person'
+  | 'event'
+  | 'document'
+  | 'wait'
+  | 'cloud'
+  | 'queue'
+  | 'subprocess'
+  | 'screen'
+  | 'prepare';
+export const NODE_KINDS: NodeKind[] = [
+  'default',
+  'decision',
+  'start',
+  'end',
+  'data',
+  'database',
+  'note',
+  'person',
+  'event',
+  'document',
+  'wait',
+  'cloud',
+  'queue',
+  'subprocess',
+  'screen',
+  'prepare',
+];
 
 /** Cómo entra un bloque: aparecer subiendo, crecer, trazarse como un dibujo, o llegar deslizándose. */
 export type EnterStyle = 'fade' | 'scale' | 'draw' | 'slide';

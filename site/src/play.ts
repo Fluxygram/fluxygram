@@ -2,7 +2,7 @@ import '@fluxygram/element';
 import type { FluxyGram } from '@fluxygram/element';
 import { DIAGRAM_TYPES, validate, type Diagram, type DiagramType, type FluxNode } from '@fluxygram/core';
 import {
-  Circle, CircleDot, Database, Diamond, Download, FileCode, FilePlus, FolderOpen, LayoutGrid, Maximize, Milestone, Minus, Plus,
+  AppWindow, Circle, CircleDot, Cloud, Database, FileText, Hexagon, Hourglass, Zap, Diamond, Download, FileCode, FilePlus, FolderOpen, LayoutGrid, Maximize, Milestone, Minus, Plus,
   ArrowLeftRight, BrainCircuit, CircleHelp, PanelRightClose, PanelRightOpen, Layers, Lightbulb, Network, RectangleHorizontal, RefreshCw, Redo2, Square, StickyNote, Undo2, User, Workflow, X, type IconNode,
 } from 'lucide';
 import { exampleUrl, lang, t } from './i18n';
@@ -218,6 +218,8 @@ interface PaletteItem {
 
 /** Paralelogramo (entrada / salida): lucide no lo trae. */
 const Parallelogram: IconNode = [['path', { d: 'M7 5h14l-4 14H3z' }]];
+const QueueShape: IconNode = [['path', { d: 'M6 6h12a3 6 0 0 1 0 12H6a3 6 0 0 1 0-12z' }], ['path', { d: 'M18 6a3 6 0 0 0 0 12' }]];
+const SubprocessShape: IconNode = [['rect', { x: '3', y: '6', width: '18', height: '12', rx: '2' }], ['path', { d: 'M7 6v12M17 6v12' }]];
 
 function paletteItems(): PaletteItem[] {
   const type = model.diagram.type;
@@ -256,6 +258,10 @@ function paletteItems(): PaletteItem[] {
     return [
       { label: t('ed.add.node'), icon: Square, add: node({}, 'ed.newNode') },
       { label: t('ed.add.database'), icon: Database, add: node({ kind: 'database' }, 'ed.newDatabase') },
+      { label: t('ed.add.cloud'), icon: Cloud, add: node({ kind: 'cloud' }, 'ed.newCloud') },
+      { label: t('ed.add.queue'), icon: QueueShape, add: node({ kind: 'queue' }, 'ed.newQueue') },
+      { label: t('ed.add.screen'), icon: AppWindow, add: node({ kind: 'screen' }, 'ed.newScreen') },
+      { label: t('ed.add.person'), icon: User, add: node({ kind: 'person' }, 'ed.newPerson') },
       { label: t('ed.add.note'), icon: StickyNote, add: node({ kind: 'note' }, 'ed.newNote') },
       { label: t('ed.add.layer'), icon: RectangleHorizontal, add: () => model.addGroup(t('ed.newLayer')) },
     ];
@@ -268,13 +274,24 @@ function paletteItems(): PaletteItem[] {
     { label: t('ed.add.data'), icon: Parallelogram, add: node({ kind: 'data' }, 'ed.newData') },
     { label: t('ed.add.database'), icon: Database, add: node({ kind: 'database' }, 'ed.newDatabase') },
     { label: t('ed.add.note'), icon: StickyNote, add: node({ kind: 'note' }, 'ed.newNote') },
+    { label: t('ed.add.person'), icon: User, add: node({ kind: 'person' }, 'ed.newPerson') },
+    { label: t('ed.add.event'), icon: Zap, add: node({ kind: 'event' }, 'ed.newEvent') },
+    { label: t('ed.add.document'), icon: FileText, add: node({ kind: 'document' }, 'ed.newDocument') },
+    { label: t('ed.add.wait'), icon: Hourglass, add: node({ kind: 'wait' }, 'ed.newWait') },
+    { label: t('ed.add.cloud'), icon: Cloud, add: node({ kind: 'cloud' }, 'ed.newCloud') },
+    { label: t('ed.add.queue'), icon: QueueShape, add: node({ kind: 'queue' }, 'ed.newQueue') },
+    { label: t('ed.add.subprocess'), icon: SubprocessShape, add: node({ kind: 'subprocess' }, 'ed.newSubprocess') },
+    { label: t('ed.add.screen'), icon: AppWindow, add: node({ kind: 'screen' }, 'ed.newScreen') },
+    { label: t('ed.add.prepare'), icon: Hexagon, add: node({ kind: 'prepare' }, 'ed.newPrepare') },
   ];
 }
 
 function renderPalette() {
   const root = $('palette');
+  const items = paletteItems();
+  root.classList.toggle('is-wide', items.length > 9);
   root.replaceChildren(
-    ...paletteItems().map((item) => {
+    ...items.map((item) => {
       const chip = h('button', { type: 'button', class: 'ed-chip' }, icon(item.icon, 16), item.label);
       chip.addEventListener('pointerdown', (e) => startPaletteDrag(e, item));
       chip.addEventListener('keydown', (e) => {

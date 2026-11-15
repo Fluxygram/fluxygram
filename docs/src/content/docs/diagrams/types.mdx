@@ -23,9 +23,33 @@ When two types fit, pick the one whose motion matches the question: "how does X 
 
 ## flow
 
-Processes and decisions. Blocks can take shapes with `kind`: `decision` (diamond, phrase it as a question), `start` and `end` (pills), `data` (parallelogram), `database` (cylinder) and `note`. Add `"direction": "TB"` to lay it out top to bottom.
+Processes and decisions. Blocks can take a shape with `kind` (see [block shapes](#block-shapes) below). Add `"direction": "TB"` to lay it out top to bottom.
 
 <Diagram src="order" />
+
+### Block shapes
+
+The shape says what a block *is* before anyone reads the label. All of them work in a `flow`; an `architecture` uses `database`, `cloud`, `queue`, `screen`, `person` and `note`.
+
+| `kind` | Shape | Use it for |
+| --- | --- | --- |
+| *(none)* | Rounded box | A step, an action |
+| `decision` | Diamond | A question with several answers ("In stock?") |
+| `start` / `end` | Pill | Where the process begins and ends |
+| `person` | Pill with an avatar | Someone who does something: a customer, a doctor, a reviewer |
+| `event` | Double outline | Something that happens: an email arrives, a day passes, a package is delivered |
+| `document` | Wavy bottom | A paper or a file: an invoice, a contract, a recipe, a report |
+| `wait` | D shape | A delay or waiting for someone: "up to 48 h", approval |
+| `prepare` | Hexagon | Getting something ready: set up, mix the ingredients, configure |
+| `screen` | Window | What a user sees: an app, a web page, a form |
+| `data` | Parallelogram | Information going in or out |
+| `database` | Cylinder | Where information is stored |
+| `queue` | Horizontal cylinder | Things waiting in line: messages, tasks, orders |
+| `cloud` | Cloud | An external service: a payment provider, Google, a supplier |
+| `subprocess` | Box with side bars | A step explained in another diagram |
+| `note` | Folded note | A comment beside the process |
+
+<Diagram src="returns" />
 
 ## architecture
 

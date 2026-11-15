@@ -123,6 +123,13 @@ function drawBadge(part: Element, x: number, y: number) {
   el('path', { class: 'i-pending', d: 'M0 -3.8 A3.8 3.8 0 1 1 -3.8 0' }, g);
 }
 
+/** Dónde va el ícono en cada forma (por defecto, a 16 px del borde). */
+const ICON_X: Partial<Record<string, number>> = { data: 22, event: 18, queue: 24, subprocess: 22, prepare: 22 };
+/** Cuánto baja (o sube) el texto respecto al centro. */
+const CY_SHIFT: Partial<Record<string, number>> = { database: 3.5, cloud: 9, screen: 6, document: -4 };
+/** Corrimiento del texto centrado (formas asimétricas). */
+const CENTER_SHIFT: Partial<Record<string, number>> = { wait: -8 };
+
 function drawNode(n: LaidNode, slot: Element) {
   const { node, w, h } = n;
   const part = el('g', { class: `fx-node${node.accent ? ' is-accent' : ''}`, 'data-id': n.id }, slot);
@@ -143,17 +150,77 @@ function drawNode(n: LaidNode, slot: Element) {
       el('path', { class: 'fx-shape fx-note', d: `M0 0 H${w - 14} L${w} 14 V${h} H0 Z`, 'stroke-linejoin': 'round' }, part);
       el('path', { class: 'fx-rim', d: `M${w - 14} 0 V14 H${w}` }, part);
       break;
+    case 'person': {
+      // Píldora con el avatar a la izquierda: alguien que hace algo.
+      el('path', { class: 'fx-shape', d: roundRect(w, h, h / 2) }, part);
+      el('circle', { class: 'fx-rim fx-avatar', cx: h / 2, cy: h / 2, r: h / 2 - 7 }, part);
+      break;
+    }
+    case 'event':
+      // Doble contorno, como los eventos de BPMN: algo que pasa.
+      el('path', { class: 'fx-shape', d: roundRect(w, h, h / 2) }, part);
+      el('path', { class: 'fx-rim', d: roundRect(w - 8, h - 8, (h - 8) / 2), transform: 'translate(4 4)' }, part);
+      break;
+    case 'document': {
+      // Hoja con el borde inferior ondulado.
+      const b = h - 7;
+      el('path', { class: 'fx-shape', d: `M12 0 H${w - 12} Q${w} 0 ${w} 12 V${b} Q${w * 0.75} ${b - 9} ${w / 2} ${b} T0 ${b} V12 Q0 0 12 0 Z`, 'stroke-linejoin': 'round' }, part);
+      break;
+    }
+    case 'wait':
+      // Forma de D: una espera o una demora.
+      el('path', { class: 'fx-shape', d: `M12 0 H${w - h / 2} A${h / 2} ${h / 2} 0 0 1 ${w - h / 2} ${h} H12 Q0 ${h} 0 ${h - 12} V12 Q0 0 12 0 Z` }, part);
+      break;
+    case 'cloud': {
+      // Tres bultos arriba que se reparten según el ancho, y la base plana.
+      const top = h * 0.42;
+      const x0 = h * 0.24;
+      const x3 = w - h * 0.24;
+      const c = (x3 - x0) / 3;
+      const r = c * 0.56;
+      const side = h * 0.34;
+      const pts = [[x0, top + 6], [x0 + c, top - 3], [x0 + 2 * c, top - 6], [x3, top + 6]];
+      let d = `M${h * 0.34} ${h} A${side} ${side} 0 0 1 ${pts[0]![0]} ${pts[0]![1]}`;
+      for (let k = 1; k < pts.length; k++) d += ` A${r} ${r} 0 0 1 ${pts[k]![0]} ${pts[k]![1]}`;
+      d += ` A${side} ${side} 0 0 1 ${w - h * 0.34} ${h} Z`;
+      el('path', { class: 'fx-shape', d, 'stroke-linejoin': 'round' }, part);
+      break;
+    }
+    case 'queue': {
+      // Cilindro acostado: cosas esperando en fila.
+      const rx = 9;
+      el('path', { class: 'fx-shape', d: `M${rx} 0 H${w - rx} A${rx} ${h / 2} 0 0 1 ${w - rx} ${h} H${rx} A${rx} ${h / 2} 0 0 1 ${rx} 0 Z` }, part);
+      el('path', { class: 'fx-rim', d: `M${w - rx} 0 A${rx} ${h / 2} 0 0 0 ${w - rx} ${h}` }, part);
+      break;
+    }
+    case 'subprocess':
+      el('path', { class: 'fx-shape', d: roundRect(w, h, 10) }, part);
+      el('path', { class: 'fx-rim', d: `M12 0 V${h} M${w - 12} 0 V${h}` }, part);
+      break;
+    case 'screen':
+      // Una ventana: lo que ve el usuario.
+      el('path', { class: 'fx-shape', d: roundRect(w, h, 10) }, part);
+      el('path', { class: 'fx-rim', d: `M0 14 H${w}` }, part);
+      for (const x of [10, 17, 24]) el('circle', { class: 'fx-rim fx-dot', cx: x, cy: 7, r: 1.8 }, part);
+      break;
+    case 'prepare':
+      // Hexágono: preparar, alistar, configurar.
+      el('path', { class: 'fx-shape', d: `M16 0 H${w - 16} L${w} ${h / 2} L${w - 16} ${h} H16 L0 ${h / 2} Z`, 'stroke-linejoin': 'round' }, part);
+      break;
     default: {
       const rx = node.kind === 'start' || node.kind === 'end' ? h / 2 : 12;
       el('path', { class: 'fx-shape', d: roundRect(w, h, rx) }, part);
     }
   }
 
-  // El cilindro baja el texto para que quede debajo de la tapa.
-  const cy = node.kind === 'database' ? h / 2 + RY / 2 : h / 2;
-  const icon = node.icon && node.kind !== 'decision' ? iconElement(node.icon, node.kind === 'data' ? 22 : 16, cy - 9, 18) : null;
+  // Algunas formas corren el texto: debajo de la tapa del cilindro, de la barra de la ventana, sobre la onda.
+  const cy = h / 2 + (CY_SHIFT[node.kind ?? 'default'] ?? 0);
+  const person = node.kind === 'person';
+  const iconName = node.icon ?? (person ? 'user' : undefined);
+  const iconX = person ? h / 2 - 9 : (ICON_X[node.kind ?? 'default'] ?? 16);
+  const icon = iconName && node.kind !== 'decision' ? iconElement(iconName, iconX, cy - 9, 18) : null;
   const center = !icon;
-  const tx = center ? w / 2 : node.kind === 'data' ? 50 : 44;
+  const tx = person ? h + 4 : center ? w / 2 + (CENTER_SHIFT[node.kind ?? 'default'] ?? 0) : iconX + 28;
   const anchor = center ? 'middle' : 'start';
   if (icon) part.appendChild(icon);
 

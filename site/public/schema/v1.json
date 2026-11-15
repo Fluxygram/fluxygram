@@ -353,9 +353,18 @@
             "end",
             "data",
             "database",
-            "note"
+            "note",
+            "person",
+            "event",
+            "document",
+            "wait",
+            "cloud",
+            "queue",
+            "subprocess",
+            "screen",
+            "prepare"
           ],
-          "description": "Block shape. decision: diamond (phrase it as a question). start/end: pill. data: parallelogram (input/output). database: cylinder. note: folded note for annotations."
+          "description": "Block shape. decision: diamond (phrase it as a question). start/end: pill. data: parallelogram (input/output). database: cylinder. note: folded note for annotations. person: someone who acts (avatar on the left). event: something that happens (double outline). document: a paper or file (wavy bottom). wait: a delay or waiting for someone (D shape). cloud: an external service. queue: messages or tasks waiting in line (horizontal cylinder). subprocess: a step detailed elsewhere (double side bars). screen: what a user sees (a window). prepare: getting something ready (hexagon)."
         },
         "group": {
           "$ref": "#/$defs/id",

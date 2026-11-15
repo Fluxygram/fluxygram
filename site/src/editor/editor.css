@@ -32,6 +32,8 @@
 }
 .ed-chip:active { cursor: grabbing; transform: scale(0.97); }
 .ed-chip svg { width: 16px; height: 16px; color: var(--accent); }
+/* Con muchas formas (flujo), la paleta pasa a dos columnas para no salirse del lienzo. */
+.ed-palette.is-wide { display: grid; grid-template-columns: repeat(2, auto); max-height: calc(100% - 24px); overflow-y: auto; }
 
 .ed-icon {
   display: inline-grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px;
@@ -234,6 +236,7 @@
 
 @media (max-width: 900px) {
   .ed-palette { flex-direction: row; flex-wrap: wrap; right: 12px; }
+  .ed-palette.is-wide { display: flex; max-height: 40%; }
   .ed-chip { padding: 0 8px; }
   .ed-main { grid-template-columns: 1fr; grid-template-rows: minmax(300px, 1fr) auto auto; grid-template-areas: 'stage' 'steps' 'side'; }
   .ed-side { border-left: 0; border-top: 1px solid var(--border); max-height: 40vh; }

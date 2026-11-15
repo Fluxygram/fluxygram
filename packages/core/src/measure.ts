@@ -24,9 +24,32 @@ export function nodeSize(node: FluxNode, type: DiagramType): { w: number; h: num
     return { w: Math.max(150, label + 84), h: 84 };
   }
 
+  const base = node.description ? 64 : 48;
+  // La persona siempre lleva su avatar a la izquierda, del alto del bloque.
+  if (node.kind === 'person') {
+    return { w: Math.min(320, Math.max(150, Math.max(label, desc) + base + 22)), h: base };
+  }
   const inner = Math.max(label + icon, desc);
-  const extra = node.kind === 'data' ? 24 : node.kind === 'note' ? 16 : 0;
-  const w = Math.min(320, Math.max(node.kind === 'start' || node.kind === 'end' ? 120 : 140, inner + 44 + extra));
-  const h = (node.description ? 64 : 48) + (node.kind === 'database' ? 14 : 0);
+  const extra = EXTRA_W[node.kind ?? 'default'] ?? 0;
+  const w = Math.min(340, Math.max(node.kind === 'start' || node.kind === 'end' ? 120 : 140, inner + 44 + extra));
+  const h = base + (EXTRA_H[node.kind ?? 'default'] ?? 0);
   return { w, h };
 }
+
+/** Espacio extra que necesita cada forma para que el texto no toque sus bordes. */
+const EXTRA_W: Partial<Record<string, number>> = {
+  data: 24,
+  note: 16,
+  event: 8,
+  wait: 22,
+  cloud: 44,
+  queue: 22,
+  subprocess: 20,
+  prepare: 30,
+};
+const EXTRA_H: Partial<Record<string, number>> = {
+  database: 14,
+  document: 10,
+  cloud: 24,
+  screen: 12,
+};

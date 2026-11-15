@@ -203,12 +203,16 @@ ${darkTokens(':host')}
 }
 .fx-shape {
   fill: var(--fx-surface); stroke: var(--fx-border); stroke-width: 1;
-  filter: drop-shadow(0 1px 1.5px rgb(23 23 28 / 0.05)) drop-shadow(0 4px 10px rgb(23 23 28 / 0.04));
   transition: fill 320ms ease, stroke 320ms ease;
 }
+/* La sombra solo se ve sobre fondo claro; en oscuro el navegador la recortaba en un rectángulo visible. */
+:host([theme='light']) .fx-shape { filter: drop-shadow(0 1px 1.5px rgb(23 23 28 / 0.05)) drop-shadow(0 4px 10px rgb(23 23 28 / 0.04)); }
 .fx-rim { fill: none; stroke: var(--fx-border); stroke-width: 1; transition: stroke 320ms ease; }
 .fx-shape.fx-note { stroke-dasharray: 4 3; fill: color-mix(in oklab, var(--fx-warning) 6%, var(--fx-surface)); }
 .fx-note-text { font-weight: 500; }
+.fx-avatar { fill: color-mix(in oklab, var(--fx-text) 6%, transparent); }
+.fx-dot { fill: var(--fx-border); stroke: none; }
+.fx-node[data-state] .fx-dot { fill: var(--fx-state); }
 .fx-node.is-accent .fx-rim { stroke: var(--fx-accent); }
 .fx-node[data-state] .fx-rim { stroke: var(--fx-state); }
 .fx-label { fill: var(--fx-text); font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }

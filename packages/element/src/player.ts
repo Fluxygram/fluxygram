@@ -198,10 +198,13 @@ export class Player {
     if (reducedMotion()) return;
     const n = this.layout.nodes.find((x) => x.id === id);
     if (!n) return;
-    const decision = n.node.kind === 'decision';
-    const ring = decision
-      ? el('path', { class: 'fx-pulse', d: `M${n.x + n.w / 2} ${n.y} L${n.x + n.w} ${n.y + n.h / 2} L${n.x + n.w / 2} ${n.y + n.h} L${n.x} ${n.y + n.h / 2} Z` }, this.scene.overlay)
-      : el('rect', { class: 'fx-pulse', x: n.x, y: n.y, width: n.w, height: n.h, rx: n.node.kind === 'start' || n.node.kind === 'end' ? n.h / 2 : 12 }, this.scene.overlay);
+    // El anillo copia el contorno real del bloque (rombo, hexágono, nube…), no un rectángulo genérico.
+    // La animación usa transform (escala), así que el desplazamiento va en un grupo aparte.
+    const shape = this.scene.parts.get(id)?.querySelector('.fx-shape');
+    const holder = el('g', { transform: `translate(${n.x} ${n.y})` }, this.scene.overlay);
+    const ring = shape
+      ? el('path', { class: 'fx-pulse', d: shape.getAttribute('d') ?? '' }, holder)
+      : el('rect', { class: 'fx-pulse', width: n.w, height: n.h, rx: 12 }, holder);
     ring.style.stroke = color;
     const anim = ring.animate(
       [
@@ -210,8 +213,8 @@ export class Player {
       ],
       { duration: 720, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' },
     );
-    anim.onfinish = () => ring.remove();
-    anim.oncancel = () => ring.remove();
+    anim.onfinish = () => holder.remove();
+    anim.oncancel = () => holder.remove();
   }
 
   /* ---------- Resaltado ---------- */

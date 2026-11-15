@@ -1,0 +1,209 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Returning a product",
+  "nodes": [
+    {
+      "id": "customer",
+      "label": "Customer",
+      "kind": "person"
+    },
+    {
+      "id": "form",
+      "label": "Return form",
+      "description": "in the app",
+      "kind": "screen",
+      "icon": "mobile"
+    },
+    {
+      "id": "label",
+      "label": "Shipping label",
+      "kind": "document"
+    },
+    {
+      "id": "pack",
+      "label": "Pack the item",
+      "kind": "prepare",
+      "icon": "box"
+    },
+    {
+      "id": "arrives",
+      "label": "Package arrives",
+      "kind": "event",
+      "icon": "truck"
+    },
+    {
+      "id": "inspect",
+      "label": "Inspection",
+      "description": "up to 48 h",
+      "kind": "wait",
+      "icon": "hourglass"
+    },
+    {
+      "id": "ok",
+      "label": "In good condition?",
+      "kind": "decision"
+    },
+    {
+      "id": "queue",
+      "label": "Refunds queue",
+      "description": "processed every night",
+      "kind": "queue"
+    },
+    {
+      "id": "provider",
+      "label": "Payment provider",
+      "kind": "cloud"
+    },
+    {
+      "id": "money",
+      "label": "Money back",
+      "kind": "end",
+      "icon": "money"
+    },
+    {
+      "id": "back",
+      "label": "Send it back",
+      "description": "see the shipping flow",
+      "kind": "subprocess"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "customer",
+      "to": "form"
+    },
+    {
+      "id": "e2",
+      "from": "form",
+      "to": "label"
+    },
+    {
+      "id": "e3",
+      "from": "label",
+      "to": "pack"
+    },
+    {
+      "id": "e4",
+      "from": "pack",
+      "to": "arrives"
+    },
+    {
+      "id": "e5",
+      "from": "arrives",
+      "to": "inspect"
+    },
+    {
+      "id": "e6",
+      "from": "inspect",
+      "to": "ok"
+    },
+    {
+      "id": "yes",
+      "from": "ok",
+      "to": "queue",
+      "label": "yes"
+    },
+    {
+      "id": "no",
+      "from": "ok",
+      "to": "back",
+      "label": "no"
+    },
+    {
+      "id": "e7",
+      "from": "queue",
+      "to": "provider"
+    },
+    {
+      "id": "e8",
+      "from": "provider",
+      "to": "money"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "customer"
+      ],
+      "caption": "A customer wants to return something"
+    },
+    {
+      "show": [
+        "e1",
+        "form"
+      ],
+      "flow": "e1",
+      "caption": "They fill in the return form in the app"
+    },
+    {
+      "show": [
+        "e2",
+        "label"
+      ],
+      "flow": "e2",
+      "caption": "and get a shipping label"
+    },
+    {
+      "show": [
+        "e3",
+        "pack",
+        "e4",
+        "arrives"
+      ],
+      "flow": [
+        "e3",
+        "e4"
+      ],
+      "caption": "They pack it and send it to the warehouse"
+    },
+    {
+      "show": [
+        "e5",
+        "inspect"
+      ],
+      "flow": "e5",
+      "state": {
+        "inspect": "pending"
+      },
+      "caption": "The warehouse inspects it, which takes up to 48 h"
+    },
+    {
+      "show": [
+        "e6",
+        "ok",
+        "no",
+        "back"
+      ],
+      "flow": "e6",
+      "state": {
+        "inspect": "success",
+        "ok": "warning",
+        "back": "error"
+      },
+      "caption": "If it is damaged, it goes back to the customer"
+    },
+    {
+      "show": [
+        "yes",
+        "queue",
+        "e7",
+        "provider",
+        "e8",
+        "money"
+      ],
+      "flow": [
+        "yes",
+        "e7",
+        "e8"
+      ],
+      "state": {
+        "ok": "success",
+        "back": "default",
+        "money": "success"
+      },
+      "caption": "Otherwise the refund is queued and paid to the card"
+    }
+  ]
+}

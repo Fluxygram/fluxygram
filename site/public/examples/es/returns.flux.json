@@ -1,0 +1,209 @@
+{
+  "$schema": "/schema/v1.json",
+  "type": "flow",
+  "title": "Devolver un producto",
+  "nodes": [
+    {
+      "id": "customer",
+      "label": "Cliente",
+      "kind": "person"
+    },
+    {
+      "id": "form",
+      "label": "Formulario de devolución",
+      "description": "en la app",
+      "kind": "screen",
+      "icon": "mobile"
+    },
+    {
+      "id": "label",
+      "label": "Guía de envío",
+      "kind": "document"
+    },
+    {
+      "id": "pack",
+      "label": "Empacar el producto",
+      "kind": "prepare",
+      "icon": "box"
+    },
+    {
+      "id": "arrives",
+      "label": "Llega el paquete",
+      "kind": "event",
+      "icon": "truck"
+    },
+    {
+      "id": "inspect",
+      "label": "Revisión",
+      "description": "hasta 48 h",
+      "kind": "wait",
+      "icon": "hourglass"
+    },
+    {
+      "id": "ok",
+      "label": "¿Está en buen estado?",
+      "kind": "decision"
+    },
+    {
+      "id": "queue",
+      "label": "Cola de reembolsos",
+      "description": "se procesa cada noche",
+      "kind": "queue"
+    },
+    {
+      "id": "provider",
+      "label": "Proveedor de pagos",
+      "kind": "cloud"
+    },
+    {
+      "id": "money",
+      "label": "Dinero devuelto",
+      "kind": "end",
+      "icon": "money"
+    },
+    {
+      "id": "back",
+      "label": "Devolverlo",
+      "description": "ver el flujo de envíos",
+      "kind": "subprocess"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "customer",
+      "to": "form"
+    },
+    {
+      "id": "e2",
+      "from": "form",
+      "to": "label"
+    },
+    {
+      "id": "e3",
+      "from": "label",
+      "to": "pack"
+    },
+    {
+      "id": "e4",
+      "from": "pack",
+      "to": "arrives"
+    },
+    {
+      "id": "e5",
+      "from": "arrives",
+      "to": "inspect"
+    },
+    {
+      "id": "e6",
+      "from": "inspect",
+      "to": "ok"
+    },
+    {
+      "id": "yes",
+      "from": "ok",
+      "to": "queue",
+      "label": "sí"
+    },
+    {
+      "id": "no",
+      "from": "ok",
+      "to": "back",
+      "label": "no"
+    },
+    {
+      "id": "e7",
+      "from": "queue",
+      "to": "provider"
+    },
+    {
+      "id": "e8",
+      "from": "provider",
+      "to": "money"
+    }
+  ],
+  "steps": [
+    {
+      "show": [
+        "customer"
+      ],
+      "caption": "Un cliente quiere devolver algo"
+    },
+    {
+      "show": [
+        "e1",
+        "form"
+      ],
+      "flow": "e1",
+      "caption": "Llena el formulario de devolución en la app"
+    },
+    {
+      "show": [
+        "e2",
+        "label"
+      ],
+      "flow": "e2",
+      "caption": "y recibe una guía de envío"
+    },
+    {
+      "show": [
+        "e3",
+        "pack",
+        "e4",
+        "arrives"
+      ],
+      "flow": [
+        "e3",
+        "e4"
+      ],
+      "caption": "Lo empaca y lo envía a la bodega"
+    },
+    {
+      "show": [
+        "e5",
+        "inspect"
+      ],
+      "flow": "e5",
+      "state": {
+        "inspect": "pending"
+      },
+      "caption": "La bodega lo revisa: tarda hasta 48 h"
+    },
+    {
+      "show": [
+        "e6",
+        "ok",
+        "no",
+        "back"
+      ],
+      "flow": "e6",
+      "state": {
+        "inspect": "success",
+        "ok": "warning",
+        "back": "error"
+      },
+      "caption": "Si está dañado, vuelve al cliente"
+    },
+    {
+      "show": [
+        "yes",
+        "queue",
+        "e7",
+        "provider",
+        "e8",
+        "money"
+      ],
+      "flow": [
+        "yes",
+        "e7",
+        "e8"
+      ],
+      "state": {
+        "ok": "success",
+        "back": "default",
+        "money": "success"
+      },
+      "caption": "Si no, el reembolso entra a la cola y se paga a la tarjeta"
+    }
+  ]
+}

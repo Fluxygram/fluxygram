@@ -78,7 +78,7 @@ Type-specific notes:
 | `label` | yes | 1 to 3 words. It is a name, not a sentence. |
 | `description` | no | One short line (under ~30 characters) under the label. |
 | `icon` | no | One of the built-in names listed below. |
-| `kind` | no | Block shape. `flow`: `decision` (diamond, phrase it as a question), `start` / `end` (pills), `data` (parallelogram: input or output), `database` (cylinder), `note` (folded note to annotate). `architecture`: `database`, `note`. |
+| `kind` | no | Block shape, so readers know what a block is before reading it. `flow`: `decision` (diamond, phrase it as a question), `start` / `end` (pills), `person` (someone who acts), `event` (something that happens: an email arrives, a day passes), `document` (an invoice, a contract, a report), `wait` (a delay or waiting for approval), `prepare` (getting something ready), `screen` (what a user sees: an app, a form), `data` (parallelogram: input or output), `database` (cylinder), `queue` (things waiting in line), `cloud` (an external service), `subprocess` (a step detailed in another diagram), `note` (folded note to annotate). `architecture`: `database`, `cloud`, `queue`, `screen`, `person`, `note`. Use them where they add meaning; a plain box is fine for ordinary steps. |
 | `group` | no | `architecture` only: the id of the layer it belongs to. |
 | `date` | no | `timeline` only: `"1995"`, `"2026-03"`, `"Q3 2026"`. Milestones are sorted by it when every node has one. |
 | `accent` | no | `true` on the one node that matters most (the outcome, the key service). Use it at most once or twice. |

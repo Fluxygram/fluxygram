@@ -40,6 +40,7 @@ const EXAMPLES: Example[] = [
   { name: 'blood', theme: 'health' },
   { name: 'coffee', theme: 'history' },
   { name: 'order', theme: 'work' },
+  { name: 'returns', theme: 'work' },
   { name: 'law', theme: 'society' },
   {
     name: 'track-ticket',

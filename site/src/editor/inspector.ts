@@ -217,8 +217,18 @@ function nodePanel(model: Model, id: string) {
   if (d.type !== 'timeline' && d.type !== 'sequence') {
     const kinds: [NodeKind, string][] =
       d.type === 'flow'
-        ? [['default', 'ed.kind.default'], ['decision', 'ed.add.decision'], ['start', 'ed.add.start'], ['end', 'ed.add.end'], ['data', 'ed.add.data'], ['database', 'ed.add.database'], ['note', 'ed.add.note']]
-        : [['default', 'ed.kind.default'], ['database', 'ed.add.database'], ['note', 'ed.add.note']];
+        ? [
+            ['default', 'ed.kind.default'], ['decision', 'ed.add.decision'], ['start', 'ed.add.start'], ['end', 'ed.add.end'],
+            ['data', 'ed.add.data'], ['database', 'ed.add.database'], ['note', 'ed.add.note'], ['person', 'ed.add.person'],
+            ['event', 'ed.add.event'], ['document', 'ed.add.document'], ['wait', 'ed.add.wait'], ['cloud', 'ed.add.cloud'],
+            ['queue', 'ed.add.queue'], ['subprocess', 'ed.add.subprocess'], ['screen', 'ed.add.screen'], ['prepare', 'ed.add.prepare'],
+          ]
+        : d.type === 'architecture'
+          ? [
+              ['default', 'ed.kind.default'], ['database', 'ed.add.database'], ['cloud', 'ed.add.cloud'], ['queue', 'ed.add.queue'],
+              ['screen', 'ed.add.screen'], ['person', 'ed.add.person'], ['note', 'ed.add.note'],
+            ]
+          : [['default', 'ed.kind.default'], ['database', 'ed.add.database'], ['note', 'ed.add.note']];
     const select = h('select', {
       onchange: (e) => {
         const k = (e.target as HTMLSelectElement).value as NodeKind;

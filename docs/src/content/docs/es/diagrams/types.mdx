@@ -23,9 +23,33 @@ Si dos tipos sirven, elige el que se mueve como la pregunta: "¿cómo pasa X?" �
 
 ## flow
 
-Procesos y decisiones. Los bloques pueden tener forma con `kind`: `decision` (rombo, escríbelo como pregunta), `start` y `end` (píldoras), `data` (paralelogramo), `database` (cilindro) y `note`. Agrega `"direction": "TB"` para ordenarlo de arriba hacia abajo.
+Procesos y decisiones. Los bloques pueden tener una forma con `kind` (mira las [formas de los bloques](#formas-de-los-bloques) más abajo). Agrega `"direction": "TB"` para ordenarlo de arriba hacia abajo.
 
 <Diagram src="order" />
+
+### Formas de los bloques
+
+La forma dice qué *es* un bloque antes de leer su nombre. Todas funcionan en un `flow`; una `architecture` usa `database`, `cloud`, `queue`, `screen`, `person` y `note`.
+
+| `kind` | Forma | Úsala para |
+| --- | --- | --- |
+| *(ninguno)* | Caja redondeada | Un paso, una acción |
+| `decision` | Rombo | Una pregunta con varias respuestas ("¿Hay stock?") |
+| `start` / `end` | Píldora | Dónde empieza y termina el proceso |
+| `person` | Píldora con avatar | Alguien que hace algo: un cliente, un médico, quien revisa |
+| `event` | Doble contorno | Algo que pasa: llega un correo, pasa un día, se entrega un paquete |
+| `document` | Borde ondulado | Un papel o un archivo: una factura, un contrato, una receta, un informe |
+| `wait` | Forma de D | Una demora o esperar a alguien: "hasta 48 h", una aprobación |
+| `prepare` | Hexágono | Alistar algo: configurar, mezclar los ingredientes, preparar |
+| `screen` | Ventana | Lo que ve el usuario: una app, una página, un formulario |
+| `data` | Paralelogramo | Información que entra o sale |
+| `database` | Cilindro | Dónde se guarda la información |
+| `queue` | Cilindro acostado | Cosas esperando en fila: mensajes, tareas, pedidos |
+| `cloud` | Nube | Un servicio externo: un proveedor de pagos, Google, un proveedor |
+| `subprocess` | Caja con barras laterales | Un paso que se explica en otro diagrama |
+| `note` | Nota doblada | Un comentario al lado del proceso |
+
+<Diagram src="returns" />
 
 ## architecture
 
