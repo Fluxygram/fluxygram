@@ -385,3 +385,4 @@ main, .wordmark, footer { position: relative; z-index: 1; }
   background: color-mix(in oklab, var(--accent) 16%, transparent); color: var(--accent); font-size: 11px; font-weight: 600;
 }
 .ed-cloud-menu .ed-cloud-pro { color: var(--accent); }
+.plan-forever { color: var(--accent); }
