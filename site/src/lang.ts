@@ -19,7 +19,7 @@ for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lang-switc
       { value: 'es', label: 'ES' },
     ],
     value: lang,
-    size: 'sm',
+    size: btn.closest('.ed-top') ? 'sm' : 'md',
     radius: 8,
     inset: 3,
     ariaLabel: t('lang.label'),

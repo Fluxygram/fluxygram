@@ -30,16 +30,16 @@ code, pre { font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monos
 
 /* ---------- Nav ---------- */
 .nav-links { align-items: center; gap: 8px; }
-.nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 20px; letter-spacing: -0.02em; text-decoration: none; }
 .brand svg { width: 26px; height: 26px; }
 .nav-links { display: flex; gap: 4px; }
 .nav-links a {
-  padding: 6px 12px; border-radius: 8px; font-size: 14px; color: var(--muted); text-decoration: none;
+  padding: 8px 14px; border-radius: 9px; font-size: 16px; font-weight: 500; color: var(--muted); text-decoration: none;
   transition: color 160ms ease, background-color 160ms ease;
 }
-.nav-links a.gh { display: inline-grid; place-items: center; padding: 6px 8px; }
-.nav-links a.gh svg { width: 20px; height: 20px; }
+.nav-links a.gh { display: inline-grid; place-items: center; padding: 7px 9px; }
+.nav-links a.gh svg { width: 24px; height: 24px; }
 .btn svg { width: 18px; height: 18px; }
 .lang-switch {
   margin-left: 4px; padding: 5px 11px; border: 1px solid var(--border); border-radius: 8px;
@@ -186,6 +186,9 @@ footer { padding: 40px 0 56px; border-top: 1px solid var(--border); color: var(-
 .legal li { margin: 6px 0; }
 .legal a { color: var(--accent); }
 .footer-legal { color: var(--muted); font-size: 14px; }
+/* Logos de agentes en las pestañas */
+.ag-logos { display: inline-flex; align-items: center; gap: 5px; margin-right: 8px; vertical-align: -3px; }
+.ag-logo { width: 16px; height: 16px; flex: none; }
 .footer-legal a { color: var(--muted); text-decoration: none; }
 @media (hover: hover) and (pointer: fine) { .footer-legal a:hover { color: var(--text); } }
 

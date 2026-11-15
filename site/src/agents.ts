@@ -1,4 +1,5 @@
 import { lang, t } from './i18n';
+import { agentLogo } from './agentLogos';
 
 /**
  * "Úsalo con tu agente": instrucciones y prompts listos para copiar, para cada agente.
@@ -8,14 +9,14 @@ import { lang, t } from './i18n';
 const SITE = location.origin;
 const EDITOR = `${SITE}/play`;
 
-type Agent = { id: string; label: string; kind: 'claude-code' | 'coding' | 'chat'; open?: string };
+type Agent = { id: string; label: string; kind: 'claude-code' | 'coding' | 'chat'; open?: string; logos: string[] };
 
 const AGENTS: Agent[] = [
-  { id: 'claude-code', label: 'Claude Code', kind: 'claude-code' },
-  { id: 'coding', label: 'Cursor · Codex · Copilot', kind: 'coding' },
-  { id: 'chatgpt', label: 'ChatGPT', kind: 'chat', open: 'https://chatgpt.com/' },
-  { id: 'gemini', label: 'Gemini', kind: 'chat', open: 'https://gemini.google.com/app' },
-  { id: 'claude', label: 'Claude', kind: 'chat', open: 'https://claude.ai/new' },
+  { id: 'claude-code', label: 'Claude Code', kind: 'claude-code', logos: ['claude'] },
+  { id: 'coding', label: 'Cursor · Codex · Copilot', kind: 'coding', logos: ['cursor', 'openai', 'copilot'] },
+  { id: 'chatgpt', label: 'ChatGPT', kind: 'chat', open: 'https://chatgpt.com/', logos: ['openai'] },
+  { id: 'gemini', label: 'Gemini', kind: 'chat', open: 'https://gemini.google.com/app', logos: ['gemini'] },
+  { id: 'claude', label: 'Claude', kind: 'chat', open: 'https://claude.ai/new', logos: ['claude'] },
 ];
 
 let skillText: string | undefined;
@@ -141,7 +142,13 @@ if (tabs && panel) {
     b.type = 'button';
     b.className = 'tab';
     b.setAttribute('role', 'tab');
-    b.textContent = agent.label;
+    const logos = document.createElement('span');
+    logos.className = 'ag-logos';
+    for (const id of agent.logos) {
+      const svg = agentLogo(id);
+      if (svg) logos.append(svg);
+    }
+    b.append(logos, agent.label);
     b.onclick = () => {
       buttons.forEach((x) => x.setAttribute('aria-selected', String(x === b)));
       panel.replaceChildren(panelFor(agent));
