@@ -4,10 +4,12 @@
  * con la partícula de Fluxygram en la punta; cada nodo se enciende cuando la línea llega a él.
  *
  * Solo decora: el SVG va detrás de todo, sin eventos del puntero y oculto para lectores de pantalla.
+ * En pantallas angostas no se muestra: el margen es muy chico y competiría con el contenido.
  */
 const NS = 'http://www.w3.org/2000/svg';
 const RADIUS = 18; // esquinas redondeadas, como las conexiones de los diagramas
 const TRIGGER = 0.62; // la punta de la línea va a esta altura de la ventana
+const WIDE = '(min-width: 721px)';
 
 interface Stop {
   el: HTMLElement;
@@ -23,9 +25,6 @@ export function mountFlowline(start: HTMLElement, stops: Stop[], end: HTMLElemen
   track.classList.add('flowline-track');
   const line = document.createElementNS(NS, 'path');
   line.classList.add('flowline-line');
-  const glow = document.createElementNS(NS, 'circle');
-  glow.classList.add('flowline-glow');
-  glow.setAttribute('r', '9');
   const dot = document.createElementNS(NS, 'circle');
   dot.classList.add('flowline-dot');
   dot.setAttribute('r', '3.5');
@@ -42,7 +41,7 @@ export function mountFlowline(start: HTMLElement, stops: Stop[], end: HTMLElemen
     svg.append(g);
     return g;
   });
-  svg.append(glow, dot);
+  svg.append(dot);
   document.body.prepend(svg);
 
   let total = 0;
@@ -52,7 +51,11 @@ export function mountFlowline(start: HTMLElement, stops: Stop[], end: HTMLElemen
   const docTop = (el: Element) => el.getBoundingClientRect().top + window.scrollY;
   const docLeft = (el: Element) => el.getBoundingClientRect().left + window.scrollX;
 
+  const wide = matchMedia(WIDE);
+
   function layout() {
+    svg.toggleAttribute('hidden', !wide.matches);
+    if (!wide.matches) return;
     const width = document.documentElement.clientWidth;
     const height = document.documentElement.scrollHeight;
     svg.setAttribute('width', String(width));
@@ -106,6 +109,7 @@ export function mountFlowline(start: HTMLElement, stops: Stop[], end: HTMLElemen
   }
 
   function update() {
+    if (!wide.matches || !total) return;
     const tipY = window.scrollY + window.innerHeight * TRIGGER;
     // Al llegar al final de la página la línea se completa, aunque la marca no alcance la altura de la punta.
     const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
@@ -113,11 +117,9 @@ export function mountFlowline(start: HTMLElement, stops: Stop[], end: HTMLElemen
     line.style.strokeDashoffset = String(total - drawn);
     const p = line.getPointAtLength(drawn);
     const visible = drawn > 1 && drawn < total - 1;
-    for (const c of [dot, glow]) {
-      c.setAttribute('cx', String(p.x));
-      c.setAttribute('cy', String(p.y));
-      c.classList.toggle('is-hidden', !visible);
-    }
+    dot.setAttribute('cx', String(p.x));
+    dot.setAttribute('cy', String(p.y));
+    dot.classList.toggle('is-hidden', !visible);
     nodes.forEach((g, i) => g.classList.toggle('is-on', drawn >= nodeLens[i]! - 1));
   }
 
@@ -137,6 +139,7 @@ export function mountFlowline(start: HTMLElement, stops: Stop[], end: HTMLElemen
   const relayout = schedule(layout);
   new ResizeObserver(relayout).observe(document.body);
   window.addEventListener('resize', relayout);
+  wide.addEventListener('change', relayout);
   void document.fonts?.ready.then(relayout);
   layout();
 }

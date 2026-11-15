@@ -321,6 +321,7 @@ footer .wrap { display: flex; flex-wrap: wrap; align-items: center; justify-cont
 .gal-live .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 /* ---------- La landing como un gran diagrama ---------- */
+.flowline[hidden] { display: none; }
 .flowline { position: absolute; top: 0; left: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 main, .wordmark, footer { position: relative; z-index: 1; }
 .nav { position: relative; z-index: 10; }
@@ -331,8 +332,6 @@ main, .wordmark, footer { position: relative; z-index: 1; }
 .flowline-node.is-on circle:first-child { stroke: var(--accent); }
 .flowline-node.is-on .flowline-core { fill: var(--accent); transform: scale(1.35); }
 .flowline-dot { fill: var(--accent); }
-.flowline-glow { fill: var(--accent); opacity: 0.18; }
 .flowline .is-hidden { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .flowline-node circle, .flowline-core { transition: none; } }
 @media print { .flowline { display: none; } }
-@media (max-width: 720px) { .flowline-node circle:first-child { r: 5px; } .flowline-core { r: 2px; } }
