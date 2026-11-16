@@ -18,5 +18,5 @@
   },
   "include": ["packages/*/src", "site/src"],
   // Obsidian (tipos propios que cambian el DOM global) y Docusaurus (Node) se revisan en su propio build.
-  "exclude": ["packages/obsidian", "packages/docusaurus"]
+  "exclude": ["packages/obsidian", "packages/docusaurus", "packages/mcp/src/cli.ts"]
 }

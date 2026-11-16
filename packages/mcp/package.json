@@ -1,0 +1,31 @@
+{
+  "name": "@fluxygram/mcp",
+  "version": "0.3.0",
+  "description": "Fluxygram MCP server: lets AI agents write, validate and share animated step-by-step diagrams. Works in Claude, Cursor, VS Code, Windsurf and any MCP client.",
+  "keywords": ["mcp", "mcp-server", "model-context-protocol", "ai", "agents", "claude", "cursor", "diagram", "animation", "fluxygram"],
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://docs.fluxygram.app/guides/mcp/",
+  "repository": { "type": "git", "url": "git+https://github.com/Fluxygram/fluxygram.git", "directory": "packages/mcp" },
+  "bugs": { "url": "https://github.com/Fluxygram/fluxygram/issues" },
+  "mcpName": "app.fluxygram/mcp",
+  "main": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "bin": { "fluxygram-mcp": "./dist/cli.js" },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } }
+  },
+  "files": ["dist", "LICENSE", "README.md"],
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "data": "node scripts/data.mjs",
+    "build": "node scripts/data.mjs && tsup src/index.ts src/cli.ts --format esm --dts src/index.ts --clean --target node18"
+  },
+  "devDependencies": {
+    "@fluxygram/core": "workspace:^",
+    "@types/node": "^22"
+  }
+}

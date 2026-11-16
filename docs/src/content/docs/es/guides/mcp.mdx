@@ -1,0 +1,101 @@
+---
+title: Usar con MCP
+description: Conecta el servidor MCP de Fluxygram a Claude, Cursor, VS Code, Windsurf o Codex para que tu agente escriba, revise y comparta diagramas animados.
+sidebar:
+  order: 3
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+El servidor MCP de Fluxygram le da cuatro herramientas a tu agente de IA. Pide un diagrama con tus palabras ("explícame con un diagrama cómo funciona OAuth") y el agente aprende el formato, escribe el diagrama, lo revisa, corrige lo que esté mal y te da un link para verlo animado.
+
+| Herramienta | Qué hace |
+| --- | --- |
+| `get_guide` | El formato: tipos de diagrama, nodos, conexiones, pasos, movimiento, estado en vivo y las reglas para contar bien la historia. |
+| `get_example` | Uno de los [ejemplos de la galería](https://fluxygram.app/gallery) como punto de partida, en inglés o en español. |
+| `validate_diagram` | Revisa el diagrama con el mismo validador del visor y lista cada problema. |
+| `share_link` | Un link de fluxygram.app para ver, editar o presentar el diagrama. El diagrama va dentro del link: no se sube ni se guarda nada. |
+
+Es gratis y no necesita cuenta. Tu agente escribe el diagrama con tu propio plan de IA; el servidor solo enseña, revisa y arma el link.
+
+## Conéctalo
+
+Usa el servidor remoto (sin instalar nada) o córrelo en tu computador con `npx`. Los dos tienen las mismas herramientas.
+
+- Remoto: `https://fluxygram.app/mcp`
+- Local: `npx -y @fluxygram/mcp` (Node 18 o más nuevo)
+
+<Tabs syncKey="mcp-client">
+<TabItem label="Claude Code">
+
+```sh
+claude mcp add --transport http fluxygram https://fluxygram.app/mcp
+```
+
+</TabItem>
+<TabItem label="Claude Desktop">
+
+En **Configuración → Conectores**, agrega un conector personalizado con la URL `https://fluxygram.app/mcp`. O córrelo localmente desde `claude_desktop_config.json`:
+
+```json title="claude_desktop_config.json"
+{
+  "mcpServers": {
+    "fluxygram": { "command": "npx", "args": ["-y", "@fluxygram/mcp"] }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Cursor">
+
+```json title="~/.cursor/mcp.json"
+{
+  "mcpServers": {
+    "fluxygram": { "url": "https://fluxygram.app/mcp" }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="VS Code">
+
+```json title=".vscode/mcp.json"
+{
+  "servers": {
+    "fluxygram": { "type": "http", "url": "https://fluxygram.app/mcp" }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Windsurf">
+
+```json title="~/.codeium/windsurf/mcp_config.json"
+{
+  "mcpServers": {
+    "fluxygram": { "serverUrl": "https://fluxygram.app/mcp" }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Codex">
+
+```toml title="~/.codex/config.toml"
+[mcp_servers.fluxygram]
+command = "npx"
+args = ["-y", "@fluxygram/mcp"]
+```
+
+</TabItem>
+</Tabs>
+
+Cualquier otro cliente compatible con MCP funciona igual: dale la URL remota o el comando `npx`.
+
+## Pruébalo
+
+Pídele a tu agente:
+
+> Haz un diagrama animado de Fluxygram de cómo se aprueba un pull request y dame el link.
+
+<Aside type="tip">¿MCP o la [skill para agentes](/es/guides/agents/)? La skill es mejor cuando el agente guarda archivos `.flux.json` en tu proyecto. El servidor MCP es mejor en apps de chat, donde quieres un link para ver el diagrama al instante. Puedes usar los dos.</Aside>

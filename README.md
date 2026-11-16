@@ -139,6 +139,7 @@ import '@fluxygram/element'; // registers <fluxy-gram>
 | [`@fluxygram/markdown`](packages/markdown) | ` ```fluxygram ` code blocks become diagrams. remark and markdown-it plugins |
 | [`@fluxygram/astro`](packages/astro) | Astro and Starlight integration |
 | [`@fluxygram/docusaurus`](packages/docusaurus) | Docusaurus plugin |
+| [`@fluxygram/mcp`](packages/mcp) | MCP server for AI agents (also hosted at `https://fluxygram.app/mcp`) |
 
 Docs sites (Docusaurus, Astro, Starlight, VitePress, Next.js MDX) and Obsidian: see [integrations](https://docs.fluxygram.app/guides/integrations/).
 
@@ -156,6 +157,8 @@ The skill in [`skills/fluxygram`](skills/fluxygram) teaches an agent the format,
 ```
 
 **Cursor, Windsurf, Codex, Copilot and other coding agents**: save the skill in your project and point the agent at it.
+
+**MCP server** (Claude, Cursor, VS Code, Windsurf, any MCP client): connect `https://fluxygram.app/mcp`, or run `npx -y @fluxygram/mcp`. The agent can then validate its diagrams and give you a link to watch them. [Setup](https://docs.fluxygram.app/guides/mcp/).
 
 ```bash
 curl -o FLUXYGRAM.md https://fluxygram.app/skill.md
