@@ -191,7 +191,9 @@ $('download').onclick = () => {
 
 $('export').onclick = async () => {
   if (!model.diagram.nodes.length) return toast(t('ed.needNodes'));
-  download(`${slug(model.diagram.title)}.html`, await exportHtml(clean(model.diagram), lang), 'text/html');
+  const { loadBrand } = await import('./editor/brand-dialog');
+  const saved = await loadBrand();
+  download(`${slug(model.diagram.title)}.html`, await exportHtml(clean(model.diagram), lang, saved?.active ? saved.brand : null), 'text/html');
 };
 
 $('video').onclick = async () => {

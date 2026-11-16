@@ -1,3 +1,4 @@
+import { brandCss, type Brand } from '../brand';
 import type { Diagram } from '@fluxygram/core';
 
 /* ---------- Links para compartir: el diagrama va comprimido en la URL, sin servidor ---------- */
@@ -77,12 +78,18 @@ export function pickFile(): Promise<File | undefined> {
 const escapeHtml = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
 
 /** Un solo archivo HTML que funciona sin internet: el componente y el diagrama van adentro. */
-export async function exportHtml(d: Diagram, lang: string) {
+export async function exportHtml(d: Diagram, lang: string, brand?: Brand | null) {
   const js = await (await fetch('/fluxygram.js')).text();
   // Nada dentro de un <script> puede cerrar la etiqueta antes de tiempo.
   const safeJs = js.replace(/<\/script/gi, '<\\/script');
   const json = JSON.stringify(d, null, 2).replace(/<\/script/gi, '<\\/script');
   const title = escapeHtml(d.title || 'Fluxygram');
+  // Con marca (Pro): sus colores y su fuente, su logo arriba y sin el crédito de Fluxygram.
+  const theme = brand ? ` theme="${brand.theme}"` : '';
+  const style = brand ? ` style="${brandCss(brand).replace(/"/g, '&quot;')}"` : '';
+  const pageBg = brand?.theme === 'light' ? '#fbfbfc' : '#09090c';
+  const top = brand?.logo ? `<img class="logo" src="${brand.logo}" alt="" />\n` : '';
+  const credit = brand ? '' : '<a class="credit" href="https://fluxygram.app">Fluxygram</a>\n';
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -90,16 +97,16 @@ export async function exportHtml(d: Diagram, lang: string) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>${title}</title>
 <style>
-  html, body { margin: 0; min-height: 100%; background: #09090c; }
+  html, body { margin: 0; min-height: 100%; background: ${pageBg}; }
   body { display: grid; place-items: center; min-height: 100vh; padding: 24px; box-sizing: border-box; }
   fluxy-gram { width: min(100%, 1040px); }
   .credit { position: fixed; right: 16px; bottom: 12px; font: 12px system-ui, sans-serif; color: #6e6e7a; text-decoration: none; }
+  .logo { position: fixed; left: 24px; top: 20px; max-height: 36px; max-width: 220px; }
 </style>
 </head>
 <body>
-<fluxy-gram gestures="full"><script type="application/json">${json}</script></fluxy-gram>
-<a class="credit" href="https://github.com/Fluxygram/fluxygram">Fluxygram</a>
-<script type="module">${safeJs}</script>
+${top}<fluxy-gram gestures="full"${theme}${style}><script type="application/json">${json}</script></fluxy-gram>
+${credit}<script type="module">${safeJs}</script>
 </body>
 </html>
 `;

@@ -31,7 +31,7 @@ export const STYLES = /* css */ `
   border: 1px solid var(--fx-border);
   border-radius: 16px;
   overflow: hidden;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: var(--fx-font, Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif);
   -webkit-font-smoothing: antialiased;
   outline: none;
 }

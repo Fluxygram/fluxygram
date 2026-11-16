@@ -1,5 +1,5 @@
 import type { Diagram } from '@fluxygram/core';
-import { CloudUpload, CreditCard, Eye, FolderOpen, History, Link2, LogOut, PencilLine, Sparkle, Trash2, Workflow, X, type IconNode } from 'lucide';
+import { CloudUpload, CreditCard, Eye, FolderOpen, History, Link2, LogOut, Palette, PencilLine, Sparkle, Trash2, Workflow, X, type IconNode } from 'lucide';
 import { thumbnail, TYPE_ICONS } from './thumbnail';
 import { h, icon } from './editor/dom';
 import type { Model } from './editor/model';
@@ -250,9 +250,9 @@ export function renderSignInButtons(host: HTMLElement, providers: string[], next
 }
 
 /** Explica qué da Pro cuando algo lo necesita (límite de diagramas, historial, vistas). */
-export const showUpgrade = (reason: string, source: 'limit' | 'history' | 'video') => upgradeDialog(reason, source);
+export const showUpgrade = (reason: string, source: 'limit' | 'history' | 'video' | 'brand') => upgradeDialog(reason, source);
 
-function upgradeDialog(reason: string, source: 'limit' | 'history' | 'video') {
+function upgradeDialog(reason: string, source: 'limit' | 'history' | 'video' | 'brand') {
   track('upgrade_prompt', source);
   const close = () => modal.remove();
   const modal: HTMLDivElement = h('div', { class: 'ed-modal' },
@@ -389,6 +389,14 @@ function renderSignedIn(host: HTMLElement, saveHost: HTMLElement, me: Me, { mode
       menu.hidden = true;
       void openList();
     } }, icon(FolderOpen, 15), ' ', t('cloud.mine')),
+    me.user.plan === 'pro' || me.billing?.available
+      ? h('button', { type: 'button', role: 'menuitem', onclick: async () => {
+          menu.hidden = true;
+          if (me.user.plan !== 'pro') return upgradeDialog(t('brand.proReason'), 'brand');
+          const { openBrandDialog } = await import('./editor/brand-dialog');
+          await openBrandDialog(clean(model.diagram), toast);
+        } }, icon(Palette, 15), ' ', t('brand.title'))
+      : undefined,
     ...planItems(me, () => toast(t('cloud.error'))),
     h('button', { type: 'button', role: 'menuitem', onclick: async () => {
       await api('/auth/logout', { method: 'POST', body: '{}' });

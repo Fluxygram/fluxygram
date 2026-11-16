@@ -439,3 +439,27 @@
 .ed-video-bar i { display: block; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 200ms linear; }
 .ed-video-status { margin: 0 0 14px; min-height: 1.4em; font-size: 13px; color: var(--muted); }
 .ed-video-frame { position: fixed; left: -12000px; top: 0; width: 1100px; height: 900px; border: 0; pointer-events: none; }
+
+
+/* ---------- Tu marca ---------- */
+.ed-brand-dialog { width: min(100%, 860px); }
+.ed-brand-grid { display: grid; grid-template-columns: 280px 1fr; gap: 20px; align-items: start; margin-bottom: 18px; }
+@media (max-width: 720px) { .ed-brand-grid { grid-template-columns: 1fr; } }
+.ed-brand-controls { display: grid; gap: 14px; }
+.ed-brand-field { display: grid; gap: 6px; font-size: 13px; }
+.ed-brand-field > span { color: var(--muted); }
+.ed-brand-field small { color: var(--muted); font-size: 12px; line-height: 1.4; }
+.ed-brand-field select { height: 34px; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; }
+.ed-brand-colors { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ed-brand-swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.ed-brand-swatch { width: 24px; height: 24px; padding: 0; border: 2px solid transparent; border-radius: 999px; background: var(--c); cursor: pointer; transition: transform 140ms var(--ease-out, ease-out); }
+.ed-brand-swatch:active { transform: scale(0.92); }
+.ed-brand-swatch[aria-pressed='true'] { border-color: var(--text); box-shadow: inset 0 0 0 2px var(--bg); }
+.ed-brand-color { width: 32px; height: 28px; padding: 0; border: 1px solid var(--border); border-radius: 8px; background: none; cursor: pointer; }
+.ed-brand-logo-actions { display: flex; gap: 8px; }
+.ed-brand-stage { position: relative; padding: 48px 14px 14px; border: 1px solid var(--border); border-radius: 14px; background: #0c0c10; }
+.ed-brand-stage[data-theme='light'] { background: #fbfbfc; }
+.ed-brand-logo { position: absolute; top: 12px; right: 16px; height: 26px; display: flex; align-items: center; font-size: 12px; color: var(--muted); }
+.ed-brand-logo img { max-height: 26px; max-width: 160px; }
+.ed-brand-preview { display: block; }
+.ed-video-brand { display: flex; align-items: center; gap: 8px; margin: 2px 0 4px; font-size: 13px; }

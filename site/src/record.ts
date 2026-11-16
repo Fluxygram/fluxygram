@@ -3,6 +3,7 @@ import type { FluxyGram } from '@fluxygram/element';
 import type { Diagram } from '@fluxygram/core';
 import { ArrayBufferTarget, Muxer } from 'mp4-muxer';
 import { applyPalette, GIFEncoder, quantize } from 'gifenc';
+import { applyBrand, type Brand } from './brand';
 
 /**
  * Grabador de video (MP4) y GIF. Corre dentro de record.html, en un iframe oculto del editor, con el reloj virtual
@@ -30,6 +31,8 @@ export interface RecordJob {
   fps: number;
   lang: 'en' | 'es';
   watermark: string | null;
+  /** Marca propia (Pro): colores, fuente y logo arriba a la derecha. */
+  brand?: Brand | null;
 }
 
 type Out =
@@ -146,6 +149,17 @@ async function svgImage(svg: SVGSVGElement, w: number, h: number, fonts: string)
   }
 }
 
+async function loadImage(src: string): Promise<HTMLImageElement | null> {
+  try {
+    const img = new Image();
+    img.src = src;
+    await img.decode();
+    return img;
+  } catch {
+    return null;
+  }
+}
+
 /* ---------- Grabar ---------- */
 
 const nextTick = () => new Promise<void>((ok) => clock.real.setTimeout(ok, 0));
@@ -163,6 +177,8 @@ async function record(job: RecordJob) {
   const { width: W, height: H, fps } = job;
   el.setAttribute('lang', job.lang);
   if (job.diagram.theme) el.setAttribute('theme', job.diagram.theme);
+  applyBrand(el, job.brand);
+  const logo = job.brand?.logo ? await loadImage(job.brand.logo) : null;
   el.style.width = '1040px';
   el.diagram = job.diagram;
   const svg = await waitForScene();
@@ -191,6 +207,7 @@ async function record(job: RecordJob) {
   const bg = color('--fx-bg', '#09090c');
   const text = color('--fx-text', '#f3f3f6');
   const muted = color('--fx-muted', '#9b9ba8');
+  const fontStack = hostStyle.getPropertyValue('--fx-font').trim() || 'Inter, sans-serif';
   const k = H / 720; // todo escala con el alto del video
   const title = job.diagram.title;
   const top = title ? 96 * k : 40 * k;
@@ -217,14 +234,14 @@ async function record(job: RecordJob) {
 
     if (title) {
       ctx.fillStyle = text;
-      ctx.font = `600 ${Math.round(28 * k)}px Inter, sans-serif`;
+      ctx.font = `600 ${Math.round(28 * k)}px ${fontStack}`;
       ctx.textBaseline = 'alphabetic';
       ctx.textAlign = 'left';
       ctx.fillText(title, 48 * k, 62 * k, W - 220 * k);
     }
     // El texto del paso, con su entrada y salida (opacidad y desplazamiento) tal como en el componente.
     ctx.textAlign = 'center';
-    ctx.font = `500 ${Math.round(24 * k)}px Inter, sans-serif`;
+    ctx.font = `500 ${Math.round(24 * k)}px ${fontStack}`;
     for (const span of el.shadowRoot!.querySelectorAll<HTMLElement>('.fx-caption span')) {
       const cs = getComputedStyle(span);
       const opacity = Number(cs.opacity);
@@ -235,6 +252,14 @@ async function record(job: RecordJob) {
       ctx.fillText(span.textContent, W / 2, H - 46 * k + shift * k, W - 120 * k);
     }
     ctx.globalAlpha = 1;
+    if (logo) {
+      // El logo arriba a la derecha, a la altura del título.
+      // Un SVG sin tamaño propio se trata como un logo horizontal (4:1).
+      const ratio = logo.naturalWidth && logo.naturalHeight ? logo.naturalWidth / logo.naturalHeight : 4;
+      const lw = Math.min(ratio * 40 * k, 260 * k);
+      const lh = lw / ratio;
+      ctx.drawImage(logo, W - 48 * k - lw, 32 * k + (40 * k - lh) / 2, lw, lh);
+    }
     if (job.watermark) {
       ctx.textAlign = 'right';
       ctx.font = `500 ${Math.round(15 * k)}px Inter, sans-serif`;

@@ -4,6 +4,7 @@ import { h, icon } from './dom';
 import { t } from '../i18n';
 import { loadMe, showUpgrade } from '../cloud';
 import type { RecordJob } from '../record';
+import { loadBrand } from './brand-dialog';
 
 /**
  * Exportar el diagrama como video (MP4) o GIF. La grabación corre en un iframe oculto (/record) con un reloj
@@ -28,6 +29,8 @@ export async function openVideoExport(diagram: Diagram, lang: 'en' | 'es', fileN
   const me = await loadMe();
   const pro = !!(me?.signedIn && me.user.plan === 'pro');
   const canBuy = !!(me?.signedIn ? me.billing?.available : me && me.providers.length);
+  const saved = pro ? await loadBrand() : null;
+  const brand = saved?.active ? saved.brand : null;
   let format: Format = pro ? 'mp4' : 'gif';
   let size = 0;
   let frame: HTMLIFrameElement | undefined;
@@ -49,6 +52,8 @@ export async function openVideoExport(diagram: Diagram, lang: 'en' | 'es', fileN
   const go = h('button', { type: 'button', class: 'ed-btn ed-btn-primary', onclick: () => void start() }, t('video.export'));
 
   const proTag = () => h('span', { class: 'ed-video-pro' }, 'Pro');
+  const useBrand = h('input', { type: 'checkbox', checked: !!brand }) as HTMLInputElement;
+  const brandRow = brand ? h('label', { class: 'ed-video-brand' }, useBrand, ' ', t('video.useBrand')) : undefined;
   const render = () => {
     formatSeg.replaceChildren(...(['mp4', 'gif'] as Format[]).map((f) =>
       h('button', { type: 'button', role: 'radio', 'aria-checked': String(format === f), onclick: () => {
@@ -83,6 +88,7 @@ export async function openVideoExport(diagram: Diagram, lang: 'en' | 'es', fileN
         fps: s.fps,
         lang,
         watermark: pro ? null : t('video.watermark'),
+        brand: useBrand.checked ? brand : null,
       };
       frame!.contentWindow!.postMessage({ type: 'record', job }, location.origin);
     } else if (msg.type === 'progress') {
@@ -140,6 +146,7 @@ export async function openVideoExport(diagram: Diagram, lang: 'en' | 'es', fileN
       h('p', { class: 'ed-video-lead' }, t('video.lead')),
       h('div', { class: 'ed-video-row' }, h('span', {}, t('video.format')), formatSeg),
       h('div', { class: 'ed-video-row' }, h('span', {}, t('video.size')), sizeSeg),
+      brandRow,
       note,
       bar,
       status,
