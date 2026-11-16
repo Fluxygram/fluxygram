@@ -260,7 +260,7 @@ function upgradeDialog(reason: string, source: 'limit' | 'history' | 'video' | '
       h('button', { type: 'button', class: 'ed-icon ed-modal-close', title: t('ed.close'), 'aria-label': t('ed.close'), onclick: close }, icon(X)),
       h('h2', { class: 'ed-picker-title' }, t('pro.title')),
       h('p', { class: 'ed-pro-reason' }, reason),
-      h('ul', { class: 'ed-pro-list' }, ...['pricing.pro.2', 'pricing.pro.3', 'pricing.pro.4', 'pricing.pro.5'].map((k) => h('li', {}, t(k)))),
+      h('ul', { class: 'ed-pro-list' }, ...['pricing.pro.2', 'pricing.pro.7', 'pricing.pro.8', 'pricing.pro.3', 'pricing.pro.4'].map((k) => h('li', {}, t(k)))),
       h('div', { class: 'ed-pro-actions' },
         h('button', { type: 'button', class: 'ed-btn', onclick: close }, t('cloud.hintLater')),
         h('a', { class: 'ed-btn ed-btn-primary', href: `/pricing?from=${source}` }, t('pro.see')),
