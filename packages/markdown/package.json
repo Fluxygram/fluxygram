@@ -1,0 +1,50 @@
+{
+  "name": "@fluxygram/markdown",
+  "version": "0.3.0",
+  "description": "Turn ```fluxygram code blocks into animated diagrams. remark and markdown-it plugins for Docusaurus, Astro, VitePress, Next.js MDX and more.",
+  "keywords": [
+    "markdown",
+    "remark",
+    "remark-plugin",
+    "markdown-it",
+    "markdown-it-plugin",
+    "mdx",
+    "fluxygram",
+    "diagram",
+    "animation"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://docs.fluxygram.app/guides/integrations/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fluxygram/fluxygram.git",
+    "directory": "packages/markdown"
+  },
+  "bugs": {
+    "url": "https://github.com/Fluxygram/fluxygram/issues"
+  },
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --target es2022"
+  }
+}

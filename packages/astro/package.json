@@ -1,0 +1,52 @@
+{
+  "name": "@fluxygram/astro",
+  "version": "0.3.0",
+  "description": "Fluxygram for Astro and Starlight: animated diagrams from ```fluxygram code blocks in Markdown and MDX.",
+  "keywords": [
+    "astro",
+    "astro-integration",
+    "starlight",
+    "withastro",
+    "fluxygram",
+    "diagram",
+    "animation"
+  ],
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://docs.fluxygram.app/guides/integrations/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fluxygram/fluxygram.git",
+    "directory": "packages/astro"
+  },
+  "bugs": {
+    "url": "https://github.com/Fluxygram/fluxygram/issues"
+  },
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean --target es2022"
+  },
+  "dependencies": {
+    "@fluxygram/element": "workspace:^",
+    "@fluxygram/markdown": "workspace:^"
+  }
+}

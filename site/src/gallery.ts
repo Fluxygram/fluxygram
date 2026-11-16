@@ -1,7 +1,9 @@
 import '@fluxygram/element';
 import type { FluxyGram } from '@fluxygram/element';
 import { DIAGRAM_TYPES, type Diagram } from '@fluxygram/core';
-import { exampleUrl, t } from './i18n';
+import { examplePage, exampleUrl, t } from './i18n';
+import examples from './examples.json';
+import { mountLive, type Live } from './live-demo';
 import { encodeDiagram } from './editor/io';
 import { h, icon } from './editor/dom';
 import { thumbnail, TYPE_ICONS } from './thumbnail';
@@ -20,47 +22,10 @@ interface Example {
   /** Ejemplo del modo seguimiento: se abre con controles para avanzar el proceso. */
   live?: Live;
 }
-interface Live {
-  /** Etapas del camino feliz, en orden (puede repetir etapas si el proceso vuelve atrás). */
-  path: string[];
-  /** Etapa a la que salta "Simular un problema", si hay una conexión desde la etapa actual. */
-  fail?: string;
-  /** Se pasa el historial al componente: para ramas que se juntan o procesos que vuelven atrás. */
-  history?: boolean;
-}
 
-// Orden mezclado a propósito: la galería muestra variedad desde la primera fila.
-const EXAMPLES: Example[] = [
-  { name: 'tracker', theme: 'work', live: { path: ['received', 'paid', 'packed', 'shipped', 'out', 'delivered'], fail: 'declined' } },
-  { name: 'how-it-works', theme: 'software' },
-  { name: 'bread', theme: 'cooking' },
-  { name: 'game', theme: 'games' },
-  { name: 'architecture', theme: 'software' },
-  { name: 'track-food', theme: 'cooking', live: { path: ['placed', 'accepted', 'cooking', 'pickup', 'way', 'delivered'], fail: 'rejected' } },
-  { name: 'blood', theme: 'health' },
-  { name: 'coffee', theme: 'history' },
-  { name: 'order', theme: 'work' },
-  { name: 'returns', theme: 'work' },
-  { name: 'law', theme: 'society' },
-  {
-    name: 'track-ticket',
-    theme: 'work',
-    live: { path: ['open', 'assigned', 'working', 'waiting', 'working', 'resolved', 'closed'], history: true },
-  },
-  { name: 'trip', theme: 'travel' },
-  { name: 'sequence', theme: 'software' },
-  { name: 'animals', theme: 'nature' },
-  { name: 'doctor', theme: 'health' },
-  {
-    name: 'track-job',
-    theme: 'work',
-    live: { path: ['applied', 'screening', 'interview', 'offer', 'hired'], fail: 'rejected', history: true },
-  },
-  { name: 'mindmap', theme: 'work' },
-  { name: 'cycle', theme: 'nature' },
-  { name: 'tree', theme: 'work' },
-  { name: 'web-history', theme: 'software' },
-];
+// La lista (y el texto de cada página de ejemplo) vive en examples.json. Orden mezclado a propósito:
+// la galería muestra variedad desde la primera fila.
+const EXAMPLES = (examples as Example[]).map((ex) => ({ ...ex }));
 const THEMES: Theme[] = ['software', 'work', 'cooking', 'games', 'health', 'history', 'society', 'travel', 'nature'];
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -101,7 +66,12 @@ function card(ex: Example) {
   const svg = thumbnail(d);
   if (svg) thumb.append(svg);
   return h('li', {},
-    h('button', { type: 'button', class: 'gal-card', onclick: () => void open(ex) },
+    h('a', { class: 'gal-card', href: examplePage(ex.name), onclick: (ev: Event) => {
+      const e = ev as MouseEvent;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      void open(ex);
+    } },
       thumb,
       h('span', { class: 'gal-card-body' },
         h('strong', {}, d.title ?? ex.name, ex.live ? h('span', { class: 'gal-live-badge' }, t('live.badge')) : undefined),
@@ -132,16 +102,11 @@ async function open(ex: Example) {
   lastFocus = document.activeElement as HTMLElement | null;
   $('viewerTitle').textContent = d.title ?? ex.name;
   // El modo se fija antes de cargar el diagrama: el componente dibuja según el modo.
-  current = ex;
-  if (ex.live) {
-    viewerDiagram.setAttribute('mode', 'tracker');
-    goLive(0);
-  } else {
-    for (const a of ['mode', 'stage', 'status', 'history']) viewerDiagram.removeAttribute(a);
-  }
+  if (ex.live) live.start(ex.name, d, ex.live);
+  else live.stop();
   $('live').hidden = !ex.live;
   viewerDiagram.diagram = d;
-  showCode();
+  $<HTMLAnchorElement>('viewerPage').href = examplePage(ex.name);
   const code = await encodeDiagram(d);
   $<HTMLAnchorElement>('viewerEdit').href = `/play#d=${code}`;
   viewer.hidden = false;
@@ -160,46 +125,7 @@ document.addEventListener('keydown', (e) => e.key === 'Escape' && !viewer.hidden
 
 /* ---------- Ejemplos en vivo: avanzar el proceso ---------- */
 
-let current: Example | null = null;
-let at = 0; // posición en el camino feliz
-let visited: string[] = [];
-
-function goLive(index: number, status: 'pending' | 'success' | 'error' | 'warning' = 'pending', stage?: string) {
-  const live = current!.live!;
-  at = index;
-  visited = stage ? [...live.path.slice(0, index + 1), stage] : live.path.slice(0, index + 1);
-  const target = stage ?? live.path[index]!;
-  // La última etapa queda como terminada (verde).
-  const final = !stage && index === live.path.length - 1;
-  viewerDiagram.history = live.history ? visited : null;
-  viewerDiagram.setStage(target, final ? 'success' : status);
-  updateButtons();
-}
-function updateButtons() {
-  const live = current?.live;
-  if (!live) return;
-  const stage = viewerDiagram.stage;
-  const ended = stage !== live.path[at] || at === live.path.length - 1;
-  const canFail = !!live.fail && !ended && !!current!.diagram?.edges?.some((e) => e.from === stage && e.to === live.fail);
-  $<HTMLButtonElement>('liveNext').disabled = ended;
-  $<HTMLButtonElement>('liveDelay').disabled = ended;
-  $<HTMLButtonElement>('liveFail').disabled = !canFail;
-  $('liveFail').hidden = !live.fail;
-}
-function showCode() {
-  if ($('live').hidden || !current) return;
-  const stage = viewerDiagram.stage ?? '';
-  const status = viewerDiagram.status;
-  const history = current.live?.history ? `
-  history="${viewerDiagram.history.join(',')}"` : '';
-  $('liveCode').textContent = `<fluxy-gram src="${current.name}.flux.json" mode="tracker"
-  stage="${stage}"${status !== 'pending' ? ` status="${status}"` : ''}${history}></fluxy-gram>`;
-}
-viewerDiagram.addEventListener('fluxy-stage', showCode);
-$('liveNext').onclick = () => goLive(Math.min(at + 1, current!.live!.path.length - 1));
-$('liveDelay').onclick = () => goLive(at, 'warning');
-$('liveFail').onclick = () => goLive(at, 'error', current!.live!.fail);
-$('liveReset').onclick = () => goLive(0);
+const live = mountLive(viewerDiagram, $('live'));
 
 /* ---------- Carga ---------- */
 

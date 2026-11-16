@@ -31,7 +31,9 @@ for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-lang-switc
       } catch {
         /* sin almacenamiento: el idioma vuelve a salir del navegador */
       }
-      window.setTimeout(() => location.reload(), 380);
+      // Si la página tiene su versión en el otro idioma en otra URL, se va a esa; si no, se recarga.
+      const alt = document.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${value}"]`);
+      window.setTimeout(() => (alt ? location.assign(alt.href) : location.reload()), 380);
     },
   });
   btn.replaceWith(seg.el);

@@ -8,3 +8,5 @@ declare global {
 export const lang: 'en' | 'es' = window.FLUXY_I18N?.lang ?? 'en';
 export const t = (key: string, params?: Record<string, string>) => window.FLUXY_I18N?.t(key, params) ?? key;
 export const exampleUrl = (name: string) => `/examples/${lang}/${name}.flux.json`;
+/** Página pública de un ejemplo (una por idioma, generada en el build). */
+export const examplePage = (name: string) => (lang === 'es' ? `/ejemplos/${name}` : `/examples/${name}`);

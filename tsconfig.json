@@ -16,5 +16,7 @@
       "@fluxygram/element": ["packages/element/src/index.ts"]
     }
   },
-  "include": ["packages/*/src", "site/src"]
+  "include": ["packages/*/src", "site/src"],
+  // Obsidian (tipos propios que cambian el DOM global) y Docusaurus (Node) se revisan en su propio build.
+  "exclude": ["packages/obsidian", "packages/docusaurus"]
 }

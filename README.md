@@ -136,6 +136,11 @@ import '@fluxygram/element'; // registers <fluxy-gram>
 | [`@fluxygram/element`](packages/element) | The `<fluxy-gram>` web component. Works in any framework, or none |
 | [`@fluxygram/core`](packages/core) | Format, validation, layout and motion. No DOM |
 | [`fluxygram`](packages/fluxygram) | Single-file build for `<script>` tags and CDNs |
+| [`@fluxygram/markdown`](packages/markdown) | ` ```fluxygram ` code blocks become diagrams. remark and markdown-it plugins |
+| [`@fluxygram/astro`](packages/astro) | Astro and Starlight integration |
+| [`@fluxygram/docusaurus`](packages/docusaurus) | Docusaurus plugin |
+
+Docs sites (Docusaurus, Astro, Starlight, VitePress, Next.js MDX) and Obsidian: see [integrations](https://docs.fluxygram.app/guides/integrations/).
 
 The component picks English or Spanish from the page or browser language (the `lang` attribute wins when set).
 

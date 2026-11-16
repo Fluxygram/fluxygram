@@ -62,7 +62,7 @@ export class FluxyGram extends HTMLElement {
   private io?: IntersectionObserver;
   private uid = `fx${++uid}`;
   private narrow = false;
-  private detach?: () => void;
+  private unbindGestures?: () => void;
   private hoverPaused = false;
   private ro?: ResizeObserver;
 
@@ -129,7 +129,7 @@ export class FluxyGram extends HTMLElement {
       if (narrow !== this.narrow && this.data) {
         const at = this.player?.index ?? -1;
         this.render(this.data);
-        if (at > 0) this.show(at);
+        if (at > 0) this.showStep(at);
       }
     });
     this.ro.observe(this);
@@ -145,7 +145,7 @@ export class FluxyGram extends HTMLElement {
     document.removeEventListener('visibilitychange', this.onVisibility);
     this.io?.disconnect();
     this.ro?.disconnect();
-    this.detach?.();
+    this.unbindGestures?.();
     this.timer?.cancel();
     this.player?.destroy();
   }
@@ -228,7 +228,7 @@ export class FluxyGram extends HTMLElement {
   }
   goTo(i: number) {
     this.pause();
-    this.show(i);
+    this.showStep(i);
   }
   play() {
     if (!this.player) return;
@@ -249,7 +249,7 @@ export class FluxyGram extends HTMLElement {
     this.player.reset();
     this.playing = true;
     // Un cuadro de respiro para que las transiciones de salida no se pisen con las de entrada.
-    setTimeout(() => this.show(0), 60);
+    setTimeout(() => this.showStep(0), 60);
   }
 
   /* ---------- Carga y render ---------- */
@@ -306,8 +306,8 @@ export class FluxyGram extends HTMLElement {
     this.player = new Player(scene, lay, motion, (text, dir) => this.setCaption(text, dir));
     this.style.setProperty('--fx-speed', String(this.player.speed));
     this.player.onFreeChange = (free) => this.els.recenter?.classList.toggle('is-on', free);
-    this.detach?.();
-    this.detach = attachInteractions(scene.svg, this.player, {
+    this.unbindGestures?.();
+    this.unbindGestures = attachInteractions(scene.svg, this.player, {
       onInteract: () => this.pause(),
       onBackgroundClick: () => this.next(),
       onHover: (active) => {
@@ -350,15 +350,15 @@ export class FluxyGram extends HTMLElement {
   private start() {
     if (this.started || !this.player || this.tracking) return;
     this.started = true;
-    this.show(0);
+    this.showStep(0);
   }
 
   private step(delta: number) {
     if (!this.player) return;
-    this.show((this.player.index < 0 ? -1 : this.player.index) + delta);
+    this.showStep((this.player.index < 0 ? -1 : this.player.index) + delta);
   }
 
-  private show(i: number) {
+  private showStep(i: number) {
     if (!this.player) return;
     this.started = true;
     this.player.go(i);
@@ -501,8 +501,8 @@ export class FluxyGram extends HTMLElement {
   private showIssues(issues: ValidationIssue[]) {
     this.player?.destroy();
     this.player = undefined;
-    this.detach?.();
-    this.detach = undefined;
+    this.unbindGestures?.();
+    this.unbindGestures = undefined;
     const box = document.createElement('div');
     box.className = 'fx-error';
     box.innerHTML = '<strong></strong><ul></ul>';

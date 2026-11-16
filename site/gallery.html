@@ -61,15 +61,16 @@
         <!-- Solo para el ejemplo "en vivo": avanza el pedido como lo haría tu sistema -->
         <div class="gal-live" id="live" hidden>
           <div class="gal-live-buttons">
-            <button type="button" class="btn btn-primary" id="liveNext" data-i18n="live.next">Next stage</button>
-            <button type="button" class="btn" id="liveDelay" data-i18n="live.delay">Simulate a delay</button>
-            <button type="button" class="btn" id="liveFail" data-i18n="live.fail">Simulate a problem</button>
-            <button type="button" class="btn" id="liveReset" data-i18n="live.reset">Start over</button>
+            <button type="button" class="btn btn-primary" data-live="next" data-i18n="live.next">Next stage</button>
+            <button type="button" class="btn" data-live="delay" data-i18n="live.delay">Simulate a delay</button>
+            <button type="button" class="btn" data-live="fail" data-i18n="live.fail">Simulate a problem</button>
+            <button type="button" class="btn" data-live="reset" data-i18n="live.reset">Start over</button>
           </div>
-          <pre class="code gal-live-code" id="liveCode"></pre>
+          <pre class="code gal-live-code" data-live="code"></pre>
           <p class="gal-live-note" data-i18n="live.note">Your site only changes the stage attribute when the order changes; the diagram animates by itself.</p>
         </div>
         <div class="gal-dialog-actions">
+          <a class="btn" id="viewerPage" href="/gallery" data-i18n="gallery.page">How to make one</a>
           <a class="btn btn-primary" id="viewerEdit" href="/play" data-i18n="view.edit">Edit a copy</a>
         </div>
       </div>

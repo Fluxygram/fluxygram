@@ -2,10 +2,13 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightLlmsTxt from 'starlight-llms-txt';
+import fluxygram from '@fluxygram/astro';
 
 export default defineConfig({
   site: 'https://docs.fluxygram.app',
   integrations: [
+    // ```fluxygram en Markdown se vuelve un diagrama (la misma integración que usa cualquiera con Astro).
+    fluxygram(),
     starlight({
       title: 'Fluxygram',
       description: 'Diagrams that explain themselves: describe anything in JSON and get an animated, step-by-step diagram.',
@@ -50,7 +53,7 @@ export default defineConfig({
         {
           label: 'Guides',
           translations: { es: 'Guías' },
-          items: ['guides/present', 'guides/tracker', 'guides/agents', 'guides/codebase'],
+          items: ['guides/present', 'guides/tracker', 'guides/agents', 'guides/codebase', 'guides/integrations'],
         },
         {
           label: 'Reference',

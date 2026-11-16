@@ -1,0 +1,15 @@
+{
+  "name": "@fluxygram/obsidian",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Fluxygram for Obsidian: animated diagrams from fluxygram code blocks.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc --noEmit -p . && tsup && node -e \"require('fs').copyFileSync('manifest.json','dist/manifest.json')\""
+  },
+  "devDependencies": {
+    "@fluxygram/element": "workspace:^",
+    "obsidian": "^1.14.4"
+  }
+}

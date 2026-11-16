@@ -1,0 +1,215 @@
+[
+  {
+    "name": "tracker",
+    "theme": "work",
+    "live": {
+      "path": [
+        "received",
+        "paid",
+        "packed",
+        "shipped",
+        "out",
+        "delivered"
+      ],
+      "fail": "declined"
+    },
+    "lead": {
+      "en": "A live order tracker: the diagram shows where an order is right now, from payment to delivery, and turns red when something goes wrong. Your site only changes one attribute.",
+      "es": "Un seguimiento de pedido en vivo: el diagrama muestra dónde va un pedido ahora mismo, del pago a la entrega, y se pone en rojo si algo sale mal. Tu sitio solo cambia un atributo."
+    }
+  },
+  {
+    "name": "how-it-works",
+    "theme": "software",
+    "lead": {
+      "en": "How Fluxygram itself works, told step by step: you ask your AI agent, it writes a small JSON file and the diagram draws and explains itself.",
+      "es": "Cómo funciona Fluxygram, contado paso a paso: le pides algo a tu agente de IA, escribe un JSON pequeño y el diagrama se dibuja y se explica solo."
+    }
+  },
+  {
+    "name": "bread",
+    "theme": "cooking",
+    "lead": {
+      "en": "An animated recipe for homemade bread: mix, knead, let it rise, check if it doubled and bake. Each step appears with a short explanation of why it matters.",
+      "es": "Una receta animada de pan casero: mezclar, amasar, dejar levar, revisar si dobló su tamaño y hornear. Cada paso aparece con una explicación corta de por qué importa."
+    }
+  },
+  {
+    "name": "game",
+    "theme": "games",
+    "lead": {
+      "en": "A run through an adventure game as an animated flowchart: explore, battle, loot, level up and face the final boss, with the path lighting up as the player moves.",
+      "es": "Una partida de un juego de aventuras como diagrama de flujo animado: explorar, pelear, recoger botín, subir de nivel y enfrentar al jefe final, con el camino encendiéndose a medida que avanza el jugador."
+    }
+  },
+  {
+    "name": "architecture",
+    "theme": "software",
+    "lead": {
+      "en": "An animated software architecture diagram: how a request travels from the web and mobile apps through the API gateway to the auth, orders and payments services, Postgres and Redis.",
+      "es": "Un diagrama de arquitectura de software animado: cómo viaja una petición desde la web y la app móvil por el API gateway hasta los servicios de autenticación, pedidos y pagos, Postgres y Redis."
+    }
+  },
+  {
+    "name": "track-food",
+    "theme": "cooking",
+    "live": {
+      "path": [
+        "placed",
+        "accepted",
+        "cooking",
+        "pickup",
+        "way",
+        "delivered"
+      ],
+      "fail": "rejected"
+    },
+    "lead": {
+      "en": "A live food delivery tracker: order placed, accepted by the restaurant, cooking, picked up by the rider and on the way, with a clear warning if the restaurant is closed.",
+      "es": "Un seguimiento de domicilio en vivo: pedido hecho, aceptado por el restaurante, en preparación, recogido por el domiciliario y en camino, con un aviso claro si el restaurante está cerrado."
+    }
+  },
+  {
+    "name": "blood",
+    "theme": "health",
+    "lead": {
+      "en": "How blood travels through the body, animated: from the heart to the lungs, back to the heart and out to the rest of the body, with particles showing the flow.",
+      "es": "Cómo viaja la sangre por el cuerpo, animado: del corazón a los pulmones, de vuelta al corazón y al resto del cuerpo, con partículas que muestran el recorrido."
+    }
+  },
+  {
+    "name": "coffee",
+    "theme": "history",
+    "lead": {
+      "en": "A short history of coffee as an animated timeline: the first coffeehouses, its arrival in London and Brazil, the espresso machine, instant coffee and coffee shop chains.",
+      "es": "Una breve historia del café como línea de tiempo animada: las primeras cafeterías, su llegada a Londres y a Brasil, la máquina de espresso, el café instantáneo y las cadenas de cafeterías."
+    }
+  },
+  {
+    "name": "order",
+    "theme": "work",
+    "lead": {
+      "en": "How an order gets processed, as an animated business process diagram: the order arrives, stock is checked, the customer is charged and the shipment is prepared until delivery.",
+      "es": "Cómo se procesa un pedido, como diagrama de proceso animado: llega el pedido, se revisa el inventario, se cobra al cliente y se prepara el envío hasta la entrega."
+    }
+  },
+  {
+    "name": "returns",
+    "theme": "work",
+    "lead": {
+      "en": "A product return process explained step by step: return form, shipping label, packing, inspection and either a refund or sending the item back. Ready for a help page.",
+      "es": "El proceso para devolver un producto explicado paso a paso: formulario, guía de envío, empaque, revisión y luego reembolso o devolución del artículo. Listo para una página de ayuda."
+    }
+  },
+  {
+    "name": "law",
+    "theme": "society",
+    "lead": {
+      "en": "How a bill becomes law, animated: proposal, committee, debate, the vote and the signature, including what happens when a bill is shelved. Great for civics classes.",
+      "es": "Cómo se aprueba una ley, animado: proyecto, comisión, debate, votación y firma, incluido qué pasa cuando un proyecto se archiva. Ideal para clases de ciudadanía."
+    }
+  },
+  {
+    "name": "track-ticket",
+    "theme": "work",
+    "live": {
+      "path": [
+        "open",
+        "assigned",
+        "working",
+        "waiting",
+        "working",
+        "resolved",
+        "closed"
+      ],
+      "history": true
+    },
+    "lead": {
+      "en": "A live support ticket tracker that can go back and forth: open, assigned, in progress, waiting for the customer and resolved, keeping the full history.",
+      "es": "Un seguimiento de solicitud de soporte en vivo que puede ir y volver: abierta, asignada, en curso, esperando al cliente y resuelta, con todo el historial."
+    }
+  },
+  {
+    "name": "trip",
+    "theme": "travel",
+    "lead": {
+      "en": "Planning a trip as an animated mind map: destination and weather, budget and tickets, where to stay, what to pack and things to do. A simple way to lay out any plan.",
+      "es": "Planear un viaje como mapa mental animado: destino y clima, presupuesto y tiquetes, dónde quedarse, qué empacar y qué hacer. Una forma simple de organizar cualquier plan."
+    }
+  },
+  {
+    "name": "sequence",
+    "theme": "software",
+    "lead": {
+      "en": "How an OAuth login works, as an animated sequence diagram: the user, the app and the identity provider exchanging redirects, codes and tokens, one message at a time.",
+      "es": "Cómo funciona un login con OAuth, como diagrama de secuencia animado: el usuario, la app y el proveedor de identidad intercambiando redirecciones, códigos y tokens, un mensaje a la vez."
+    }
+  },
+  {
+    "name": "animals",
+    "theme": "nature",
+    "lead": {
+      "en": "How animals are classified, as an animated tree: vertebrates and invertebrates, mammals, birds, fish, reptiles and more, branch by branch.",
+      "es": "Cómo se clasifican los animales, como árbol animado: vertebrados e invertebrados, mamíferos, aves, peces, reptiles y más, rama por rama."
+    }
+  },
+  {
+    "name": "doctor",
+    "theme": "health",
+    "lead": {
+      "en": "A visit to the doctor as an animated sequence diagram: the patient, the front desk, the doctor and the pharmacy, one message at a time. Useful for clinics that want patients to know what to expect.",
+      "es": "Una visita al médico como diagrama de secuencia animado: el paciente, la recepción, el médico y la farmacia, un mensaje a la vez. Útil para clínicas que quieren que sus pacientes sepan qué esperar."
+    }
+  },
+  {
+    "name": "track-job",
+    "theme": "work",
+    "live": {
+      "path": [
+        "applied",
+        "screening",
+        "interview",
+        "offer",
+        "hired"
+      ],
+      "fail": "rejected",
+      "history": true
+    },
+    "lead": {
+      "en": "A live job application tracker: applied, résumé review, interview, offer and welcome aboard, so candidates always know where their application stands.",
+      "es": "Un seguimiento de postulación en vivo: aplicó, revisión de hoja de vida, entrevista, oferta y bienvenida, para que cada candidato sepa siempre cómo va su proceso."
+    }
+  },
+  {
+    "name": "mindmap",
+    "theme": "work",
+    "lead": {
+      "en": "An animated mind map for launching a product: product, marketing, sales and support, with the beta, docs, pricing and launch day branching out from the central idea.",
+      "es": "Un mapa mental animado para lanzar un producto: producto, marketing, ventas y soporte, con la beta, la documentación, los precios y el día del lanzamiento saliendo de la idea central."
+    }
+  },
+  {
+    "name": "cycle",
+    "theme": "nature",
+    "lead": {
+      "en": "The water cycle as an animated cycle diagram: evaporation, condensation, precipitation and collection, looping just like the real thing.",
+      "es": "El ciclo del agua como diagrama de ciclo animado: evaporación, condensación, precipitación y acumulación, dando vueltas como en la realidad."
+    }
+  },
+  {
+    "name": "tree",
+    "theme": "work",
+    "lead": {
+      "en": "An animated org chart of a product team: the CEO, the CTO, CPO and COO, and the backend, frontend, design, research and support teams, level by level.",
+      "es": "Un organigrama animado de un equipo de producto: el CEO, el CTO, el CPO y el COO, y los equipos de backend, frontend, diseño, investigación y soporte, nivel por nivel."
+    }
+  },
+  {
+    "name": "web-history",
+    "theme": "software",
+    "lead": {
+      "en": "Moments that changed the web, as an animated timeline: the first web page, JavaScript, CSS, Web 2.0, the iPhone, responsive design, ES2015 and generative AI.",
+      "es": "Momentos que cambiaron la web, como línea de tiempo animada: la primera página web, JavaScript, CSS, la Web 2.0, el iPhone, el diseño responsive, ES2015 y la IA generativa."
+    }
+  }
+]

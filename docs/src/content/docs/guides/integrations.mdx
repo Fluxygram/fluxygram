@@ -1,0 +1,157 @@
+---
+title: Docs and Markdown integrations
+description: Animated Fluxygram diagrams from a code block in Docusaurus, Astro, Starlight, VitePress, Next.js MDX and Obsidian.
+sidebar:
+  order: 5
+---
+
+import { Aside, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Write a code block with the language `fluxygram` in your Markdown and it becomes an animated diagram. No HTML, no imports in the page. This page uses it:
+
+```fluxygram
+{
+  "type": "flow",
+  "title": "From Markdown to motion",
+  "nodes": [
+    { "id": "md", "label": "Your Markdown", "icon": "file", "kind": "start" },
+    { "id": "build", "label": "Build", "icon": "build" },
+    { "id": "fx", "label": "Animated diagram", "icon": "play", "kind": "end", "accent": true }
+  ],
+  "edges": [
+    { "id": "e1", "from": "md", "to": "build" },
+    { "id": "e2", "from": "build", "to": "fx" }
+  ],
+  "steps": [
+    { "show": ["md"], "caption": "You write a fluxygram code block" },
+    { "show": ["e1"], "flow": "e1", "caption": "Your docs tool runs the plugin" },
+    { "show": ["e2"], "flow": "e2", "caption": "Readers watch it step by step" }
+  ]
+}
+```
+
+## The code block
+
+Put the diagram JSON inside, or point to a file with `src`:
+
+````md
+```fluxygram
+{ "type": "flow", "nodes": [...], "edges": [...], "steps": [...] }
+```
+
+```fluxygram src="/diagrams/checkout.flux.json"
+```
+````
+
+After the language you can add the same attributes as the [component](/reference/element/): `theme=light`, `autoplay=false`, `controls=false`, `lang=es`, and for [live status](/guides/tracker/) `mode=tracker stage=shipped`.
+
+````md
+```fluxygram theme=light autoplay=false
+````
+
+<Aside type="tip">Make the JSON in the [editor](https://fluxygram.app/play) or ask your [agent](/guides/agents/), then paste it into the block.</Aside>
+
+## Set it up
+
+<Tabs syncKey="docs-tool">
+<TabItem label="Astro / Starlight">
+
+```sh
+npm install @fluxygram/astro
+```
+
+```js title="astro.config.mjs"
+import { defineConfig } from 'astro/config';
+import fluxygram from '@fluxygram/astro';
+
+export default defineConfig({
+  integrations: [fluxygram()], // with Starlight: [fluxygram(), starlight({ ... })]
+});
+```
+
+It works in `.md` and `.mdx`, and loads the component on every page, so you can also write `<fluxy-gram>` by hand.
+
+</TabItem>
+<TabItem label="Docusaurus">
+
+```sh
+npm install @fluxygram/docusaurus @fluxygram/markdown
+```
+
+```js title="docusaurus.config.mjs"
+import { remarkFluxygram } from '@fluxygram/markdown';
+
+export default {
+  plugins: ['@fluxygram/docusaurus'],
+  presets: [
+    [
+      'classic',
+      {
+        docs: { remarkPlugins: [remarkFluxygram] },
+        blog: { remarkPlugins: [remarkFluxygram] },
+      },
+    ],
+  ],
+};
+```
+
+The plugin loads the component in the browser; the remark plugin turns the code blocks into diagrams.
+
+</TabItem>
+<TabItem label="VitePress">
+
+```sh
+npm install @fluxygram/markdown @fluxygram/element
+```
+
+```js title=".vitepress/config.mjs"
+import { defineConfig } from 'vitepress';
+import { markdownItFluxygram } from '@fluxygram/markdown';
+
+export default defineConfig({
+  markdown: { config: (md) => md.use(markdownItFluxygram) },
+  vue: { template: { compilerOptions: { isCustomElement: (tag) => tag === 'fluxy-gram' } } },
+});
+```
+
+```js title=".vitepress/theme/index.js"
+import DefaultTheme from 'vitepress/theme';
+
+export default {
+  extends: DefaultTheme,
+  enhanceApp() {
+    if (!import.meta.env.SSR) import('@fluxygram/element');
+  },
+};
+```
+
+</TabItem>
+<TabItem label="Next.js / MDX">
+
+Any tool built on remark (Next.js with `@next/mdx`, Nextra, Gatsby, plain `unified`) takes the remark plugin:
+
+```sh
+npm install @fluxygram/markdown @fluxygram/element
+```
+
+```js title="next.config.mjs"
+import createMDX from '@next/mdx';
+import { remarkFluxygram } from '@fluxygram/markdown';
+
+const withMDX = createMDX({ options: { remarkPlugins: [remarkFluxygram] } });
+export default withMDX({ pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'] });
+```
+
+Then load the component once on the client, for example in a layout: `useEffect(() => { import('@fluxygram/element'); }, [])`.
+
+</TabItem>
+<TabItem label="Obsidian">
+
+The Fluxygram plugin for Obsidian is on its way to the community plugins. It turns the same `fluxygram` code blocks into diagrams in your notes and follows Obsidian's light or dark theme.
+
+</TabItem>
+</Tabs>
+
+## Anything else
+
+Any other Markdown tool built on markdown-it takes `markdownItFluxygram`. For a plain HTML page, add the [CDN script](/start/install/) and write the tag.

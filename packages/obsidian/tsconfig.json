@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@fluxygram/core": ["../core/src/index.ts"],
+      "@fluxygram/element": ["../element/src/index.ts"]
+    }
+  },
+  "include": ["src"],
+  "exclude": []
+}

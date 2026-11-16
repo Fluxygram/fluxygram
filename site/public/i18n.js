@@ -516,6 +516,7 @@
       'motion.flow': 'The path builds up step by step and a particle travels along each new stretch.',
       'motion.architecture': 'Layers appear from the bottom up and requests travel between services.',
       'motion.timeline': 'The camera moves from milestone to milestone and each moment lands in place.',
+      "gallery.page": "How to make one",
       "compare.title": "Not another drawing tool.",
       "compare.lead": "Diagramming tools are for drawing a map and editing it as a team. Fluxygram is for making someone understand a process.",
       "compare.draw": "Drawing tools",
@@ -1071,6 +1072,7 @@
       'motion.flow': 'El camino se construye paso a paso y una partícula recorre cada tramo nuevo.',
       'motion.architecture': 'Las capas aparecen de abajo hacia arriba y las peticiones viajan entre servicios.',
       'motion.timeline': 'La cámara avanza hito por hito y cada momento aterriza en su lugar.',
+      "gallery.page": "Cómo hacer uno",
       "compare.title": "No es otra herramienta de dibujo.",
       "compare.lead": "Las herramientas de diagramas sirven para dibujar un mapa y editarlo en equipo. Fluxygram sirve para que alguien entienda un proceso.",
       "compare.draw": "Herramientas de dibujo",
@@ -1118,7 +1120,9 @@
   var saved = null;
   try { saved = localStorage.getItem(KEY); } catch (e) { /* storage unavailable */ }
   var browser = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
-  var lang = saved === 'es' || saved === 'en' ? saved : /^es\b/i.test(browser) ? 'es' : 'en';
+  // Las páginas con una URL por idioma (las de cada ejemplo) fijan el idioma con data-lang.
+  var fixed = document.documentElement.getAttribute('data-lang');
+  var lang = fixed === 'es' || fixed === 'en' ? fixed : saved === 'es' || saved === 'en' ? saved :/^es\b/i.test(browser) ? 'es' : 'en';
   var dict = STRINGS[lang];
 
   function t(key, params) {

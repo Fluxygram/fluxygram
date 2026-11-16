@@ -9,3 +9,5 @@ packages/*/dist/
 site/public/skill.md
 docs/public/examples/
 docs/.astro/
+site/examples/
+site/ejemplos/
