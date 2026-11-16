@@ -143,7 +143,6 @@ async function open(ex: Example) {
   viewerDiagram.diagram = d;
   showCode();
   const code = await encodeDiagram(d);
-  $<HTMLAnchorElement>('viewerPresent').href = `/present#d=${code}`;
   $<HTMLAnchorElement>('viewerEdit').href = `/play#d=${code}`;
   viewer.hidden = false;
   document.body.style.overflow = 'hidden';
