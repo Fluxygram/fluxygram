@@ -28,7 +28,6 @@ export function applyBrand(el: HTMLElement, brand: Brand | null | undefined) {
   if (!brand) return;
   el.setAttribute('theme', brand.theme);
   el.style.setProperty('--fx-accent', brand.accent);
-  el.style.setProperty('--fx-success', brand.accent);
   el.style.setProperty('--fx-accent-soft', `color-mix(in oklab, ${brand.accent} ${brand.theme === 'dark' ? 16 : 12}%, ${brand.theme === 'dark' ? '#16161c' : '#ffffff'})`);
   el.style.setProperty('--fx-font', FONT_STACKS[brand.font] ?? FONT_STACKS.inter);
 }
@@ -36,7 +35,7 @@ export function applyBrand(el: HTMLElement, brand: Brand | null | undefined) {
 /** Lo mismo, como texto CSS para el HTML exportado. */
 export function brandCss(brand: Brand): string {
   const soft = `color-mix(in oklab, ${brand.accent} ${brand.theme === 'dark' ? 16 : 12}%, ${brand.theme === 'dark' ? '#16161c' : '#ffffff'})`;
-  return `--fx-accent: ${brand.accent}; --fx-success: ${brand.accent}; --fx-accent-soft: ${soft}; --fx-font: ${FONT_STACKS[brand.font] ?? FONT_STACKS.inter};`;
+  return `--fx-accent: ${brand.accent}; --fx-accent-soft: ${soft}; --fx-font: ${FONT_STACKS[brand.font] ?? FONT_STACKS.inter};`;
 }
 
 export const isHex = (v: unknown): v is string => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
