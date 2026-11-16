@@ -250,7 +250,9 @@ export function renderSignInButtons(host: HTMLElement, providers: string[], next
 }
 
 /** Explica qué da Pro cuando algo lo necesita (límite de diagramas, historial, vistas). */
-function upgradeDialog(reason: string, source: 'limit' | 'history') {
+export const showUpgrade = (reason: string, source: 'limit' | 'history' | 'video') => upgradeDialog(reason, source);
+
+function upgradeDialog(reason: string, source: 'limit' | 'history' | 'video') {
   track('upgrade_prompt', source);
   const close = () => modal.remove();
   const modal: HTMLDivElement = h('div', { class: 'ed-modal' },

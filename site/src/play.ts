@@ -2,7 +2,7 @@ import '@fluxygram/element';
 import type { FluxyGram } from '@fluxygram/element';
 import { DIAGRAM_TYPES, validate, type Diagram, type DiagramType, type FluxNode } from '@fluxygram/core';
 import {
-  AppWindow, Circle, CircleDot, Cloud, Database, FileText, Hexagon, Hourglass, Zap, Diamond, Download, FileCode, FilePlus, FolderOpen, LayoutGrid, Maximize, Milestone, Minus, Plus,
+  AppWindow, Clapperboard, Circle, CircleDot, Cloud, Database, FileText, Hexagon, Hourglass, Zap, Diamond, Download, FileCode, FilePlus, FolderOpen, LayoutGrid, Maximize, Milestone, Minus, Plus,
   ArrowLeftRight, BrainCircuit, CircleHelp, PanelRightClose, PanelRightOpen, Layers, Lightbulb, Network, RectangleHorizontal, RefreshCw, Redo2, Square, StickyNote, Undo2, User, Workflow, X, type IconNode,
 } from 'lucide';
 import { exampleUrl, lang, t } from './i18n';
@@ -62,6 +62,7 @@ setIcon('new', FilePlus);
 setIcon('open', FolderOpen);
 setIcon('download', Download);
 setIcon('export', FileCode);
+setIcon('video', Clapperboard);
 setIcon('zoomIn', Plus);
 setIcon('zoomOut', Minus);
 setIcon('modalClose', X);
@@ -191,6 +192,12 @@ $('download').onclick = () => {
 $('export').onclick = async () => {
   if (!model.diagram.nodes.length) return toast(t('ed.needNodes'));
   download(`${slug(model.diagram.title)}.html`, await exportHtml(clean(model.diagram), lang), 'text/html');
+};
+
+$('video').onclick = async () => {
+  if (!model.diagram.nodes.length) return toast(t('ed.needNodes'));
+  const { openVideoExport } = await import('./editor/video');
+  await openVideoExport(clean(model.diagram), lang, slug(model.diagram.title));
 };
 
 $('present').onclick = async () => {

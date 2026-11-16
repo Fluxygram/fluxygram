@@ -15,6 +15,7 @@ export default defineConfig({
         terms: resolve(import.meta.dirname, 'terms.html'),
         gallery: resolve(import.meta.dirname, 'gallery.html'),
         pricing: resolve(import.meta.dirname, 'pricing.html'),
+        record: resolve(import.meta.dirname, 'record.html'),
       },
     },
   },

@@ -426,3 +426,16 @@
 .ed-cloud-card:hover .ed-cloud-more-btn, .ed-cloud-more-btn:focus-visible { opacity: 1; }
 @media (hover: none) { .ed-cloud-more-btn { opacity: 1; } }
 .ed-detail-badge { padding: 1px 7px; border-radius: 999px; background: color-mix(in oklab, var(--accent) 14%, transparent); color: var(--accent); font-size: 11px; font-weight: 600; }
+
+
+/* ---------- Exportar video o GIF ---------- */
+.ed-video-dialog { width: min(100%, 460px); }
+.ed-video-lead { margin: 4px 0 16px; color: var(--muted); font-size: 14px; }
+.ed-video-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 10px; font-size: 14px; }
+.ed-video-row .ed-seg button { display: inline-flex; align-items: center; gap: 6px; }
+.ed-video-pro { padding: 0 6px; border-radius: 999px; background: color-mix(in oklab, var(--accent) 16%, transparent); color: var(--accent); font-size: 10.5px; font-weight: 600; line-height: 16px; }
+.ed-video-note { margin: 6px 0 14px; color: var(--muted); font-size: 13px; min-height: 2.6em; }
+.ed-video-bar { height: 6px; margin: 0 0 8px; border-radius: 999px; background: var(--code-bg); overflow: hidden; }
+.ed-video-bar i { display: block; height: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 200ms linear; }
+.ed-video-status { margin: 0 0 14px; min-height: 1.4em; font-size: 13px; color: var(--muted); }
+.ed-video-frame { position: fixed; left: -12000px; top: 0; width: 1100px; height: 900px; border: 0; pointer-events: none; }

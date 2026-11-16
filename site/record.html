@@ -1,0 +1,79 @@
+<!doctype html>
+<!--
+  Grabador de video y GIF. El editor lo abre en un iframe oculto y le pasa el diagrama por postMessage.
+  Antes que nada se instala un reloj virtual: el componente anima con temporizadores, requestAnimationFrame
+  y animaciones CSS/WAAPI, y aquí todo avanza cuadro por cuadro, así el video sale exacto en cualquier equipo.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="robots" content="noindex" />
+    <title>Fluxygram recorder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      html, body { margin: 0; background: transparent; }
+      fluxy-gram { display: block; }
+    </style>
+    <script>
+      (function () {
+        var real = {
+          setTimeout: window.setTimeout.bind(window),
+          clearTimeout: window.clearTimeout.bind(window),
+        };
+        var clock = { now: 0, seq: 0, timers: new Map(), frames: new Map(), real: real };
+        var base = Date.now();
+        performance.now = function () { return clock.now; };
+        Date.now = function () { return base + clock.now; };
+        window.setTimeout = function (fn, ms) {
+          var args = Array.prototype.slice.call(arguments, 2);
+          var id = ++clock.seq;
+          clock.timers.set(id, { at: clock.now + Math.max(0, Number(ms) || 0), fn: fn, args: args });
+          return id;
+        };
+        window.clearTimeout = function (id) { clock.timers.delete(id); };
+        window.setInterval = function (fn, ms) {
+          var args = Array.prototype.slice.call(arguments, 2);
+          var id = ++clock.seq;
+          var every = Math.max(1, Number(ms) || 0);
+          clock.timers.set(id, { at: clock.now + every, fn: fn, args: args, every: every });
+          return id;
+        };
+        window.clearInterval = window.clearTimeout;
+        window.requestAnimationFrame = function (fn) {
+          var id = ++clock.seq;
+          clock.frames.set(id, fn);
+          return id;
+        };
+        window.cancelAnimationFrame = function (id) { clock.frames.delete(id); };
+        // El video siempre lleva todo el movimiento, aunque quien exporta tenga activado "reducir movimiento".
+        var mm = window.matchMedia.bind(window);
+        window.matchMedia = function (q) {
+          if (/prefers-reduced-motion/.test(q)) return { matches: false, media: q, addEventListener: function () {}, removeEventListener: function () {}, addListener: function () {}, removeListener: function () {} };
+          return mm(q);
+        };
+        /** Avanza el reloj: corre los temporizadores en orden y luego un cuadro de requestAnimationFrame. */
+        clock.advance = function (ms) {
+          var target = clock.now + ms;
+          for (;;) {
+            var next = null, nextId = 0;
+            clock.timers.forEach(function (t, id) { if (t.at <= target && (!next || t.at < next.at)) { next = t; nextId = id; } });
+            if (!next) break;
+            clock.now = next.at;
+            if (next.every) next.at += next.every; else clock.timers.delete(nextId);
+            try { typeof next.fn === 'function' ? next.fn.apply(window, next.args) : 0; } catch (e) { console.error(e); }
+          }
+          clock.now = target;
+          var frames = clock.frames;
+          clock.frames = new Map();
+          frames.forEach(function (fn) { try { fn(clock.now); } catch (e) { console.error(e); } });
+        };
+        window.__fxClock = clock;
+      })();
+    </script>
+  </head>
+  <body>
+    <fluxy-gram id="d" autoplay="false" controls="false"></fluxy-gram>
+    <script src="/i18n.js"></script>
+    <script type="module" src="/src/record.ts"></script>
+  </body>
+</html>

@@ -394,6 +394,11 @@ export class FluxyGram extends HTMLElement {
     };
   }
 
+  /** Cuánto dura cada paso al reproducirse solo, en ms. Lo usa el exportador de video para seguir el mismo ritmo. */
+  stepDurations(): number[] {
+    return this.player ? Array.from({ length: this.player.count }, (_, i) => this.holdFor(i)) : [];
+  }
+
   private holdFor(i: number) {
     const s = this.player?.steps[i];
     if (!s) return 2600;
