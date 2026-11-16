@@ -386,3 +386,25 @@ main, .wordmark, footer { position: relative; z-index: 1; }
 }
 .ed-cloud-menu .ed-cloud-pro { color: var(--accent); }
 .plan-forever { color: var(--accent); }
+
+/* ---------- Comparación: dibujar vs explicar ---------- */
+.compare-wrap { border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden; }
+.compare { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 15px; }
+.compare th, .compare td { padding: 16px 20px; text-align: left; vertical-align: top; }
+.compare thead th { font-size: 14px; font-weight: 600; color: var(--muted); }
+.compare thead th.is-us { color: var(--accent); }
+.compare tbody tr { border-top: 1px solid var(--border); }
+.compare tbody th { width: 22%; font-weight: 500; color: var(--muted); }
+.compare td { width: 39%; color: var(--muted); }
+.compare td.is-us { color: var(--text); background: color-mix(in oklab, var(--accent) 5%, transparent); }
+.compare thead th.is-us { background: color-mix(in oklab, var(--accent) 5%, transparent); }
+.compare-foot { margin: 20px 0 0; max-width: 640px; color: var(--muted); font-size: 15px; }
+@media (max-width: 640px) {
+  .compare thead td { display: none; }
+  .compare thead tr, .compare tbody tr { display: grid; grid-template-columns: 1fr 1fr; }
+  .compare tbody th { grid-column: 1 / -1; width: auto; padding-bottom: 0; font-size: 13px; }
+  .compare th, .compare td { width: auto; padding: 12px 14px; font-size: 14px; }
+  .compare tbody td { padding-top: 8px; }
+  .compare tbody tr { background: linear-gradient(to right, transparent 50%, color-mix(in oklab, var(--accent) 5%, transparent) 50%); }
+  .compare td.is-us, .compare thead th.is-us { background: none; }
+}
