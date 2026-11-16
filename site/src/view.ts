@@ -42,8 +42,10 @@ async function diagramFromShortLink(slug: string): Promise<unknown | undefined> 
     let res = await fetch(`/api/links/${slug}`);
     // Con contraseña: se pide hasta que sea la correcta.
     let wrong = false;
+    const actions = document.querySelectorAll<HTMLElement>('#present, #edit');
     while (res.status === 401) {
       el.hidden = true;
+      for (const a of actions) a.hidden = true;
       const password = await askPassword(wrong);
       res = await fetch(`/api/links/${slug}/unlock`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
       if (res.status === 403) {
@@ -52,6 +54,7 @@ async function diagramFromShortLink(slug: string): Promise<unknown | undefined> 
       }
     }
     el.hidden = false;
+    for (const a of actions) a.hidden = false;
     if (res.status === 410) linkProblem = ((await res.json()) as { error: string }).error === 'expired' ? 'expired' : 'disabled';
     if (!res.ok) return undefined;
     const body = (await res.json()) as { diagram: unknown; brand?: Brand | null };
