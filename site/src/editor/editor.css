@@ -463,3 +463,19 @@
 .ed-brand-logo img { max-height: 26px; max-width: 160px; }
 .ed-brand-preview { display: block; }
 .ed-video-brand { display: flex; align-items: center; gap: 8px; margin: 2px 0 4px; font-size: 13px; }
+
+
+/* ---------- Opciones de un link (Pro) ---------- */
+.ed-link-row { grid-template-columns: 1fr auto auto; }
+.ed-link-actions { display: flex; gap: 6px; }
+.ed-link-tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+.ed-link-options { grid-column: 1 / -1; display: grid; gap: 10px; padding: 10px 2px 2px; border-top: 1px solid var(--border); }
+.ed-link-options[hidden] { display: none; }
+.ed-link-opt { display: grid; grid-template-columns: 110px 1fr; align-items: center; gap: 10px; font-size: 13px; }
+.ed-link-opt > span { color: var(--muted); }
+.ed-link-opt > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.ed-link-opt input[type='password'], .ed-link-opt input[type='date'] { height: 32px; padding: 0 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; color-scheme: dark; }
+.ed-link-opt input[type='password'] { flex: 1; min-width: 160px; }
+.ed-link-check { grid-template-columns: auto 1fr; cursor: pointer; }
+.ed-link-check > span { color: var(--text); }
+@media (max-width: 560px) { .ed-link-row { grid-template-columns: 1fr; } .ed-link-opt { grid-template-columns: 1fr; } }

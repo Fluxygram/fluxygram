@@ -672,7 +672,9 @@ async function showDetails(d: Saved, o: ListOptions, closeList: () => void) {
   const [vr, lr] = await Promise.all([api(`/diagrams/${d.id}/versions`), api(`/diagrams/${d.id}/links`)]);
   if (!vr.ok || !lr.ok) return o.toast(t('cloud.error'));
   const { versions } = (await vr.json()) as { versions: { version: number; savedAt: number }[] };
-  const { links } = (await lr.json()) as { links: { slug: string; url: string; version: number; views: number | null; disabled: boolean }[] };
+  const { links } = (await lr.json()) as {
+    links: { slug: string; url: string; version: number; views: number | null; disabled: boolean; hasPassword: boolean; expiresAt: number | null; followLatest: boolean }[];
+  };
   const date = new Intl.DateTimeFormat(document.documentElement.lang || undefined, { dateStyle: 'medium', timeStyle: 'short' });
   const close = () => modal.remove();
 
@@ -690,16 +692,87 @@ async function showDetails(d: Saved, o: ListOptions, closeList: () => void) {
   );
 
   type LinkInfo = (typeof links)[number];
-  const linkRow = (l: LinkInfo): HTMLLIElement => {
-    const row: HTMLLIElement = h('li', { class: l.disabled ? 'ed-detail-row is-off' : 'ed-detail-row' },
+  const day = new Intl.DateTimeFormat(document.documentElement.lang || undefined, { dateStyle: 'medium' });
+  const patch = async (l: LinkInfo, body: Record<string, unknown>) => {
+    const r = await api(`/links/${l.slug}`, { method: 'PATCH', body: JSON.stringify(body) });
+    if (!r.ok) {
+      o.toast(t('cloud.error'));
+      return false;
+    }
+    return true;
+  };
+  const linkRow = (l: LinkInfo, open = false): HTMLLIElement => {
+    const expired = !!l.expiresAt && l.expiresAt * 1000 <= Date.now();
+    const tags = [
+      l.hasPassword ? t('links.passwordSet') : '',
+      l.expiresAt ? (expired ? t('links.expired') : t('links.expiresOn', { d: day.format(l.expiresAt * 1000) })) : '',
+      l.followLatest ? t('links.followOn') : '',
+      l.disabled ? t('pro.off') : '',
+    ].filter(Boolean);
+    const rerender = (keepOpen = true) => row.replaceWith(linkRow(l, keepOpen));
+
+    // Opciones: contraseña, vencimiento y "siempre la última versión". Cada cambio se guarda al momento.
+    const pass = h('input', { type: 'password', placeholder: t('links.passwordPlaceholder'), autocomplete: 'new-password' }) as HTMLInputElement;
+    const setPass = h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
+      if (pass.value.length < 4) return o.toast(t('links.passwordShort'));
+      if (await patch(l, { password: pass.value })) {
+        l.hasPassword = true;
+        o.toast(t('links.saved'));
+        rerender();
+      }
+    } }, t('links.setPassword'));
+    const removePass = h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
+      if (await patch(l, { password: null })) {
+        l.hasPassword = false;
+        rerender();
+      }
+    } }, t('links.removePassword'));
+    const toDate = (sec: number) => new Date(sec * 1000).toISOString().slice(0, 10);
+    const expires = h('input', { type: 'date', value: l.expiresAt ? toDate(l.expiresAt) : '', min: new Date().toISOString().slice(0, 10), onchange: async (e: Event) => {
+      const v = (e.target as HTMLInputElement).value;
+      // Vence al terminar ese día (hora local).
+      const at = v ? Math.floor(new Date(`${v}T23:59:59`).getTime() / 1000) : null;
+      if (await patch(l, { expiresAt: at })) {
+        l.expiresAt = at;
+        rerender();
+      }
+    } });
+    const never = h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
+      if (await patch(l, { expiresAt: null })) {
+        l.expiresAt = null;
+        rerender();
+      }
+    } }, t('links.never'));
+    const follow = h('input', { type: 'checkbox', checked: l.followLatest, onchange: async (e: Event) => {
+      const v = (e.target as HTMLInputElement).checked;
+      if (await patch(l, { followLatest: v })) {
+        l.followLatest = v;
+        rerender();
+      }
+    } });
+    const panel = h('div', { class: 'ed-link-options', hidden: !open },
+      h('div', { class: 'ed-link-opt' }, h('span', {}, t('links.password')), h('div', {}, pass, setPass, l.hasPassword ? removePass : undefined)),
+      h('div', { class: 'ed-link-opt' }, h('span', {}, t('links.expires')), h('div', {}, expires, l.expiresAt ? never : undefined)),
+      h('label', { class: 'ed-link-opt ed-link-check' }, follow, h('span', {}, t('links.follow'))),
+    );
+
+    const row: HTMLLIElement = h('li', { class: l.disabled || expired ? 'ed-detail-row ed-link-row is-off' : 'ed-detail-row ed-link-row' },
       h('span', {}, icon(Link2, 14), ' ', h('a', { href: l.url, target: '_blank', rel: 'noopener' }, l.url.replace(/^https?:\/\//, ''))),
-      h('span', { class: 'ed-detail-meta' }, icon(Eye, 13), ' ', t(l.views === 1 ? 'pro.view1' : 'pro.views', { n: String(l.views ?? 0) }), ' · ', t('pro.version', { n: String(l.version) }), l.disabled ? ` · ${t('pro.off')}` : ''),
-      h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
-        const r = await api(`/links/${l.slug}`, { method: 'PATCH', body: JSON.stringify({ disabled: !l.disabled }) });
-        if (!r.ok) return o.toast(t('cloud.error'));
-        l.disabled = !l.disabled;
-        row.replaceWith(linkRow(l));
-      } }, l.disabled ? t('pro.linkOn') : t('pro.linkOff')),
+      h('span', { class: 'ed-detail-meta' }, icon(Eye, 13), ' ', t(l.views === 1 ? 'pro.view1' : 'pro.views', { n: String(l.views ?? 0) }), ' · ', t('pro.version', { n: String(l.version) })),
+      h('span', { class: 'ed-link-actions' },
+        h('button', { type: 'button', class: 'ed-btn', 'aria-expanded': String(open), onclick: (e: Event) => {
+          panel.hidden = !panel.hidden;
+          (e.currentTarget as HTMLElement).setAttribute('aria-expanded', String(!panel.hidden));
+        } }, t('links.settings')),
+        h('button', { type: 'button', class: 'ed-btn', onclick: async () => {
+          if (await patch(l, { disabled: !l.disabled })) {
+            l.disabled = !l.disabled;
+            rerender(!panel.hidden);
+          }
+        } }, l.disabled ? t('pro.linkOn') : t('pro.linkOff')),
+      ),
+      tags.length ? h('span', { class: 'ed-link-tags' }, ...tags.map((x) => h('span', { class: 'ed-detail-badge' }, x))) : undefined,
+      panel,
     );
     return row;
   };
@@ -711,7 +784,7 @@ async function showDetails(d: Saved, o: ListOptions, closeList: () => void) {
       h('h3', { class: 'ed-detail-h' }, t('pro.history')),
       h('ul', { class: 'ed-detail-list' }, ...versionRows),
       h('h3', { class: 'ed-detail-h' }, t('pro.links')),
-      links.length ? h('ul', { class: 'ed-detail-list' }, ...links.map(linkRow)) : h('p', { class: 'ed-detail-empty' }, t('pro.noLinks')),
+      links.length ? h('ul', { class: 'ed-detail-list' }, ...links.map((l) => linkRow(l))) : h('p', { class: 'ed-detail-empty' }, t('pro.noLinks')),
     ),
   );
   modal.addEventListener('click', (e) => e.target === modal && close());
