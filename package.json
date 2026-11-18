@@ -11,7 +11,7 @@
     "preview": "pnpm build && node scripts/cf.mjs dev",
     "deploy": "pnpm build && node scripts/cf.mjs deploy",
     "build:packages": "pnpm --filter @fluxygram/core build && pnpm --filter @fluxygram/element build && pnpm --filter fluxygram build && pnpm --filter @fluxygram/markdown --filter @fluxygram/astro --filter @fluxygram/docusaurus --filter @fluxygram/mcp build",
-    "release": "pnpm build:packages && pnpm publish -r --filter \"@fluxygram/*\" --filter fluxygram --access public --no-git-checks",
+    "release": "node --use-system-ca scripts/release.mjs",
     "docs": "pnpm --filter docs dev",
     "deploy:docs": "pnpm --filter docs build && node scripts/cf.mjs deploy -c docs/wrangler.jsonc"
   },

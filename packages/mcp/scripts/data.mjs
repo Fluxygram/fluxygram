@@ -15,9 +15,10 @@ for (const lang of ['en', 'es']) {
     examples[lang][f.replace('.flux.json', '')] = d;
   }
 }
+const version = JSON.parse(readFileSync(resolve(import.meta.dirname, '../package.json'), 'utf8')).version;
 const summaries = meta.map((m) => ({ name: m.name, live: !!m.live, about: m.lead.en }));
 writeFileSync(
   resolve(import.meta.dirname, '../src/data.ts'),
-  `// Generado por scripts/data.mjs. No editar.\nexport const GUIDE: string = ${JSON.stringify(skill)};\nexport const EXAMPLES: Record<'en' | 'es', Record<string, unknown>> = ${JSON.stringify(examples)};\nexport const SUMMARIES: { name: string; live: boolean; about: string }[] = ${JSON.stringify(summaries)};\n`,
+  `// Generado por scripts/data.mjs. No editar.\nexport const VERSION: string = ${JSON.stringify(version)};\nexport const GUIDE: string = ${JSON.stringify(skill)};\nexport const EXAMPLES: Record<'en' | 'es', Record<string, unknown>> = ${JSON.stringify(examples)};\nexport const SUMMARIES: { name: string; live: boolean; about: string }[] = ${JSON.stringify(summaries)};\n`,
 );
 console.log('mcp data ok');

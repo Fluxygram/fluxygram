@@ -1,5 +1,5 @@
 import { validate, type Diagram, type Locale } from '@fluxygram/core';
-import { EXAMPLES, GUIDE, SUMMARIES } from './data';
+import { EXAMPLES, GUIDE, SUMMARIES, VERSION } from './data';
 
 /**
  * Fluxygram MCP server: a tiny, dependency-free JSON-RPC core that speaks the Model Context Protocol.
@@ -9,7 +9,8 @@ import { EXAMPLES, GUIDE, SUMMARIES } from './data';
  * user's own agent; this server only teaches the format, checks it and turns it into a link.
  */
 
-export const VERSION = '0.3.0';
+// La versión sale del package.json (la escribe scripts/data.mjs en data.ts).
+export { VERSION };
 const PROTOCOLS = ['2025-06-18', '2025-03-26', '2024-11-05'];
 
 export interface ServerOptions {
