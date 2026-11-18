@@ -1,0 +1,27 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "app.fluxygram/mcp",
+  "title": "Fluxygram",
+  "description": "Animated, step-by-step diagrams: learn the format, validate a diagram and get a link to watch it.",
+  "websiteUrl": "https://fluxygram.app",
+  "repository": {
+    "url": "https://github.com/Fluxygram/fluxygram",
+    "source": "github",
+    "subfolder": "packages/mcp"
+  },
+  "version": "0.3.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@fluxygram/mcp",
+      "version": "0.3.0",
+      "transport": { "type": "stdio" }
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://fluxygram.app/mcp"
+    }
+  ]
+}
