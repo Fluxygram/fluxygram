@@ -160,6 +160,8 @@ The skill in [`skills/fluxygram`](skills/fluxygram) teaches an agent the format,
 
 **MCP server** (Claude, Cursor, VS Code, Windsurf, any MCP client): connect `https://fluxygram.app/mcp`, or run `npx -y @fluxygram/mcp`. The agent can then validate its diagrams and give you a link to watch them. [Setup](https://docs.fluxygram.app/guides/mcp/).
 
+[![Fluxygram/fluxygram MCP server](https://glama.ai/mcp/servers/Fluxygram/fluxygram/badges/score.svg)](https://glama.ai/mcp/servers/Fluxygram/fluxygram)
+
 ```bash
 curl -o FLUXYGRAM.md https://fluxygram.app/skill.md
 ```
