@@ -162,6 +162,7 @@ The skill in [`skills/fluxygram`](skills/fluxygram) teaches an agent the format,
 
 [![Fluxygram/fluxygram MCP server](https://glama.ai/mcp/servers/Fluxygram/fluxygram/badges/score.svg)](https://glama.ai/mcp/servers/Fluxygram/fluxygram)
 [![Fluxygram MCP connector](https://glama.ai/mcp/connectors/app.fluxygram/mcp/badges/score.svg)](https://glama.ai/mcp/connectors/app.fluxygram/mcp)
+[![Fluxygram MCP on mcprush](https://mcprush.com/badge/fluxygram-mcp/score.svg)](https://mcprush.com/to/fluxygram-mcp?ref=badge)
 
 ```bash
 curl -o FLUXYGRAM.md https://fluxygram.app/skill.md
