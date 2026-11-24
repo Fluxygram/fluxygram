@@ -25,6 +25,9 @@
   <a href="https://www.npmjs.com/package/@fluxygram/element"><img src="https://img.shields.io/npm/v/@fluxygram/element?label=npm&color=2bff88&labelColor=16161c" alt="npm version"></a>
   <a href="https://github.com/Fluxygram/fluxygram/actions/workflows/ci.yml"><img src="https://github.com/Fluxygram/fluxygram/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="LICENSE.md"><img src="https://img.shields.io/badge/license-MIT%20%2B%20FSL-16161c" alt="License: MIT + FSL"></a>
+  <a href="https://glama.ai/mcp/servers/Fluxygram/fluxygram"><img src="https://glama.ai/mcp/servers/Fluxygram/fluxygram/badges/score.svg" alt="Fluxygram/fluxygram MCP server"></a>
+  <a href="https://glama.ai/mcp/connectors/app.fluxygram/mcp"><img src="https://glama.ai/mcp/connectors/app.fluxygram/mcp/badges/score.svg" alt="Fluxygram MCP connector"></a>
+  <a href="https://mcprush.com/to/fluxygram-mcp?ref=badge"><img src="https://mcprush.com/badge/fluxygram-mcp/score.svg" alt="Fluxygram MCP on mcprush"></a>
 </p>
 
 <p align="center">
@@ -159,10 +162,6 @@ The skill in [`skills/fluxygram`](skills/fluxygram) teaches an agent the format,
 **Cursor, Windsurf, Codex, Copilot and other coding agents**: save the skill in your project and point the agent at it.
 
 **MCP server** (Claude, Cursor, VS Code, Windsurf, any MCP client): connect `https://fluxygram.app/mcp`, or run `npx -y @fluxygram/mcp`. The agent can then validate its diagrams and give you a link to watch them. [Setup](https://docs.fluxygram.app/guides/mcp/).
-
-[![Fluxygram/fluxygram MCP server](https://glama.ai/mcp/servers/Fluxygram/fluxygram/badges/score.svg)](https://glama.ai/mcp/servers/Fluxygram/fluxygram)
-[![Fluxygram MCP connector](https://glama.ai/mcp/connectors/app.fluxygram/mcp/badges/score.svg)](https://glama.ai/mcp/connectors/app.fluxygram/mcp)
-[![Fluxygram MCP on mcprush](https://mcprush.com/badge/fluxygram-mcp/score.svg)](https://mcprush.com/to/fluxygram-mcp?ref=badge)
 
 ```bash
 curl -o FLUXYGRAM.md https://fluxygram.app/skill.md
